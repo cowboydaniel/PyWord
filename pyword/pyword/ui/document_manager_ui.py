@@ -300,7 +300,7 @@ class DocumentManagerUI(QWidget):
                 return
         
         # Create a new editor
-        from .editor import TextEditor  # Lazy import to avoid circular imports
+        from ..core.editor import TextEditor  # Lazy import to avoid circular imports
         editor = TextEditor()
         
         # Set document content

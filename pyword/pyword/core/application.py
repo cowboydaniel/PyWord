@@ -13,6 +13,11 @@ from ..features.styles import DocumentStyles
 from ..features.tables import TableManager
 from ..features.navigation import FindReplaceDialog, DocumentMap, GoToDialog
 from ..features.headers_footers import HeaderFooterManager, HeaderFooterType
+from ..features.columns import ColumnManager, ColumnSettings
+from ..features.lists import ListManager, ListType
+from ..features.page_numbers import PageNumberManager, PageNumberSettings
+from ..features.shapes import ShapeManager
+from ..features.split_view import SplitViewManager
 
 # Import UI components
 from ..ui.toolbars.header_footer_toolbar import HeaderFooterToolBar
@@ -32,22 +37,32 @@ class WordProcessor(QMainWindow):
         # Initialize features
         self.styles = DocumentStyles()
         self.table_manager = TableManager(self)
-        
+
         # Initialize header/footer manager (will be set when document is loaded)
         self.header_footer_manager = None
+
+        # Initialize additional feature managers
+        self.column_manager = None  # Will be initialized when text_edit is ready
+        self.list_manager = None
+        self.page_number_manager = None
+        self.shape_manager = None
+        self.split_view_manager = None
         
         # Setup UI
         self.setup_ui()
-        
+
         # Initialize document map
         self.init_document_map()
-        
+
         # Initialize header/footer toolbar
         self.header_footer_toolbar = HeaderFooterToolBar(self)
         self.header_footer_toolbar.setObjectName("headerFooterToolbar")
         self.addToolBar(Qt.TopToolBarArea, self.header_footer_toolbar)
         self.header_footer_toolbar.hide()  # Hide by default, show when document is loaded
-        
+
+        # Initialize all feature managers now that text_edit is available
+        self.init_feature_managers()
+
         # Load settings
         self.load_settings()
     
@@ -204,6 +219,26 @@ class WordProcessor(QMainWindow):
             fmt.setFontWeight(weight)
             self.text_edit.mergeCurrentCharFormat(fmt)
     
+    def init_feature_managers(self):
+        """Initialize all feature managers after text_edit is created."""
+        if not hasattr(self, 'text_edit') or not self.text_edit:
+            return
+
+        # Column manager
+        self.column_manager = ColumnManager(self.text_edit)
+
+        # List manager
+        self.list_manager = ListManager(self.text_edit)
+
+        # Page number manager
+        self.page_number_manager = PageNumberManager(self.text_edit)
+
+        # Shape manager
+        self.shape_manager = ShapeManager(self.text_edit)
+
+        # Split view manager
+        self.split_view_manager = SplitViewManager(self)
+
     def init_document_map(self):
         """Initialize the document map dock widget."""
         self.dock = QDockWidget("Document Map", self)
@@ -270,21 +305,82 @@ class WordProcessor(QMainWindow):
         doc_map_action.setChecked(False)
         doc_map_action.triggered.connect(self.toggle_document_map)
         menu.addAction(doc_map_action)
+
+        menu.addSeparator()
+
+        # Split view actions
+        split_horizontal_action = QAction("Split &Horizontal", self)
+        split_horizontal_action.triggered.connect(self.split_view_horizontal)
+        menu.addAction(split_horizontal_action)
+
+        split_vertical_action = QAction("Split &Vertical", self)
+        split_vertical_action.triggered.connect(self.split_view_vertical)
+        menu.addAction(split_vertical_action)
+
+        remove_split_action = QAction("&Remove Split", self)
+        remove_split_action.triggered.connect(self.remove_split_view)
+        menu.addAction(remove_split_action)
     
     def setup_insert_actions(self, menu):
         """Setup insert-related actions."""
         table_action = QAction("&Table...", self)
         table_action.triggered.connect(self.insert_table)
         menu.addAction(table_action)
+
+        menu.addSeparator()
+
+        # Page numbers
+        page_numbers_action = QAction("&Page Numbers...", self)
+        page_numbers_action.triggered.connect(self.insert_page_numbers)
+        menu.addAction(page_numbers_action)
+
+        menu.addSeparator()
+
+        # Shapes submenu
+        shapes_menu = menu.addMenu("&Shapes")
+
+        rectangle_action = QAction("Rectangle", self)
+        rectangle_action.triggered.connect(lambda: self.insert_shape("rectangle"))
+        shapes_menu.addAction(rectangle_action)
+
+        circle_action = QAction("Circle", self)
+        circle_action.triggered.connect(lambda: self.insert_shape("circle"))
+        shapes_menu.addAction(circle_action)
+
+        line_action = QAction("Line", self)
+        line_action.triggered.connect(lambda: self.insert_shape("line"))
+        shapes_menu.addAction(line_action)
+
+        arrow_action = QAction("Arrow", self)
+        arrow_action.triggered.connect(lambda: self.insert_shape("arrow"))
+        shapes_menu.addAction(arrow_action)
     
     def setup_format_actions(self, menu):
         """Setup format-related actions."""
+        # Bullets and numbering
+        bullets_action = QAction("&Bullets", self)
+        bullets_action.triggered.connect(lambda: self.apply_list_format(ListType.BULLET))
+        menu.addAction(bullets_action)
+
+        numbering_action = QAction("&Numbering", self)
+        numbering_action.triggered.connect(lambda: self.apply_list_format(ListType.NUMBERED))
+        menu.addAction(numbering_action)
+
+        menu.addSeparator()
+
+        # Columns
+        columns_action = QAction("C&olumns...", self)
+        columns_action.triggered.connect(self.format_columns)
+        menu.addAction(columns_action)
+
+        menu.addSeparator()
+
         # Add style actions
         for style in self.styles.styles.keys():
             action = QAction(style, self)
             action.triggered.connect(lambda checked, s=style: self.apply_style(s))
             menu.addAction(action)
-        
+
         # Add theme submenu
         theme_menu = menu.addMenu("Themes")
         for theme in self.styles.themes.keys():
@@ -335,6 +431,61 @@ class WordProcessor(QMainWindow):
                 }}
             """)
     
+    def apply_list_format(self, list_type):
+        """Apply list formatting (bullets or numbering)."""
+        if self.list_manager:
+            if list_type == ListType.BULLET:
+                self.list_manager.create_bullet_list()
+            elif list_type == ListType.NUMBERED:
+                self.list_manager.create_numbered_list()
+
+    def format_columns(self):
+        """Show columns dialog and apply column formatting."""
+        if self.column_manager:
+            from ..features.columns import ColumnDialog, ColumnSettings
+            dialog = ColumnDialog(self)
+            if dialog.exec():
+                settings = dialog.get_settings()
+                self.column_manager.apply_columns(settings)
+
+    def insert_page_numbers(self):
+        """Insert page numbers."""
+        if self.page_number_manager:
+            from ..features.page_numbers import PageNumberDialog
+            dialog = PageNumberDialog(self)
+            if dialog.exec():
+                settings = dialog.get_settings()
+                self.page_number_manager.insert_page_numbers(settings)
+
+    def insert_shape(self, shape_type):
+        """Insert a shape."""
+        if self.shape_manager:
+            # Default size for shapes
+            width, height = 100, 100
+            if shape_type == "line":
+                self.shape_manager.insert_line(width)
+            elif shape_type == "rectangle":
+                self.shape_manager.insert_rectangle(width, height)
+            elif shape_type == "circle":
+                self.shape_manager.insert_ellipse(width, height)
+            elif shape_type == "arrow":
+                self.shape_manager.insert_arrow(width)
+
+    def split_view_horizontal(self):
+        """Split view horizontally."""
+        if self.split_view_manager:
+            self.split_view_manager.split_horizontal()
+
+    def split_view_vertical(self):
+        """Split view vertically."""
+        if self.split_view_manager:
+            self.split_view_manager.split_vertical()
+
+    def remove_split_view(self):
+        """Remove split view."""
+        if self.split_view_manager:
+            self.split_view_manager.remove_split()
+
     def maybe_save(self):
         """Check if the document has unsaved changes."""
         if self.text_edit.document().isModified():
@@ -343,7 +494,7 @@ class WordProcessor(QMainWindow):
                 "The document has been modified.\nDo you want to save your changes?",
                 QMessageBox.Save | QMessageBox.Discard | QMessageBox.Cancel
             )
-            
+
             if ret == QMessageBox.Save:
                 return self.save_file()
             elif ret == QMessageBox.Cancel:
