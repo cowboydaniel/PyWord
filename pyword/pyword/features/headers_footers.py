@@ -123,7 +123,14 @@ class HeaderFooterManager(QObject):
             self.headers[footer_type].content = content
             self._update_header_footer(footer_type)
             self.headerFooterChanged.emit()
-    
+
+    def set_header_footer_content(self, hf_type: HeaderFooterType, content: str):
+        """Set the content of a header or footer based on type."""
+        if hf_type in [HeaderFooterType.HEADER, HeaderFooterType.FIRST_PAGE_HEADER, HeaderFooterType.EVEN_PAGE_HEADER]:
+            self.set_header(content, hf_type)
+        elif hf_type in [HeaderFooterType.FOOTER, HeaderFooterType.FIRST_PAGE_FOOTER, HeaderFooterType.EVEN_PAGE_FOOTER]:
+            self.set_footer(content, hf_type)
+
     def _update_header_footer(self, header_footer_type: HeaderFooterType):
         """Update the content of a header or footer frame."""
         frame_name = "header" if "header" in header_footer_type.name.lower() else "footer"
