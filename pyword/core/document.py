@@ -10,6 +10,9 @@ if TYPE_CHECKING:
     from .page_setup import PageSetup
     from ..features.headers_footers import HeaderFooterManager, HeaderFooterType
 
+# Import file format manager
+from .file_formats import format_manager
+
 class DocumentType(Enum):
     """Supported document types."""
     TEXT = "text/plain"
@@ -192,15 +195,15 @@ class Document:
         
         return doc
     
-    def save(self, file_path: Optional[Union[str, Path]] = None, 
+    def save(self, file_path: Optional[Union[str, Path]] = None,
             format: Optional[DocumentType] = None) -> bool:
         """
         Save the document to a file.
-        
+
         Args:
             file_path: Path to save the document to. If None, uses the current file_path.
             format: Document format to save as. If None, infers from file extension.
-            
+
         Returns:
             bool: True if save was successful, False otherwise.
         """
@@ -208,34 +211,41 @@ class Document:
             self.file_path = str(file_path) if isinstance(file_path, Path) else file_path
             path = Path(self.file_path)
             self.title = path.stem
-            
+
             # Update document type based on file extension if not explicitly provided
             if format is None:
                 self.document_type = DocumentType.from_extension(path.suffix)
-        
+
         if not self.file_path:
             return False
-        
+
         path = Path(self.file_path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        
+
         try:
             # Update modification time
             self.modified_at = datetime.now()
-            
-            # Save based on document type
-            if self.document_type in (DocumentType.RTF, DocumentType.HTML, DocumentType.TEXT):
-                # For text-based formats, save the main content
+
+            # Try to use format manager for supported formats
+            extension = path.suffix.lower().lstrip('.')
+            if format_manager.can_export(extension):
+                success = format_manager.export_document(self, str(path))
+                if success:
+                    self.modified = False
+                return success
+
+            # Fallback to basic text-based save for unsupported formats
+            if self.document_type == DocumentType.TEXT:
                 with open(path, 'w', encoding=self._encoding) as f:
                     f.write(self.content)
             else:
-                # For structured formats, save as JSON
+                # For other formats without handlers, save as JSON
                 with open(path.with_suffix('.json'), 'w', encoding=self._encoding) as f:
                     json.dump(self.to_dict(), f, indent=2, ensure_ascii=False)
-            
+
             self.modified = False
             return True
-            
+
         except Exception as e:
             # TODO: Log error properly
             print(f"Error saving document: {e}")
@@ -244,10 +254,10 @@ class Document:
     def load(self, file_path: Union[str, Path]) -> bool:
         """
         Load document content from a file.
-        
+
         Args:
             file_path: Path to the file to load.
-            
+
         Returns:
             bool: True if load was successful, False otherwise.
         """
@@ -255,38 +265,67 @@ class Document:
             path = Path(file_path) if isinstance(file_path, str) else file_path
             self.file_path = str(path)
             self.title = path.stem
-            
+
             # Determine document type from file extension
             self.document_type = DocumentType.from_extension(path.suffix)
-            
-            if self.document_type in (DocumentType.RTF, DocumentType.HTML, DocumentType.TEXT):
-                # Load text-based formats
+
+            # Try to use format manager for supported formats
+            extension = path.suffix.lower().lstrip('.')
+            if format_manager.can_import(extension):
+                data = format_manager.import_document(str(path))
+                if data:
+                    # Update document with imported data
+                    self.content = data.get('content', '')
+                    self.title = data.get('title', path.stem)
+                    self.author = data.get('author', '')
+                    self.keywords = data.get('keywords', [])
+                    self.metadata = data.get('metadata', {})
+
+                    # Update timestamps if provided
+                    if 'created_at' in data:
+                        try:
+                            self.created_at = datetime.fromisoformat(data['created_at'])
+                        except:
+                            pass
+                    if 'modified_at' in data:
+                        try:
+                            self.modified_at = datetime.fromisoformat(data['modified_at'])
+                        except:
+                            pass
+
+                    # Create a default section with the content
+                    self.sections = [DocumentSection(name="Main Content", content=self.content)]
+
+                    self.modified = False
+                    return True
+
+            # Fallback to basic text loading for unsupported formats
+            if self.document_type == DocumentType.TEXT:
                 with open(path, 'r', encoding=self._encoding) as f:
                     self.content = f.read()
-                # Create a default section with the content
                 self.sections = [DocumentSection(name="Main Content", content=self.content)]
             else:
-                # Load structured format (JSON)
+                # Try to load as JSON
                 json_path = path if path.suffix.lower() == '.json' else path.with_suffix('.json')
                 if json_path.exists():
                     with open(json_path, 'r', encoding=self._encoding) as f:
                         data = json.load(f)
-                    
+
                     # Create document from dictionary
                     loaded_doc = self.from_dict(data)
-                    
+
                     # Update current document with loaded data
                     self.__dict__.update(loaded_doc.__dict__)
                 else:
                     # If no JSON file exists, treat as plain text
-                    with open(path, 'r', encoding=self._encoding) as f:
+                    with open(path, 'r', encoding=self._encoding, errors='ignore') as f:
                         self.content = f.read()
                     self.sections = [DocumentSection(name="Main Content", content=self.content)]
-            
+
             self.modified = False
             self.modified_at = datetime.now()
             return True
-            
+
         except Exception as e:
             # TODO: Log error properly
             print(f"Error loading document: {e}")
