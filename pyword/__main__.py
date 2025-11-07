@@ -1,6 +1,16 @@
 import sys
+import os
 from PySide6.QtWidgets import QApplication
-from .core.application import WordProcessor
+
+# Handle both direct execution and module execution
+if __name__ == "__main__" and __package__ is None:
+    # Direct execution: python pyword/__main__.py
+    # Add parent directory to path to allow absolute imports
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from pyword.core.application import WordProcessor
+else:
+    # Module execution: python -m pyword
+    from .core.application import WordProcessor
 
 def main():
     app = QApplication(sys.argv)
