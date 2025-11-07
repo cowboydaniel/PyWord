@@ -35,20 +35,20 @@
 - [x] Split view (split_view.py)
 - [x] Different view modes (Print, Web, Draft) (split_view.py)
 
-## Phase 3: Advanced Features
+## Phase 3: Advanced Features ✅
 
 ### 3.1 Advanced Layout
-- [ ] Sections and section breaks
-- [ ] Page backgrounds and watermarks
-- [ ] Advanced table formatting
-- [ ] Text wrapping around objects
-- [ ] Advanced image handling
+- [x] Sections and section breaks (sections.py)
+- [x] Page backgrounds and watermarks (page_backgrounds.py)
+- [x] Advanced table formatting (advanced_tables.py)
+- [x] Text wrapping around objects (text_wrapping.py)
+- [x] Advanced image handling (advanced_images.py)
 
 ### 3.2 Collaboration
-- [ ] Track changes
-- [ ] Comments
-- [ ] Document comparison
-- [ ] Basic review features
+- [x] Track changes (track_changes.py)
+- [x] Comments (comments.py)
+- [x] Document comparison (document_comparison.py)
+- [x] Basic review features (review.py)
 
 ## Phase 4: Professional Features
 
