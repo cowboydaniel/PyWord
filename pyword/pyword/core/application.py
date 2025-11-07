@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QStatusBar, 
+from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QStatusBar,
                              QMenuBar, QMenu, QToolBar, QFileDialog, QMessageBox,
                              QSplitter, QDockWidget, QListWidget, QListWidgetItem,
                              QTextEdit, QDockWidget, QTextBrowser)
@@ -18,6 +18,9 @@ from ..features.lists import ListManager, ListType
 from ..features.page_numbers import PageNumberManager, PageNumberSettings
 from ..features.shapes import ShapeManager
 from ..features.split_view import SplitViewManager
+from ..features.performance import (LargeDocumentOptimizer, MemoryManager,
+                                   BackgroundSaver, AutoRecovery, PerformanceMonitor)
+from ..features.accessibility import AccessibilityManager, AccessibilityLevel
 
 # Import UI components
 from ..ui.toolbars.header_footer_toolbar import HeaderFooterToolBar
@@ -47,7 +50,17 @@ class WordProcessor(QMainWindow):
         self.page_number_manager = None
         self.shape_manager = None
         self.split_view_manager = None
-        
+
+        # Initialize Phase 6 features - Performance
+        self.document_optimizer = LargeDocumentOptimizer()
+        self.memory_manager = MemoryManager()
+        self.background_saver = BackgroundSaver()
+        self.auto_recovery = AutoRecovery()
+        self.performance_monitor = PerformanceMonitor()
+
+        # Initialize Phase 6 features - Accessibility
+        self.accessibility_manager = AccessibilityManager(self)
+
         # Setup UI
         self.setup_ui()
 
@@ -62,6 +75,9 @@ class WordProcessor(QMainWindow):
 
         # Initialize all feature managers now that text_edit is available
         self.init_feature_managers()
+
+        # Start Phase 6 features
+        self.init_phase6_features()
 
         # Load settings
         self.load_settings()
@@ -154,13 +170,86 @@ class WordProcessor(QMainWindow):
             self.restoreGeometry(self.settings.value("geometry"))
         if self.settings.contains("windowState"):
             self.restoreState(self.settings.value("windowState"))
-    
+
+    def init_phase6_features(self):
+        """Initialize Phase 6 features (Performance and Accessibility)."""
+        # Start auto-recovery
+        self.auto_recovery.start()
+
+        # Start background saver
+        self.background_saver.start()
+
+        # Connect performance monitor warnings
+        self.performance_monitor.performance_warning.connect(
+            lambda msg: self.status_bar.showMessage(f"Performance: {msg}", 5000)
+        )
+
+        # Connect auto-recovery signals
+        self.auto_recovery.recovery_available.connect(self.handle_recovery_files)
+
+        # Setup accessibility features
+        self.accessibility_manager.screen_reader.announcement_requested.connect(
+            lambda msg, priority: self.status_bar.showMessage(msg, 3000)
+        )
+
+        # Enable basic accessibility by default
+        self.accessibility_manager.set_accessibility_level(AccessibilityLevel.BASIC)
+
+    def handle_recovery_files(self, recovery_files):
+        """Handle available recovery files."""
+        if not recovery_files:
+            return
+
+        # Show recovery dialog
+        from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QListWidget
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Recover Documents")
+        dialog.setMinimumSize(400, 300)
+
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(QLabel("The following documents can be recovered:"))
+
+        list_widget = QListWidget()
+        for recovery in recovery_files:
+            title = recovery.get('title', 'Untitled')
+            timestamp = recovery.get('timestamp', '')
+            list_widget.addItem(f"{title} - {timestamp}")
+
+        layout.addWidget(list_widget)
+
+        button_layout = QVBoxLayout()
+        recover_btn = QPushButton("Recover Selected")
+        skip_btn = QPushButton("Skip")
+
+        def recover_selected():
+            current_row = list_widget.currentRow()
+            if current_row >= 0:
+                recovery_file = recovery_files[current_row]['file']
+                recovered = self.auto_recovery.recover_document(recovery_file)
+                if recovered:
+                    self.status_bar.showMessage(f"Recovered: {recovered['title']}", 5000)
+            dialog.accept()
+
+        recover_btn.clicked.connect(recover_selected)
+        skip_btn.clicked.connect(dialog.reject)
+
+        button_layout.addWidget(recover_btn)
+        button_layout.addWidget(skip_btn)
+        layout.addLayout(button_layout)
+
+        dialog.exec()
+
     def closeEvent(self, event):
         """Handle application close event."""
         # Save window state
         self.settings.setValue("geometry", self.saveGeometry())
         self.settings.setValue("windowState", self.saveState())
-        
+
+        # Stop Phase 6 features
+        self.auto_recovery.stop()
+        self.background_saver.stop()
+        self.accessibility_manager.tts.stop()
+
         # Handle unsaved documents
         if self.maybe_save():
             event.accept()
