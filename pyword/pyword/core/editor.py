@@ -236,7 +236,27 @@ class TextEditor(QTextEdit):
         fmt = QTextCharFormat()
         fmt.setFontUnderline(enabled)
         self.merge_format_on_word_or_selection(fmt)
-    
+
+    def text_bold(self):
+        """Toggle bold formatting on selected text."""
+        current_weight = self.fontWeight()
+        new_weight = QFont.Weight.Normal if current_weight > QFont.Weight.Normal else QFont.Weight.Bold
+        fmt = QTextCharFormat()
+        fmt.setFontWeight(new_weight)
+        self.merge_format_on_word_or_selection(fmt)
+
+    def text_italic(self):
+        """Toggle italic formatting on selected text."""
+        fmt = QTextCharFormat()
+        fmt.setFontItalic(not self.fontItalic())
+        self.merge_format_on_word_or_selection(fmt)
+
+    def text_underline(self):
+        """Toggle underline formatting on selected text."""
+        fmt = QTextCharFormat()
+        fmt.setFontUnderline(not self.fontUnderline())
+        self.merge_format_on_word_or_selection(fmt)
+
     def set_text_color(self, color: QColor):
         """Set text color."""
         fmt = QTextCharFormat()

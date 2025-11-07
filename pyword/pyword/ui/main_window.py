@@ -732,6 +732,10 @@ class MainWindow(QMainWindow):
         """Get the current active editor."""
         return self.document_ui.tab_widget.current_editor()
 
+    def current_editor(self):
+        """Get the current active editor (alias for get_current_editor)."""
+        return self.get_current_editor()
+
     def tab_changed(self, index):
         """Handle tab change event."""
         if index >= 0:
