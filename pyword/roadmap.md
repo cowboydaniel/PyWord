@@ -64,18 +64,18 @@
 - [x] Mail merge fields (mail_merge.py)
 - [x] Preview and complete merge (mail_merge.py)
 
-## Phase 5: Enterprise Features
+## Phase 5: Enterprise Features ✅
 
 ### 5.1 Security
-- [ ] Document protection
-- [ ] Password protection
-- [ ] Digital signatures
-- [ ] Information rights management
+- [x] Document protection (security.py)
+- [x] Password protection (security.py)
+- [x] Digital signatures (security.py)
+- [x] Information rights management (security.py)
 
 ### 5.2 Automation
-- [ ] Macros
-- [ ] Add-ins support
-- [ ] Custom XML data storage
+- [x] Macros (automation.py)
+- [x] Add-ins support (automation.py)
+- [x] Custom XML data storage (automation.py)
 
 ## Phase 6: Polish and Optimization
 
