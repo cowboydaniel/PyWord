@@ -11,19 +11,19 @@ class HorizontalRuler(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedHeight(25)
-        self.unit = "in"  # inches
+        self.unit = "cm"  # centimeters
         self.dpi = 96  # dots per inch
         self.zoom = 1.0
         self.left_indent = 0
         self.right_indent = 0
         self.first_line_indent = 0
 
-        # Page margins (in inches)
-        self.left_margin = 1.0  # 1 inch left margin
-        self.right_margin = 1.0  # 1 inch right margin
-        self.page_width = 8.5  # US Letter width in inches
+        # Page margins (in cm)
+        self.left_margin = 2.54  # 1 inch = 2.54 cm left margin
+        self.right_margin = 2.54  # 1 inch = 2.54 cm right margin
+        self.page_width = 21.0  # A4 width in cm
 
-        # Tab stops (list of positions in inches)
+        # Tab stops (list of positions in cm)
         self.tab_stops = []
 
         # Microsoft Word colors
@@ -65,48 +65,45 @@ class HorizontalRuler(QWidget):
         font = QFont("Segoe UI", 8)
         painter.setFont(font)
 
-        # Calculate pixels per inch
-        pixels_per_inch = self.dpi * self.zoom
+        # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
+        pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
-        # Offset to start ruler at left margin (ruler "0" at left margin)
-        left_margin_offset = int(self.left_margin * pixels_per_inch)
-
-        # Draw tick marks every 1/8 inch, starting from left margin
-        for i in range(0, int((self.width() - left_margin_offset) / (pixels_per_inch / 8)) + 8):
-            x = left_margin_offset + int(i * pixels_per_inch / 8)
+        # NO OFFSET - ruler "0" starts at page edge
+        # Draw tick marks every mm (0.1 cm)
+        max_cm = int(self.page_width) + 1
+        for i in range(0, max_cm * 10):
+            x = int(i * pixels_per_cm / 10)
             if x > self.width():
                 break
 
-            # Every inch: long tick + number
-            if i % 8 == 0:
+            # Every cm: long tick + number
+            if i % 10 == 0:
                 painter.drawLine(x, self.height() - 10, x, self.height() - 1)
-                # Draw inch number (starting from 0 at left margin)
-                inch = i // 8
-                painter.drawText(x + 2, 12, str(inch))
-            # Every 1/2 inch: medium tick
-            elif i % 4 == 0:
+                # Draw cm number (starting from 0 at page edge)
+                cm = i // 10
+                painter.drawText(x + 2, 12, str(cm))
+            # Every 5mm: medium tick
+            elif i % 5 == 0:
                 painter.drawLine(x, self.height() - 7, x, self.height() - 1)
-            # Every 1/4 inch: small tick
-            elif i % 2 == 0:
-                painter.drawLine(x, self.height() - 5, x, self.height() - 1)
-            # Every 1/8 inch: tiny tick
+            # Every mm: small tick
             else:
-                painter.drawLine(x, self.height() - 3, x, self.height() - 1)
+                painter.drawLine(x, self.height() - 4, x, self.height() - 1)
 
     def draw_margin_indicators(self, painter):
         """Draw gray areas showing page margins."""
         painter.setPen(Qt.NoPen)
         painter.setBrush(self.margin_color)
 
-        pixels_per_inch = self.dpi * self.zoom
+        # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
+        pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
         # Left margin (gray area from 0 to left margin)
-        left_margin_pixels = int(self.left_margin * pixels_per_inch)
+        left_margin_pixels = int(self.left_margin * pixels_per_cm)
         painter.drawRect(0, 0, left_margin_pixels, self.height())
 
         # Right margin (gray area from page_width - right_margin to end)
-        right_margin_start = int((self.page_width - self.right_margin) * pixels_per_inch)
-        page_width_pixels = int(self.page_width * pixels_per_inch)
+        right_margin_start = int((self.page_width - self.right_margin) * pixels_per_cm)
+        page_width_pixels = int(self.page_width * pixels_per_cm)
         painter.drawRect(right_margin_start, 0, page_width_pixels - right_margin_start, self.height())
 
     def draw_tab_stops(self, painter):
@@ -114,13 +111,14 @@ class HorizontalRuler(QWidget):
         painter.setPen(QPen(self.text_color, 1))
         painter.setBrush(self.text_color)
 
-        pixels_per_inch = self.dpi * self.zoom
+        # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
+        pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
-        # Offset to align with ruler starting at left margin
-        left_margin_offset = int(self.left_margin * pixels_per_inch)
+        # Start from left margin
+        left_margin_offset = int(self.left_margin * pixels_per_cm)
 
         for tab_position in self.tab_stops:
-            x = left_margin_offset + int(tab_position * pixels_per_inch)
+            x = left_margin_offset + int(tab_position * pixels_per_cm)
             # Draw L-shaped tab stop marker
             painter.drawLine(x, self.height() - 6, x, self.height() - 2)
             painter.drawLine(x, self.height() - 6, x + 3, self.height() - 6)
@@ -130,13 +128,14 @@ class HorizontalRuler(QWidget):
         painter.setPen(QPen(self.marker_color, 1))
         painter.setBrush(self.marker_color)
 
-        pixels_per_inch = self.dpi * self.zoom
+        # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
+        pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
-        # Offset to align with ruler starting at left margin
-        left_margin_offset = int(self.left_margin * pixels_per_inch)
+        # Start from left margin
+        left_margin_offset = int(self.left_margin * pixels_per_cm)
 
         # Left indent marker (bottom triangle) - positioned relative to left margin
-        left_x = left_margin_offset + int(self.left_indent * pixels_per_inch)
+        left_x = left_margin_offset + int(self.left_indent * pixels_per_cm)
         painter.drawPolygon([
             QPoint(left_x - 4, self.height() - 2),
             QPoint(left_x + 4, self.height() - 2),
@@ -144,23 +143,23 @@ class HorizontalRuler(QWidget):
         ])
 
         # First line indent marker (top triangle) - positioned relative to left margin
-        first_line_x = left_margin_offset + int(self.first_line_indent * pixels_per_inch)
+        first_line_x = left_margin_offset + int(self.first_line_indent * pixels_per_cm)
         painter.drawPolygon([
             QPoint(first_line_x - 4, 2),
             QPoint(first_line_x + 4, 2),
             QPoint(first_line_x, 8)
         ])
 
-    def add_tab_stop(self, inches):
-        """Add a tab stop at the specified position."""
-        self.tab_stops.append(inches)
+    def add_tab_stop(self, cm):
+        """Add a tab stop at the specified position in cm."""
+        self.tab_stops.append(cm)
         self.tab_stops.sort()
         self.update()
 
-    def remove_tab_stop(self, inches):
-        """Remove a tab stop at the specified position."""
-        if inches in self.tab_stops:
-            self.tab_stops.remove(inches)
+    def remove_tab_stop(self, cm):
+        """Remove a tab stop at the specified position in cm."""
+        if cm in self.tab_stops:
+            self.tab_stops.remove(cm)
             self.update()
 
     def clear_tab_stops(self):
@@ -173,14 +172,14 @@ class HorizontalRuler(QWidget):
         self.zoom = zoom / 100.0
         self.update()
 
-    def set_left_indent(self, inches):
-        """Set the left indent in inches."""
-        self.left_indent = inches
+    def set_left_indent(self, cm):
+        """Set the left indent in cm."""
+        self.left_indent = cm
         self.update()
 
-    def set_first_line_indent(self, inches):
-        """Set the first line indent in inches."""
-        self.first_line_indent = inches
+    def set_first_line_indent(self, cm):
+        """Set the first line indent in cm."""
+        self.first_line_indent = cm
         self.update()
 
 
@@ -190,14 +189,14 @@ class VerticalRuler(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setFixedWidth(25)
-        self.unit = "in"  # inches
+        self.unit = "cm"  # centimeters
         self.dpi = 96  # dots per inch
         self.zoom = 1.0
 
-        # Page margins (in inches)
-        self.top_margin = 1.0  # 1 inch top margin
-        self.bottom_margin = 1.0  # 1 inch bottom margin
-        self.page_height = 11.0  # US Letter height in inches
+        # Page margins (in cm)
+        self.top_margin = 2.54  # 1 inch = 2.54 cm top margin
+        self.bottom_margin = 2.54  # 1 inch = 2.54 cm bottom margin
+        self.page_height = 29.7  # A4 height in cm
 
         # Microsoft Word colors
         self.bg_color = QColor("#FFFFFF")
@@ -228,15 +227,16 @@ class VerticalRuler(QWidget):
         painter.setPen(Qt.NoPen)
         painter.setBrush(self.margin_color)
 
-        pixels_per_inch = self.dpi * self.zoom
+        # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
+        pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
         # Top margin (gray area from 0 to top margin)
-        top_margin_pixels = int(self.top_margin * pixels_per_inch)
+        top_margin_pixels = int(self.top_margin * pixels_per_cm)
         painter.drawRect(0, 0, self.width(), top_margin_pixels)
 
         # Bottom margin (gray area from page_height - bottom_margin to end)
-        bottom_margin_start = int((self.page_height - self.bottom_margin) * pixels_per_inch)
-        page_height_pixels = int(self.page_height * pixels_per_inch)
+        bottom_margin_start = int((self.page_height - self.bottom_margin) * pixels_per_cm)
+        page_height_pixels = int(self.page_height * pixels_per_cm)
         painter.drawRect(0, bottom_margin_start, self.width(), page_height_pixels - bottom_margin_start)
 
     def draw_ruler_markings(self, painter):
@@ -247,37 +247,33 @@ class VerticalRuler(QWidget):
         font = QFont("Segoe UI", 8)
         painter.setFont(font)
 
-        # Calculate pixels per inch
-        pixels_per_inch = self.dpi * self.zoom
+        # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
+        pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
-        # Offset to start ruler at top margin (ruler "0" at top margin)
-        top_margin_offset = int(self.top_margin * pixels_per_inch)
-
-        # Draw tick marks every 1/8 inch, starting from top margin
-        for i in range(0, int((self.height() - top_margin_offset) / (pixels_per_inch / 8)) + 8):
-            y = top_margin_offset + int(i * pixels_per_inch / 8)
+        # NO OFFSET - ruler "0" starts at page edge
+        # Draw tick marks every mm (0.1 cm)
+        max_cm = int(self.page_height) + 1
+        for i in range(0, max_cm * 10):
+            y = int(i * pixels_per_cm / 10)
             if y > self.height():
                 break
 
-            # Every inch: long tick + number
-            if i % 8 == 0:
+            # Every cm: long tick + number
+            if i % 10 == 0:
                 painter.drawLine(self.width() - 10, y, self.width() - 1, y)
-                # Draw inch number (rotated) - starting from 0 at top margin
-                inch = i // 8
+                # Draw cm number (rotated) - starting from 0 at page edge
+                cm = i // 10
                 painter.save()
                 painter.translate(8, y + 10)
                 painter.rotate(-90)
-                painter.drawText(0, 0, str(inch))
+                painter.drawText(0, 0, str(cm))
                 painter.restore()
-            # Every 1/2 inch: medium tick
-            elif i % 4 == 0:
+            # Every 5mm: medium tick
+            elif i % 5 == 0:
                 painter.drawLine(self.width() - 7, y, self.width() - 1, y)
-            # Every 1/4 inch: small tick
-            elif i % 2 == 0:
-                painter.drawLine(self.width() - 5, y, self.width() - 1, y)
-            # Every 1/8 inch: tiny tick
+            # Every mm: small tick
             else:
-                painter.drawLine(self.width() - 3, y, self.width() - 1, y)
+                painter.drawLine(self.width() - 4, y, self.width() - 1, y)
 
     def set_zoom(self, zoom):
         """Set the zoom level."""

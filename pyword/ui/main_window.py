@@ -328,18 +328,41 @@ class MainWindow(QMainWindow):
         editor_layout.setContentsMargins(0, 0, 0, 0)
         editor_layout.setSpacing(0)
 
-        # Horizontal ruler - FULL WIDTH at the top
+        # A4 page size at 96 DPI: 21cm x 29.7cm = 794px x 1122px
+        self.page_width_px = 794
+        self.page_height_px = 1122
+
+        # Top row: contains horizontal ruler centered above page
+        ruler_row = QWidget()
+        ruler_row.setStyleSheet("background-color: #D3D3D3;")
+        ruler_row_layout = QHBoxLayout(ruler_row)
+        ruler_row_layout.setContentsMargins(0, 0, 0, 0)
+        ruler_row_layout.setSpacing(0)
+
+        # Left spacer (25px for vertical ruler)
+        spacer = QWidget()
+        spacer.setFixedWidth(25)
+        ruler_row_layout.addWidget(spacer)
+        ruler_row_layout.addStretch()
+
+        # Horizontal ruler - sized to page width only
         self.horizontal_ruler = HorizontalRuler(self.editor_area)
-        editor_layout.addWidget(self.horizontal_ruler)
+        self.horizontal_ruler.setFixedWidth(self.page_width_px)
+        ruler_row_layout.addWidget(self.horizontal_ruler)
 
-        # Create horizontal layout for vertical ruler and page area
-        editor_row_layout = QHBoxLayout()
-        editor_row_layout.setContentsMargins(0, 0, 0, 0)
-        editor_row_layout.setSpacing(0)
+        # Right stretch
+        ruler_row_layout.addStretch()
 
-        # Vertical ruler - anchored to left edge, FULL HEIGHT
+        editor_layout.addWidget(ruler_row)
+
+        # Content row: vertical ruler + page
+        content_row_layout = QHBoxLayout()
+        content_row_layout.setContentsMargins(0, 0, 0, 0)
+        content_row_layout.setSpacing(0)
+
+        # Vertical ruler - anchored to left edge
         self.vertical_ruler = VerticalRuler(self.editor_area)
-        editor_row_layout.addWidget(self.vertical_ruler, 0, Qt.AlignLeft)
+        content_row_layout.addWidget(self.vertical_ruler, 0, Qt.AlignLeft | Qt.AlignTop)
 
         # Page container - takes remaining space, centers the page
         page_container = QWidget()
@@ -355,8 +378,8 @@ class MainWindow(QMainWindow):
         self.tab_widget = self.document_ui.tab_widget
 
         # Style the tab widget to have gray background with white page (Microsoft Word style)
-        # Set maximum width to A4 size at 100% zoom (8.5 inches * 96 DPI = 816px)
-        self.tab_widget.setMaximumWidth(816 + 40)  # Add margin space
+        # Set to A4 size at 100% zoom (21cm = 794px at 96 DPI)
+        self.tab_widget.setFixedWidth(self.page_width_px)
         self.tab_widget.setStyleSheet("""
             QTabWidget::pane {
                 border: none;
@@ -374,10 +397,10 @@ class MainWindow(QMainWindow):
         # Add right stretch to center the page
         page_container_layout.addStretch()
 
-        # Add page container to the editor row (takes remaining width)
-        editor_row_layout.addWidget(page_container, 1)
+        # Add page container to the content row (takes remaining width)
+        content_row_layout.addWidget(page_container, 1)
 
-        editor_layout.addLayout(editor_row_layout)
+        editor_layout.addLayout(content_row_layout)
 
         self.main_splitter.addWidget(self.editor_area)
     
