@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QPushButton,
                                QLineEdit, QCheckBox, QFormLayout, QHeaderView, QSplitter)
 from PySide6.QtCore import Qt, Signal, QPointF, QRectF, QSize
 from PySide6.QtGui import (QColor, QPainter, QPen, QBrush, QFont, QImage,
-                          QTextImageFormat, QTextCursor, QPainterPath, QLinearGradient)
+                          QTextImageFormat, QTextCursor, QPainterPath, QLinearGradient, QTextDocument)
 from enum import Enum
 from typing import List, Tuple
 
@@ -106,7 +106,7 @@ class ChartRenderer:
         chart_height = self.height - 2 * self.margin - 50  # Extra space for title
 
         # Draw title
-        painter.setFont(QFont("Arial", 14, QFont.Bold))
+        painter.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         painter.drawText(QRectF(0, 10, self.width, 30), Qt.AlignCenter, data.title)
 
         # Calculate max value for scaling
@@ -208,7 +208,7 @@ class ChartRenderer:
         chart_height = self.height - 2 * self.margin - 50
 
         # Draw title
-        painter.setFont(QFont("Arial", 14, QFont.Bold))
+        painter.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         painter.drawText(QRectF(0, 10, self.width, 30), Qt.AlignCenter, data.title)
 
         # Calculate max value
@@ -260,7 +260,7 @@ class ChartRenderer:
     def render_pie_chart(self, painter: QPainter, data: ChartData):
         """Render a pie chart."""
         # Draw title
-        painter.setFont(QFont("Arial", 14, QFont.Bold))
+        painter.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         painter.drawText(QRectF(0, 10, self.width, 30), Qt.AlignCenter, data.title)
 
         # Calculate total
@@ -325,7 +325,7 @@ class ChartRenderer:
 
         chart_height = self.height - 2 * self.margin - 50
 
-        painter.setFont(QFont("Arial", 14, QFont.Bold))
+        painter.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         painter.drawText(QRectF(0, 10, self.width, 30), Qt.AlignCenter, data.title)
 
         max_value = 0
@@ -672,7 +672,7 @@ class ChartManager:
         image_format.setName(chart_id)
 
         self.editor.document().addResource(
-            QTextCursor.ImageResource,
+            QTextDocument.ResourceType.ImageResource,
             chart_id,
             image
         )

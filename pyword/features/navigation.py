@@ -42,11 +42,15 @@ class FindReplaceDialog(QDialog):
         options_layout.addWidget(self.match_case)
         options_layout.addWidget(self.whole_words)
         options_layout.addWidget(self.regex)
-        
+
+        # Status label
+        self.status_label = QLabel("")
+
         layout.addLayout(find_layout)
         layout.addLayout(replace_layout)
         layout.addLayout(options_layout)
-        
+        layout.addWidget(self.status_label)
+
         self.setLayout(layout)
         
         # Connect signals
@@ -94,7 +98,7 @@ class FindReplaceDialog(QDialog):
         self.find_next()
     
     def replace_all(self):
-        self.parent.moveCursor(QTextCursor.Start)
+        self.parent.moveCursor(QTextCursor.MoveOperation.Start)
         count = 0
         
         flags = QTextDocument.FindFlag(0)
@@ -145,7 +149,7 @@ class DocumentMap(QWidget):
         cursor = QTextCursor(document)
         
         while not cursor.atEnd():
-            cursor.movePosition(QTextCursor.NextBlock)
+            cursor.movePosition(QTextCursor.MoveOperation.NextBlock)
             if cursor.block().text().lstrip('#').strip() == item.text():
                 self.editor.setTextCursor(cursor)
                 self.editor.ensureCursorVisible()

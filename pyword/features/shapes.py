@@ -13,7 +13,7 @@ from PySide6.QtWidgets import (
     QGraphicsTextItem, QStyleOptionGraphicsItem, QWidget, QDialog, QVBoxLayout,
     QHBoxLayout, QLabel, QComboBox, QSpinBox, QDoubleSpinBox, QColorDialog,
     QPushButton, QDialogButtonBox, QFormLayout, QCheckBox, QGroupBox, QLineEdit,
-    QGraphicsView, QGraphicsScene
+    QGraphicsView, QGraphicsScene, QFontComboBox
 )
 
 class ShapeType(Enum):
@@ -31,7 +31,7 @@ class ShapeStyle:
     fill_color: QColor = field(default_factory=lambda: QColor(255, 255, 255, 200))  # White with some transparency
     stroke_color: QColor = field(default_factory=lambda: QColor(0, 0, 0))  # Black
     stroke_width: float = 1.0
-    stroke_style: Qt.PenStyle = Qt.SolidLine
+    stroke_style: Qt.PenStyle = Qt.PenStyle.SolidLine
     corner_radius: float = 0.0  # For rectangles
     opacity: float = 1.0
     shadow_enabled: bool = False
@@ -72,7 +72,7 @@ class ShapeStyle:
         
         # Other properties
         style.stroke_width = data.get('stroke_width', 1.0)
-        style.stroke_style = data.get('stroke_style', Qt.SolidLine)
+        style.stroke_style = data.get('stroke_style', Qt.PenStyle.SolidLine)
         style.corner_radius = data.get('corner_radius', 0.0)
         style.opacity = data.get('opacity', 1.0)
         style.shadow_enabled = data.get('shadow_enabled', False)
@@ -215,9 +215,9 @@ class Shape(QGraphicsItem):
     def draw_selection_handles(self, painter: QPainter):
         """Draw selection handles around the shape."""
         rect = self.boundingRect()
-        pen = QPen(Qt.blue, 1, Qt.DashLine)
+        pen = QPen(Qt.GlobalColor.blue, 1, Qt.PenStyle.DashLine)
         painter.setPen(pen)
-        painter.setBrush(Qt.NoBrush)
+        painter.setBrush(Qt.BrushStyle.NoBrush)
         painter.drawRect(rect)
         
         # Draw resize handles
@@ -232,7 +232,7 @@ class Shape(QGraphicsItem):
                     y - half_handle, 
                     handle_size, 
                     handle_size, 
-                    Qt.blue
+                    Qt.GlobalColor.blue
                 )
         
         # Edge handles
@@ -249,7 +249,7 @@ class Shape(QGraphicsItem):
                     y - half_handle, 
                     handle_size, 
                     handle_size, 
-                    Qt.blue
+                    Qt.GlobalColor.blue
                 )
     
     def to_dict(self) -> Dict[str, Any]:
@@ -769,11 +769,11 @@ class ShapePropertiesDialog(QDialog):
         
         # Stroke style
         self.stroke_style_combo = QComboBox()
-        self.stroke_style_combo.addItem("Solid", Qt.SolidLine)
-        self.stroke_style_combo.addItem("Dash", Qt.DashLine)
-        self.stroke_style_combo.addItem("Dot", Qt.DotLine)
-        self.stroke_style_combo.addItem("Dash Dot", Qt.DashDotLine)
-        self.stroke_style_combo.addItem("Dash Dot Dot", Qt.DashDotDotLine)
+        self.stroke_style_combo.addItem("Solid", Qt.PenStyle.SolidLine)
+        self.stroke_style_combo.addItem("Dash", Qt.PenStyle.DashLine)
+        self.stroke_style_combo.addItem("Dot", Qt.PenStyle.DotLine)
+        self.stroke_style_combo.addItem("Dash Dot", Qt.PenStyle.DashDotLine)
+        self.stroke_style_combo.addItem("Dash Dot Dot", Qt.PenStyle.DashDotDotLine)
         
         # Find the current stroke style
         index = self.stroke_style_combo.findData(self.shape.style.stroke_style)

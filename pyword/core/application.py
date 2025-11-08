@@ -320,10 +320,10 @@ class WordProcessor(QMainWindow):
         self.list_manager = ListManager(self.text_edit)
 
         # Page number manager
-        self.page_number_manager = PageNumberManager(self.text_edit)
+        self.page_number_manager = PageNumberManager(self.text_edit.document())
 
         # Shape manager
-        self.shape_manager = ShapeManager(self.text_edit)
+        self.shape_manager = ShapeManager(self.text_edit.document())
 
         # Split view manager
         self.split_view_manager = SplitViewManager(self)

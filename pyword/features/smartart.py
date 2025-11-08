@@ -148,7 +148,7 @@ class SmartArtRenderer:
 
             # Draw text
             painter.setPen(Qt.white)
-            painter.setFont(QFont("Arial", 12, QFont.Bold))
+            painter.setFont(QFont("Arial", 12, QFont.Weight.Bold))
             painter.drawText(rect, Qt.AlignCenter, node.text)
 
             y += node_height + spacing
@@ -183,7 +183,7 @@ class SmartArtRenderer:
 
             # Draw text
             painter.setPen(Qt.white)
-            painter.setFont(QFont("Arial", 10, QFont.Bold))
+            painter.setFont(QFont("Arial", 10, QFont.Weight.Bold))
             painter.drawText(rect, Qt.AlignCenter | Qt.TextWordWrap, node.text)
 
             # Draw arrow to next node
@@ -232,7 +232,7 @@ class SmartArtRenderer:
 
             # Draw text
             painter.setPen(Qt.white)
-            painter.setFont(QFont("Arial", 9, QFont.Bold))
+            painter.setFont(QFont("Arial", 9, QFont.Weight.Bold))
             painter.drawText(rect, Qt.AlignCenter | Qt.TextWordWrap, node.text)
 
             # Draw arrow to next node
@@ -298,7 +298,7 @@ class SmartArtRenderer:
         painter.drawRoundedRect(rect, 5, 5)
 
         painter.setPen(Qt.white)
-        painter.setFont(QFont("Arial", 9, QFont.Bold))
+        painter.setFont(QFont("Arial", 9, QFont.Weight.Bold))
         painter.drawText(rect, Qt.AlignCenter | Qt.TextWordWrap, node.text)
 
     def render_relationship_diagram(self, painter: QPainter, diagram: SmartArtDiagram):
@@ -320,7 +320,7 @@ class SmartArtRenderer:
                               circle_radius, circle_radius)
 
             painter.setPen(Qt.black)
-            painter.setFont(QFont("Arial", 10, QFont.Bold))
+            painter.setFont(QFont("Arial", 10, QFont.Weight.Bold))
             painter.drawText(QRectF(center_x - 60, center_y - 10, 120, 20),
                            Qt.AlignCenter, node.text)
 
@@ -344,7 +344,7 @@ class SmartArtRenderer:
 
                 # Draw label
                 painter.setPen(Qt.black)
-                painter.setFont(QFont("Arial", 9, QFont.Bold))
+                painter.setFont(QFont("Arial", 9, QFont.Weight.Bold))
                 label_rect = QRectF(x - 50, y - circle_radius - 20, 100, 20)
                 painter.drawText(label_rect, Qt.AlignCenter, node.text)
 
@@ -386,7 +386,7 @@ class SmartArtRenderer:
 
             # Draw text
             painter.setPen(Qt.white)
-            painter.setFont(QFont("Arial", 11, QFont.Bold))
+            painter.setFont(QFont("Arial", 11, QFont.Weight.Bold))
             painter.drawText(rect, Qt.AlignCenter | Qt.TextWordWrap, node.text)
 
     def render_pyramid_diagram(self, painter: QPainter, diagram: SmartArtDiagram):
@@ -429,7 +429,7 @@ class SmartArtRenderer:
             text_rect = QRectF((self.width - top_width) / 2 + 10, level_y + 5,
                              top_width - 20, level_height - 10)
             painter.setPen(Qt.white)
-            painter.setFont(QFont("Arial", 10, QFont.Bold))
+            painter.setFont(QFont("Arial", 10, QFont.Weight.Bold))
             painter.drawText(text_rect, Qt.AlignCenter | Qt.TextWordWrap, node.text)
 
     def draw_arrow_head(self, painter: QPainter, tip: QPointF, angle: float):

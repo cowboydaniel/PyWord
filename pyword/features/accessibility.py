@@ -276,9 +276,9 @@ class KeyboardNavigation(QObject):
             if editor:
                 cursor = editor.textCursor()
                 if direction > 0:
-                    cursor.movePosition(QTextCursor.NextBlock)
+                    cursor.movePosition(QTextCursor.MoveOperation.NextBlock)
                 else:
-                    cursor.movePosition(QTextCursor.PreviousBlock)
+                    cursor.movePosition(QTextCursor.MoveOperation.PreviousBlock)
                 editor.setTextCursor(cursor)
 
     def _navigate_heading(self, direction: int):
