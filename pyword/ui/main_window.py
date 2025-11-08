@@ -1,7 +1,7 @@
 from datetime import datetime
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QSplitter, QTabWidget,
                              QStatusBar, QMenuBar, QMenu, QToolBar, QFileDialog, QMessageBox,
-                             QDockWidget, QLabel, QSizePolicy, QApplication, QDialog, QVBoxLayout,
+                             QDockWidget, QLabel, QSizePolicy, QApplication, QDialog,
                              QHBoxLayout, QPushButton, QTextEdit, QLineEdit, QListWidget, QTreeView,
                              QTableWidget, QTableWidgetItem, QHeaderView, QComboBox, QSpinBox,
                              QDoubleSpinBox, QCheckBox, QGroupBox, QFormLayout, QScrollArea,
@@ -13,7 +13,7 @@ from PySide6.QtGui import (QAction, QIcon, QFont, QTextCursor, QTextCharFormat, 
                          QTextBlockFormat, QTextTableFormat, QTextFrameFormat, QTextLength,
                          QTextImageFormat, QPixmap, QImage, QPainter, QPalette, QColor,
                          QDesktopServices, QKeySequence, QTextDocument, QTextFrame, QTextTable,
-                         QTextDocumentFragment, QTextBlock, QTextList, QTextFormat, QTextFrameLayoutData,
+                         QTextDocumentFragment, QTextBlock, QTextList, QTextFormat,
                          QShortcut)
 
 from ..core.document import Document, DocumentManager
