@@ -26,22 +26,25 @@ class RibbonTab(QWidget):
 
     def add_group(self, group: 'RibbonGroup'):
         """Add a group to this tab."""
-        self.groups.append(group)
-        self.layout.insertWidget(len(self.groups) - 1, group)
+        # Add separator before group (except for first group) - subtle Word-style divider
+        if len(self.groups) > 0:
+            separator = QFrame()
+            separator.setFrameShape(QFrame.VLine)
+            separator.setFrameShadow(QFrame.Plain)
+            separator.setFixedWidth(1)
+            separator.setStyleSheet("""
+                QFrame {
+                    background-color: #EDEBE9;
+                    border: none;
+                    margin: 4px 0px;
+                }
+            """)
+            # Insert separator before the stretch at the end
+            self.layout.insertWidget(self.layout.count() - 1, separator)
 
-        # Add separator after group (except for last group) - subtle Word-style divider
-        separator = QFrame()
-        separator.setFrameShape(QFrame.VLine)
-        separator.setFrameShadow(QFrame.Plain)
-        separator.setFixedWidth(1)
-        separator.setStyleSheet("""
-            QFrame {
-                background-color: #EDEBE9;
-                border: none;
-                margin: 4px 0px;
-            }
-        """)
-        self.layout.insertWidget(len(self.groups) * 2 - 1, separator)
+        # Add the group before the stretch at the end
+        self.groups.append(group)
+        self.layout.insertWidget(self.layout.count() - 1, group)
 
 
 class RibbonGroup(QWidget):
