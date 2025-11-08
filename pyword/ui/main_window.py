@@ -922,7 +922,7 @@ class MainWindow(QMainWindow):
 
     def open_document(self):
         """Open an existing document."""
-        self.document_ui.open_document()
+        self.document_ui.open_document_dialog()
 
     def save_document(self):
         """Save the current document."""

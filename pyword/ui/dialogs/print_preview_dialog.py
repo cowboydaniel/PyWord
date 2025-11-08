@@ -12,11 +12,11 @@ class PrintPreviewDialog(BaseDialog):
     """Dialog for previewing documents before printing."""
 
     def __init__(self, document=None, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Print Preview")
+        # Initialize attributes before calling super().__init__()
+        # because BaseDialog.__init__() calls setup_ui()
         self.document = document
         self.printer = QPrinter(QPrinter.HighResolution)
-        self.setup_ui()
+        super().__init__("Print Preview", parent)
 
     def setup_ui(self):
         """Setup the dialog UI."""
