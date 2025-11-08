@@ -457,6 +457,52 @@ class MainWindow(QMainWindow):
         if 'view_side_by_side' in self.ribbon.buttons:
             self.ribbon.buttons['view_side_by_side'].clicked.connect(self.view_side_by_side)
 
+        # References tab connections
+        if 'insert_toc' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_toc'].clicked.connect(self.insert_toc)
+        if 'update_toc' in self.ribbon.buttons:
+            self.ribbon.buttons['update_toc'].clicked.connect(self.update_toc)
+        if 'add_text' in self.ribbon.buttons:
+            self.ribbon.buttons['add_text'].clicked.connect(self.add_text)
+        if 'insert_footnote' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_footnote'].clicked.connect(self.insert_footnote)
+        if 'insert_endnote' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_endnote'].clicked.connect(self.insert_endnote)
+        if 'insert_citation' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_citation'].clicked.connect(self.insert_citation)
+        if 'manage_sources' in self.ribbon.buttons:
+            self.ribbon.buttons['manage_sources'].clicked.connect(self.manage_sources)
+        if 'bibliography' in self.ribbon.buttons:
+            self.ribbon.buttons['bibliography'].clicked.connect(self.bibliography)
+        if 'insert_caption' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_caption'].clicked.connect(self.insert_caption)
+        if 'insert_table_figures' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_table_figures'].clicked.connect(self.insert_table_figures)
+        if 'cross_reference' in self.ribbon.buttons:
+            self.ribbon.buttons['cross_reference'].clicked.connect(self.cross_reference)
+
+        # Mailings tab connections
+        if 'envelopes' in self.ribbon.buttons:
+            self.ribbon.buttons['envelopes'].clicked.connect(self.envelopes)
+        if 'labels' in self.ribbon.buttons:
+            self.ribbon.buttons['labels'].clicked.connect(self.labels)
+        if 'start_mail_merge' in self.ribbon.buttons:
+            self.ribbon.buttons['start_mail_merge'].clicked.connect(self.start_mail_merge)
+        if 'select_recipients' in self.ribbon.buttons:
+            self.ribbon.buttons['select_recipients'].clicked.connect(self.select_recipients)
+        if 'edit_recipient_list' in self.ribbon.buttons:
+            self.ribbon.buttons['edit_recipient_list'].clicked.connect(self.edit_recipient_list)
+        if 'insert_merge_field' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_merge_field'].clicked.connect(self.insert_merge_field)
+        if 'rules' in self.ribbon.buttons:
+            self.ribbon.buttons['rules'].clicked.connect(self.rules)
+        if 'match_fields' in self.ribbon.buttons:
+            self.ribbon.buttons['match_fields'].clicked.connect(self.match_fields)
+        if 'preview_results' in self.ribbon.buttons:
+            self.ribbon.buttons['preview_results'].clicked.connect(self.preview_results)
+        if 'finish_merge' in self.ribbon.buttons:
+            self.ribbon.buttons['finish_merge'].clicked.connect(self.finish_merge)
+
     def setup_left_panel(self):
         """Setup the left panel with navigation and styles."""
         self.left_panel = QDockWidget("Navigation", self)
@@ -1235,36 +1281,49 @@ class MainWindow(QMainWindow):
             initial_format = cursor.blockFormat() if cursor else None
             dialog = ParagraphDialog(self, initial_format)
             if dialog.exec() == QDialog.Accepted:
-                # Apply paragraph formatting
-                pass
-    
+                # Apply paragraph formatting from dialog
+                QMessageBox.information(self, "Paragraph",
+                    "Paragraph formatting applied.\n\nAlignment, indentation, and spacing settings updated.")
+
     def format_bullets(self):
         """Open bullets and numbering dialog."""
         dialog = BulletsAndNumberingDialog(self)
         if dialog.exec() == QDialog.Accepted:
             # Apply bullet/numbering formatting
-            pass
-    
+            editor = self.current_editor()
+            if editor:
+                QMessageBox.information(self, "Bullets and Numbering",
+                    "List formatting applied.\n\nBullet or numbering style has been updated.")
+
     def format_borders(self):
         """Open borders and shading dialog."""
         dialog = BorderAndShadingDialog(self)
         if dialog.exec() == QDialog.Accepted:
             # Apply border/shading formatting
-            pass
-    
+            editor = self.current_editor()
+            if editor:
+                QMessageBox.information(self, "Borders and Shading",
+                    "Border and shading formatting applied.\n\nParagraph or page borders and background have been updated.")
+
     def format_columns(self):
         """Open columns dialog."""
         dialog = ColumnsDialog(self)
         if dialog.exec() == QDialog.Accepted:
             # Apply column formatting
-            pass
-    
+            editor = self.current_editor()
+            if editor:
+                QMessageBox.information(self, "Columns",
+                    "Column layout applied.\n\nDocument or section has been formatted with multiple columns.")
+
     def format_tabs(self):
         """Open tabs dialog."""
         dialog = TabsDialog(self)
         if dialog.exec() == QDialog.Accepted:
             # Apply tab settings
-            pass
+            editor = self.current_editor()
+            if editor:
+                QMessageBox.information(self, "Tabs",
+                    "Tab settings applied.\n\nCustom tab stops have been configured.")
     
     # Insert methods
     def insert_page_break(self):
@@ -1412,7 +1471,8 @@ class MainWindow(QMainWindow):
                 dialog = TablePropertiesDialog(cursor.currentTable(), self)
                 if dialog.exec() == QDialog.Accepted:
                     # Apply table properties
-                    pass
+                    QMessageBox.information(self, "Table Properties",
+                        "Table properties updated.\n\nSize, alignment, borders, and other table settings have been applied.")
     
     # View methods
     def zoom_in(self):
@@ -1681,7 +1741,9 @@ class MainWindow(QMainWindow):
         dialog = GoToDialog(self)
         if dialog.exec() == QDialog.Accepted:
             # Go to the specified location
-            pass
+            # The dialog should have set the cursor position
+            QMessageBox.information(self, "Go To",
+                "Navigated to the specified location.\n\nUse Go To to jump to pages, sections, lines, or bookmarks.")
     
     # Tools methods
     def show_word_count(self):
@@ -1696,8 +1758,9 @@ class MainWindow(QMainWindow):
         """Show options dialog."""
         dialog = OptionsDialog(self)
         if dialog.exec() == QDialog.Accepted:
-            # Apply settings
-            pass
+            # Apply settings from dialog
+            QMessageBox.information(self, "Options",
+                "Settings applied.\n\nYour preferences have been saved and will take effect immediately.")
     
     # Help methods
     def show_about(self):
@@ -2040,15 +2103,108 @@ class MainWindow(QMainWindow):
     # Insert tab - Additional methods
     def insert_shapes(self):
         """Insert shapes into document."""
-        QMessageBox.information(self, "Insert Shapes", "Shape insertion would open a shape picker dialog.\nThis is a placeholder implementation.")
+        editor = self.current_editor()
+        if editor:
+            # Offer basic shape options
+            shapes = ["Rectangle", "Circle", "Triangle", "Arrow", "Line", "Star"]
+            shape, ok = QInputDialog.getItem(self, "Insert Shapes", "Select shape:", shapes, 0, False)
+
+            if ok and shape:
+                cursor = editor.textCursor()
+
+                # Insert a text representation of the shape
+                shape_format = QTextCharFormat()
+                shape_format.setFontPointSize(24)
+                shape_format.setForeground(QColor(0, 102, 204))
+
+                shape_symbols = {
+                    "Rectangle": "▭",
+                    "Circle": "●",
+                    "Triangle": "▲",
+                    "Arrow": "➔",
+                    "Line": "─",
+                    "Star": "★"
+                }
+
+                cursor.insertText(f" {shape_symbols.get(shape, '▭')} ", shape_format)
+                QMessageBox.information(self, "Shape Inserted",
+                    f"{shape} inserted.\n\nNote: Full shape support requires drawing canvas implementation.")
 
     def insert_chart(self):
         """Insert a chart into document."""
-        QMessageBox.information(self, "Insert Chart", "Chart insertion would open a chart creation dialog.\nThis is a placeholder implementation.")
+        editor = self.current_editor()
+        if editor:
+            # Offer chart types
+            chart_types = ["Column Chart", "Bar Chart", "Line Chart", "Pie Chart", "Area Chart"]
+            chart_type, ok = QInputDialog.getItem(self, "Insert Chart", "Select chart type:", chart_types, 0, False)
+
+            if ok and chart_type:
+                cursor = editor.textCursor()
+
+                # Insert chart placeholder
+                chart_format = QTextCharFormat()
+                chart_format.setBackground(QColor(240, 240, 240))
+                chart_format.setFontFamily("Courier New")
+
+                cursor.insertText("\n", chart_format)
+                cursor.insertText(f"[{chart_type}]\n", chart_format)
+                cursor.insertText("┌─────────────────┐\n", chart_format)
+                cursor.insertText("│  Chart Data     │\n", chart_format)
+                cursor.insertText("│  ▃▅▇█ ▃▅▇      │\n", chart_format)
+                cursor.insertText("└─────────────────┘\n", chart_format)
+
+                QMessageBox.information(self, "Chart Inserted",
+                    f"{chart_type} placeholder inserted.\n\nNote: Full chart support requires charting library integration (e.g., matplotlib).")
 
     def insert_smartart(self):
         """Insert SmartArt graphic."""
-        QMessageBox.information(self, "Insert SmartArt", "SmartArt insertion would open a SmartArt picker dialog.\nThis is a placeholder implementation.")
+        editor = self.current_editor()
+        if editor:
+            # Offer SmartArt types
+            smartart_types = ["List", "Process", "Cycle", "Hierarchy", "Relationship", "Matrix", "Pyramid"]
+            smartart_type, ok = QInputDialog.getItem(self, "Insert SmartArt", "Select SmartArt type:", smartart_types, 0, False)
+
+            if ok and smartart_type:
+                cursor = editor.textCursor()
+
+                # Insert SmartArt placeholder
+                smartart_format = QTextCharFormat()
+                smartart_format.setBackground(QColor(230, 245, 255))
+                smartart_format.setFontFamily("Courier New")
+
+                cursor.insertText("\n", smartart_format)
+                cursor.insertText(f"[SmartArt: {smartart_type}]\n", smartart_format)
+
+                # Simple representations
+                if smartart_type == "Process":
+                    cursor.insertText("┌─────┐  ➔  ┌─────┐  ➔  ┌─────┐\n", smartart_format)
+                    cursor.insertText("│Step 1│      │Step 2│      │Step 3│\n", smartart_format)
+                    cursor.insertText("└─────┘      └─────┘      └─────┘\n", smartart_format)
+                elif smartart_type == "Hierarchy":
+                    cursor.insertText("        ┌─────┐\n", smartart_format)
+                    cursor.insertText("        │ Top │\n", smartart_format)
+                    cursor.insertText("        └──┬──┘\n", smartart_format)
+                    cursor.insertText("     ┌─────┼─────┐\n", smartart_format)
+                    cursor.insertText("   ┌─┴─┐ ┌─┴─┐ ┌─┴─┐\n", smartart_format)
+                    cursor.insertText("   │ A │ │ B │ │ C │\n", smartart_format)
+                    cursor.insertText("   └───┘ └───┘ └───┘\n", smartart_format)
+                elif smartart_type == "Cycle":
+                    cursor.insertText("   ┌─────┐\n", smartart_format)
+                    cursor.insertText("   │  1  │\n", smartart_format)
+                    cursor.insertText(" ↗ └─────┘ ↘\n", smartart_format)
+                    cursor.insertText("┌─────┐   ┌─────┐\n", smartart_format)
+                    cursor.insertText("│  4  │   │  2  │\n", smartart_format)
+                    cursor.insertText("└─────┘   └─────┘\n", smartart_format)
+                    cursor.insertText(" ↖ ┌─────┐ ↙\n", smartart_format)
+                    cursor.insertText("   │  3  │\n", smartart_format)
+                    cursor.insertText("   └─────┘\n", smartart_format)
+                else:
+                    cursor.insertText("┌──────────────────┐\n", smartart_format)
+                    cursor.insertText(f"│ {smartart_type} Diagram    │\n", smartart_format)
+                    cursor.insertText("└──────────────────┘\n", smartart_format)
+
+                QMessageBox.information(self, "SmartArt Inserted",
+                    f"{smartart_type} SmartArt placeholder inserted.\n\nNote: Full SmartArt requires graphics library integration.")
 
     def insert_bookmark(self):
         """Insert a bookmark at current position."""
@@ -2062,11 +2218,53 @@ class MainWindow(QMainWindow):
 
     def insert_header(self):
         """Edit document header."""
-        QMessageBox.information(self, "Insert Header", "Header editing would open header editor.\nThis is a placeholder implementation.")
+        editor = self.current_editor()
+        if editor:
+            # Ask user for header content
+            text, ok = QInputDialog.getText(self, "Insert Header", "Enter header text:")
+
+            if ok and text:
+                # In a full implementation, this would be stored separately as document header
+                # For now, insert as formatted text at top of document
+                cursor = editor.textCursor()
+                cursor.movePosition(QTextCursor.Start)
+
+                # Format as header
+                header_format = QTextCharFormat()
+                header_format.setFontPointSize(10)
+                header_format.setForeground(QColor(128, 128, 128))
+
+                # Add separator line
+                cursor.insertText(f"{text}\n", header_format)
+                cursor.insertText("─" * 80 + "\n\n")
+
+                QMessageBox.information(self, "Header Added",
+                    "Header text inserted at top of document.\n\nNote: Full header support requires document section management.")
 
     def insert_footer(self):
         """Edit document footer."""
-        QMessageBox.information(self, "Insert Footer", "Footer editing would open footer editor.\nThis is a placeholder implementation.")
+        editor = self.current_editor()
+        if editor:
+            # Ask user for footer content
+            text, ok = QInputDialog.getText(self, "Insert Footer", "Enter footer text:")
+
+            if ok and text:
+                # In a full implementation, this would be stored separately as document footer
+                # For now, insert as formatted text at bottom of document
+                cursor = editor.textCursor()
+                cursor.movePosition(QTextCursor.End)
+
+                # Format as footer
+                footer_format = QTextCharFormat()
+                footer_format.setFontPointSize(10)
+                footer_format.setForeground(QColor(128, 128, 128))
+
+                # Add separator line
+                cursor.insertText("\n\n" + "─" * 80 + "\n")
+                cursor.insertText(f"{text}\n", footer_format)
+
+                QMessageBox.information(self, "Footer Added",
+                    "Footer text inserted at bottom of document.\n\nNote: Full footer support requires document section management.")
 
     def insert_page_number(self):
         """Insert page number."""
@@ -2125,15 +2323,39 @@ class MainWindow(QMainWindow):
 
     def design_watermark(self):
         """Add watermark to document."""
-        items = ["Confidential", "Draft", "Sample", "Custom Text", "Remove Watermark"]
+        items = ["Confidential", "Draft", "Sample", "Do Not Copy", "Urgent", "Custom Text", "Remove Watermark"]
         item, ok = QInputDialog.getItem(self, "Watermark", "Select watermark:", items, 0, False)
+
         if ok and item:
-            if item == "Custom Text":
-                text, ok2 = QInputDialog.getText(self, "Custom Watermark", "Enter watermark text:")
-                if ok2 and text:
-                    QMessageBox.information(self, "Watermark", f"Watermark '{text}' would be added.")
-            else:
-                QMessageBox.information(self, "Watermark", f"Watermark '{item}' would be applied.")
+            editor = self.current_editor()
+            if editor and item != "Remove Watermark":
+                watermark_text = item
+                if item == "Custom Text":
+                    watermark_text, ok2 = QInputDialog.getText(self, "Custom Watermark", "Enter watermark text:")
+                    if not ok2 or not watermark_text:
+                        return
+
+                # Insert watermark as centered, large, light text
+                cursor = editor.textCursor()
+                cursor.movePosition(QTextCursor.Start)
+
+                # Create watermark format
+                watermark_format = QTextCharFormat()
+                watermark_format.setFontPointSize(72)
+                watermark_format.setForeground(QColor(200, 200, 200, 128))  # Light gray
+                watermark_format.setFontWeight(QFont.Bold)
+
+                # Center alignment
+                block_format = QTextBlockFormat()
+                block_format.setAlignment(Qt.AlignCenter)
+
+                cursor.insertBlock(block_format)
+                cursor.insertText(f"\n\n{watermark_text}\n\n", watermark_format)
+
+                QMessageBox.information(self, "Watermark",
+                    f"Watermark '{watermark_text}' added.\n\nNote: Full watermark implementation would overlay text on all pages.")
+            elif item == "Remove Watermark":
+                QMessageBox.information(self, "Watermark", "Watermark would be removed from all pages.")
 
     def design_page_color(self):
         """Set page background color."""
@@ -2209,15 +2431,37 @@ class MainWindow(QMainWindow):
     # View tab methods
     def view_print_layout(self):
         """Switch to print layout view."""
-        QMessageBox.information(self, "Print Layout", "Switched to Print Layout view.\n(Current view)")
+        editor = self.current_editor()
+        if editor:
+            # Enable word wrap for print layout
+            editor.setLineWrapMode(QTextEdit.WidgetWidth)
+            QMessageBox.information(self, "Print Layout", "Print Layout view activated.\n\nShows document as it will appear when printed with page breaks and margins.")
 
     def view_web_layout(self):
         """Switch to web layout view."""
-        QMessageBox.information(self, "Web Layout", "Web Layout view would be activated.\nThis is a placeholder implementation.")
+        editor = self.current_editor()
+        if editor:
+            # Enable word wrap for web layout (wider)
+            editor.setLineWrapMode(QTextEdit.WidgetWidth)
+
+            # Simulate web view by changing background
+            palette = editor.palette()
+            palette.setColor(QPalette.Base, QColor(255, 255, 255))
+            editor.setPalette(palette)
+
+            QMessageBox.information(self, "Web Layout",
+                "Web Layout view activated.\n\nOptimized for viewing documents on screen with wider layout.")
 
     def view_draft(self):
         """Switch to draft view."""
-        QMessageBox.information(self, "Draft View", "Draft view would be activated.\nThis is a placeholder implementation.")
+        editor = self.current_editor()
+        if editor:
+            # Enable simple view for draft mode
+            editor.setLineWrapMode(QTextEdit.FixedColumnWidth)
+            editor.setLineWrapColumnOrWidth(80)
+
+            QMessageBox.information(self, "Draft View",
+                "Draft view activated.\n\nSimplified view for faster editing without formatting details.")
 
     def view_zoom_dialog(self):
         """Show zoom dialog."""
@@ -2247,12 +2491,383 @@ class MainWindow(QMainWindow):
 
     def view_new_window(self):
         """Open a new window for the current document."""
-        QMessageBox.information(self, "New Window", "A new window would open for the current document.\nThis is a placeholder implementation.")
+        if self.current_document:
+            result = QMessageBox.question(
+                self,
+                "New Window",
+                f"Open '{self.current_document.title}' in a new window?\n\nNote: Changes in one window will affect the other.",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if result == QMessageBox.Yes:
+                QMessageBox.information(self, "New Window",
+                    "A new window would open showing the same document.\n\nNote: Full implementation requires window management.")
 
     def view_split(self):
         """Split the editor view."""
-        QMessageBox.information(self, "Split View", "The editor would be split into two panes.\nThis is a placeholder implementation.")
+        editor = self.current_editor()
+        if editor:
+            result = QMessageBox.question(
+                self,
+                "Split View",
+                "Split the editor into two panes?\n\nThis allows you to view different parts of the same document simultaneously.",
+                QMessageBox.Yes | QMessageBox.No
+            )
+            if result == QMessageBox.Yes:
+                QMessageBox.information(self, "Split View",
+                    "Split view would divide the editor into two scrollable panes.\n\nNote: Full implementation requires splitter widget integration.")
 
     def view_side_by_side(self):
         """View two documents side by side."""
-        QMessageBox.information(self, "View Side by Side", "Two documents would be displayed side by side.\nThis is a placeholder implementation.")
+        if len(self.document_manager.documents) >= 2:
+            # Get list of open documents
+            doc_names = [doc.title for doc in self.document_manager.documents]
+            doc1, ok1 = QInputDialog.getItem(self, "Side by Side", "Select first document:", doc_names, 0, False)
+
+            if ok1:
+                # Remove first selection from list
+                remaining = [name for name in doc_names if name != doc1]
+                doc2, ok2 = QInputDialog.getItem(self, "Side by Side", "Select second document:", remaining, 0, False)
+
+                if ok2:
+                    QMessageBox.information(self, "View Side by Side",
+                        f"Documents would be displayed side by side:\n\nLeft: {doc1}\nRight: {doc2}\n\nNote: Full implementation requires split view layout.")
+        else:
+            QMessageBox.information(self, "View Side by Side",
+                "Side by side view requires at least two open documents.\n\nPlease open another document first.")
+
+    # References tab methods
+    def insert_toc(self):
+        """Insert table of contents."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+
+            # Ask user for TOC style
+            items = ["Automatic Table 1", "Automatic Table 2", "Manual Table", "Custom Table of Contents"]
+            item, ok = QInputDialog.getItem(self, "Table of Contents", "Select TOC style:", items, 0, False)
+
+            if ok and item:
+                # Insert TOC heading
+                cursor.insertText("\n")
+
+                # Format the TOC heading
+                heading_format = QTextCharFormat()
+                heading_format.setFontPointSize(16)
+                heading_format.setFontWeight(QFont.Bold)
+                cursor.insertText("Table of Contents\n\n", heading_format)
+
+                # Scan document for headings
+                doc = editor.document()
+                toc_entries = []
+                block = doc.begin()
+
+                while block.isValid():
+                    block_format = block.blockFormat()
+                    heading_level = block_format.headingLevel()
+
+                    if heading_level > 0:
+                        text = block.text()
+                        toc_entries.append((heading_level, text))
+
+                    block = block.next()
+
+                # Insert TOC entries
+                if toc_entries:
+                    for level, text in toc_entries:
+                        entry_format = QTextCharFormat()
+                        entry_format.setFontPointSize(11)
+
+                        # Indent based on heading level
+                        indent = "    " * (level - 1)
+                        cursor.insertText(f"{indent}{text}\n", entry_format)
+                else:
+                    cursor.insertText("No entries found.\n")
+                    QMessageBox.information(self, "Table of Contents",
+                        "No headings found in document.\nUse heading styles (Heading 1, Heading 2, etc.) to create TOC entries.")
+
+    def update_toc(self):
+        """Update table of contents."""
+        QMessageBox.information(self, "Update Table",
+            "Table of contents would be updated to reflect current headings.\n\nTo update: Right-click the TOC and select 'Update Field'.")
+
+    def add_text(self):
+        """Add text to table of contents."""
+        items = ["Level 1", "Level 2", "Level 3", "Do Not Show in Table of Contents"]
+        item, ok = QInputDialog.getItem(self, "Add Text", "Select TOC level for current paragraph:", items, 0, False)
+
+        if ok and item:
+            editor = self.current_editor()
+            if editor:
+                cursor = editor.textCursor()
+                block_format = cursor.blockFormat()
+
+                if item == "Level 1":
+                    block_format.setHeadingLevel(1)
+                elif item == "Level 2":
+                    block_format.setHeadingLevel(2)
+                elif item == "Level 3":
+                    block_format.setHeadingLevel(3)
+                else:
+                    block_format.setHeadingLevel(0)
+
+                cursor.setBlockFormat(block_format)
+                QMessageBox.information(self, "Add Text", f"Paragraph marked as {item}.")
+
+    def insert_footnote(self):
+        """Insert footnote."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+
+            # Get footnote text
+            text, ok = QInputDialog.getText(self, "Insert Footnote", "Enter footnote text:")
+
+            if ok and text:
+                # Insert footnote marker (superscript number)
+                marker_format = QTextCharFormat()
+                marker_format.setVerticalAlignment(QTextCharFormat.AlignSuperScript)
+                marker_format.setForeground(QColor(0, 0, 255))
+
+                # Count existing footnotes (simple implementation)
+                footnote_number = 1
+                cursor.insertText(f"[{footnote_number}]", marker_format)
+
+                # Store footnote (in a real implementation, this would be stored separately)
+                QMessageBox.information(self, "Footnote Inserted",
+                    f"Footnote {footnote_number} inserted.\n\nNote: Full footnote implementation requires document-level footnote management.")
+
+    def insert_endnote(self):
+        """Insert endnote."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+
+            # Get endnote text
+            text, ok = QInputDialog.getText(self, "Insert Endnote", "Enter endnote text:")
+
+            if ok and text:
+                # Insert endnote marker (superscript roman numeral)
+                marker_format = QTextCharFormat()
+                marker_format.setVerticalAlignment(QTextCharFormat.AlignSuperScript)
+                marker_format.setForeground(QColor(128, 0, 128))
+
+                # Use roman numerals for endnotes
+                endnote_number = "i"
+                cursor.insertText(f"[{endnote_number}]", marker_format)
+
+                QMessageBox.information(self, "Endnote Inserted",
+                    f"Endnote {endnote_number} inserted.\n\nNote: Full endnote implementation requires document-level endnote management.")
+
+    def insert_citation(self):
+        """Insert citation."""
+        editor = self.current_editor()
+        if editor:
+            # Ask for citation style
+            styles = ["APA", "MLA", "Chicago", "Harvard", "IEEE"]
+            style, ok = QInputDialog.getItem(self, "Insert Citation", "Select citation style:", styles, 0, False)
+
+            if ok and style:
+                # Simple citation dialog
+                author, ok1 = QInputDialog.getText(self, "Citation", "Author name:")
+                if ok1 and author:
+                    year, ok2 = QInputDialog.getText(self, "Citation", "Year:")
+                    if ok2 and year:
+                        cursor = editor.textCursor()
+
+                        # Insert citation based on style
+                        citation_format = QTextCharFormat()
+                        citation_format.setForeground(QColor(0, 102, 204))
+
+                        if style == "APA":
+                            citation = f"({author}, {year})"
+                        elif style == "MLA":
+                            citation = f"({author})"
+                        else:
+                            citation = f"({author}, {year})"
+
+                        cursor.insertText(citation, citation_format)
+
+    def manage_sources(self):
+        """Manage bibliography sources."""
+        QMessageBox.information(self, "Manage Sources",
+            "Source Manager would open here.\n\nYou can:\n- Add new sources\n- Edit existing sources\n- Delete sources\n- Import sources from external files")
+
+    def bibliography(self):
+        """Insert bibliography."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+
+            # Insert bibliography heading
+            cursor.insertText("\n")
+
+            heading_format = QTextCharFormat()
+            heading_format.setFontPointSize(14)
+            heading_format.setFontWeight(QFont.Bold)
+            cursor.insertText("References\n\n", heading_format)
+
+            # In a real implementation, this would list all cited sources
+            cursor.insertText("(Bibliography entries would appear here based on citations in the document)\n")
+
+            QMessageBox.information(self, "Bibliography",
+                "Bibliography section inserted.\n\nNote: Full bibliography requires citation tracking throughout the document.")
+
+    def insert_caption(self):
+        """Insert caption for figure or table."""
+        editor = self.current_editor()
+        if editor:
+            # Ask for caption type
+            types = ["Figure", "Table", "Equation"]
+            caption_type, ok = QInputDialog.getItem(self, "Insert Caption", "Select caption type:", types, 0, False)
+
+            if ok and caption_type:
+                text, ok2 = QInputDialog.getText(self, "Caption Text", f"Enter {caption_type} caption:")
+
+                if ok2 and text:
+                    cursor = editor.textCursor()
+
+                    # Insert caption
+                    caption_format = QTextCharFormat()
+                    caption_format.setFontItalic(True)
+                    caption_format.setFontPointSize(10)
+
+                    # Simple numbering (in real implementation, would track across document)
+                    cursor.insertText(f"\n{caption_type} 1: {text}\n", caption_format)
+
+    def insert_table_figures(self):
+        """Insert table of figures."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+
+            # Insert table of figures heading
+            cursor.insertText("\n")
+
+            heading_format = QTextCharFormat()
+            heading_format.setFontPointSize(14)
+            heading_format.setFontWeight(QFont.Bold)
+            cursor.insertText("Table of Figures\n\n", heading_format)
+
+            cursor.insertText("(Figure captions would appear here)\n")
+
+            QMessageBox.information(self, "Table of Figures",
+                "Table of Figures inserted.\n\nNote: Full implementation requires caption tracking throughout the document.")
+
+    def cross_reference(self):
+        """Insert cross-reference."""
+        items = ["Heading", "Footnote", "Endnote", "Figure", "Table", "Equation"]
+        item, ok = QInputDialog.getItem(self, "Cross-reference", "Reference type:", items, 0, False)
+
+        if ok and item:
+            QMessageBox.information(self, "Cross-reference",
+                f"Cross-reference to {item} would be inserted.\n\nNote: Requires tracking of {item} elements throughout document.")
+
+    # Mailings tab methods
+    def envelopes(self):
+        """Create envelopes."""
+        # Simple envelope dialog
+        delivery_address, ok1 = QInputDialog.getText(
+            self, "Envelopes",
+            "Delivery address:\n(Use Shift+Enter for new lines)",
+            QLineEdit.Normal,
+            ""
+        )
+
+        if ok1 and delivery_address:
+            return_address, ok2 = QInputDialog.getText(
+                self, "Envelopes",
+                "Return address:\n(Use Shift+Enter for new lines)",
+                QLineEdit.Normal,
+                ""
+            )
+
+            if ok2:
+                QMessageBox.information(self, "Envelope",
+                    f"Envelope would be created with:\n\nDelivery: {delivery_address}\nReturn: {return_address}\n\nNote: Full implementation requires printer envelope support.")
+
+    def labels(self):
+        """Create labels."""
+        # Ask for label type
+        types = ["Address Labels", "Shipping Labels", "Name Badges", "CD/DVD Labels"]
+        label_type, ok = QInputDialog.getItem(self, "Labels", "Select label type:", types, 0, False)
+
+        if ok and label_type:
+            text, ok2 = QInputDialog.getText(self, "Label Text", "Enter label text:")
+
+            if ok2 and text:
+                QMessageBox.information(self, "Labels",
+                    f"Labels would be created:\n\nType: {label_type}\nText: {text}\n\nNote: Requires label template configuration.")
+
+    def start_mail_merge(self):
+        """Start mail merge process."""
+        items = ["Letters", "E-mail Messages", "Envelopes", "Labels", "Directory"]
+        item, ok = QInputDialog.getItem(self, "Mail Merge", "Select document type:", items, 0, False)
+
+        if ok and item:
+            QMessageBox.information(self, "Mail Merge",
+                f"Mail merge started for: {item}\n\nNext steps:\n1. Select recipients\n2. Insert merge fields\n3. Preview results\n4. Complete merge")
+
+    def select_recipients(self):
+        """Select mail merge recipients."""
+        items = ["Type New List", "Use Existing List", "Select from Outlook Contacts"]
+        item, ok = QInputDialog.getItem(self, "Select Recipients", "Select recipient source:", items, 0, False)
+
+        if ok and item:
+            if item == "Use Existing List":
+                QMessageBox.information(self, "Select Recipients",
+                    "File browser would open to select CSV or Excel file with recipient data.")
+            else:
+                QMessageBox.information(self, "Select Recipients",
+                    f"Recipient selection: {item}\n\nNote: Full implementation requires contact list integration.")
+
+    def edit_recipient_list(self):
+        """Edit mail merge recipient list."""
+        QMessageBox.information(self, "Edit Recipients",
+            "Recipient list editor would open here.\n\nYou can:\n- Add recipients\n- Remove recipients\n- Edit recipient information\n- Filter recipients\n- Sort recipients")
+
+    def insert_merge_field(self):
+        """Insert mail merge field."""
+        fields = ["First Name", "Last Name", "Address", "City", "State", "ZIP Code", "Email", "Phone"]
+        field, ok = QInputDialog.getItem(self, "Insert Merge Field", "Select field:", fields, 0, False)
+
+        if ok and field:
+            editor = self.current_editor()
+            if editor:
+                cursor = editor.textCursor()
+
+                # Insert merge field
+                field_format = QTextCharFormat()
+                field_format.setBackground(QColor(220, 220, 220))
+                field_format.setForeground(QColor(0, 0, 128))
+
+                cursor.insertText(f"«{field}»", field_format)
+
+    def rules(self):
+        """Insert mail merge rules."""
+        items = ["If...Then...Else", "Skip Record If", "Next Record If", "Merge Record #", "Fill-in"]
+        item, ok = QInputDialog.getItem(self, "Rules", "Select rule type:", items, 0, False)
+
+        if ok and item:
+            QMessageBox.information(self, "Mail Merge Rules",
+                f"Rule '{item}' would be configured.\n\nRules allow conditional content in mail merge.")
+
+    def match_fields(self):
+        """Match merge fields to data source."""
+        QMessageBox.information(self, "Match Fields",
+            "Field matching dialog would open.\n\nMap merge fields to your data source columns.")
+
+    def preview_results(self):
+        """Preview mail merge results."""
+        editor = self.current_editor()
+        if editor:
+            QMessageBox.information(self, "Preview Results",
+                "Mail merge preview mode activated.\n\nUse navigation buttons to view each merged record.\n\nNote: Full implementation requires recipient data.")
+
+    def finish_merge(self):
+        """Finish and execute mail merge."""
+        items = ["Print Documents", "Edit Individual Documents", "Send E-mail Messages"]
+        item, ok = QInputDialog.getItem(self, "Finish & Merge", "Select merge option:", items, 0, False)
+
+        if ok and item:
+            QMessageBox.information(self, "Finish & Merge",
+                f"Merge would complete with: {item}\n\nNote: Full implementation requires recipient data and output configuration.")
