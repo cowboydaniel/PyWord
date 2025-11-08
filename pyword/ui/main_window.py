@@ -331,21 +331,28 @@ class MainWindow(QMainWindow):
         editor_layout.setContentsMargins(0, 0, 0, 0)
         editor_layout.setSpacing(0)
 
-        # Horizontal ruler
+        # Horizontal ruler - FULL WIDTH at the top
         self.horizontal_ruler = HorizontalRuler(self.editor_area)
         editor_layout.addWidget(self.horizontal_ruler)
 
-        # Create horizontal layout for vertical ruler and editor
+        # Create horizontal layout for vertical ruler and page area
         editor_row_layout = QHBoxLayout()
         editor_row_layout.setContentsMargins(0, 0, 0, 0)
         editor_row_layout.setSpacing(0)
 
-        # Vertical ruler - anchored to left edge
+        # Vertical ruler - anchored to left edge, FULL HEIGHT
         self.vertical_ruler = VerticalRuler(self.editor_area)
-        editor_row_layout.addWidget(self.vertical_ruler)
+        editor_row_layout.addWidget(self.vertical_ruler, 0, Qt.AlignLeft)
 
-        # Add left stretch to center the page horizontally
-        editor_row_layout.addStretch()
+        # Page container - takes remaining space, centers the page
+        page_container = QWidget()
+        page_container.setStyleSheet("background-color: #D3D3D3;")
+        page_container_layout = QHBoxLayout(page_container)
+        page_container_layout.setContentsMargins(0, 0, 0, 0)
+        page_container_layout.setSpacing(0)
+
+        # Add left stretch to center the page
+        page_container_layout.addStretch()
 
         # Tab widget for multiple documents (hide tabs for Word-like SDI)
         self.tab_widget = QTabWidget()
@@ -358,6 +365,8 @@ class MainWindow(QMainWindow):
         self.tab_widget.tabBar().setVisible(False)
 
         # Style the tab widget to have gray background with white page (Microsoft Word style)
+        # Set maximum width to A4 size at 100% zoom (8.5 inches * 96 DPI = 816px)
+        self.tab_widget.setMaximumWidth(816 + 40)  # Add margin space
         self.tab_widget.setStyleSheet("""
             QTabWidget::pane {
                 border: none;
@@ -370,10 +379,13 @@ class MainWindow(QMainWindow):
             }
         """)
 
-        editor_row_layout.addWidget(self.tab_widget)
+        page_container_layout.addWidget(self.tab_widget)
 
-        # Add right stretch to center the page horizontally
-        editor_row_layout.addStretch()
+        # Add right stretch to center the page
+        page_container_layout.addStretch()
+
+        # Add page container to the editor row (takes remaining width)
+        editor_row_layout.addWidget(page_container, 1)
 
         editor_layout.addLayout(editor_row_layout)
 
