@@ -47,16 +47,21 @@ class QuickAccessToolbar(QToolBar):
             QToolBar {
                 background: #F3F2F1;
                 border: none;
-                spacing: 2px;
+                spacing: 4px;
                 padding: 2px 8px;
+            }
+            QToolBar::separator {
+                background: #D2D0CE;
+                width: 1px;
+                margin: 4px 3px;
             }
             QToolButton {
                 border: 1px solid transparent;
                 border-radius: 2px;
-                padding: 2px 4px;
+                padding: 3px 4px;
                 background: transparent;
                 color: #605E5C;
-                font-size: 14px;
+                font-size: 13px;
             }
             QToolButton:hover {
                 background-color: #E1DFDD;
@@ -128,8 +133,12 @@ class QuickAccessToolbar(QToolBar):
 
         # Add new commands
         for cmd_id in command_ids:
-            action = actions.get(cmd_id) if actions else None
-            self.add_command(cmd_id, action)
+            if cmd_id == '|':
+                # Add separator
+                self.addSeparator()
+            else:
+                action = actions.get(cmd_id) if actions else None
+                self.add_command(cmd_id, action)
 
     def save_configuration(self):
         """Save toolbar configuration to settings."""
@@ -138,8 +147,8 @@ class QuickAccessToolbar(QToolBar):
 
     def load_configuration(self):
         """Load toolbar configuration from settings."""
-        # Default commands if none saved
-        default_commands = ['save', 'undo', 'redo', 'print']
+        # Default commands if none saved (with separator after redo, before print)
+        default_commands = ['save', 'undo', 'redo', '|', 'print']  # '|' indicates separator
         saved_commands = self.settings.value("commands", default_commands)
 
         if saved_commands:
