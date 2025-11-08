@@ -41,12 +41,14 @@ class HeaderFooterManager(QObject):
         super().__init__(parent)
         self.document = document
         self.headers: Dict[HeaderFooterType, HeaderFooter] = {
-            HeaderFooterType.HEADER: HeaderFooter("", False, 12.7),  # Default 1.27cm from top
-            HeaderFooterType.FOOTER: HeaderFooter("", False, 12.7),  # Default 1.27cm from bottom
+            # First page headers/footers should not be linked to previous (they are the first)
             HeaderFooterType.FIRST_PAGE_HEADER: HeaderFooter("", False, 12.7),
             HeaderFooterType.FIRST_PAGE_FOOTER: HeaderFooter("", False, 12.7),
-            HeaderFooterType.EVEN_PAGE_HEADER: HeaderFooter("", False, 12.7),
-            HeaderFooterType.EVEN_PAGE_FOOTER: HeaderFooter("", False, 12.7)
+            # Regular and even page headers/footers should be linked to previous by default
+            HeaderFooterType.HEADER: HeaderFooter("", True, 12.7),  # Default 1.27cm from top
+            HeaderFooterType.FOOTER: HeaderFooter("", True, 12.7),  # Default 1.27cm from bottom
+            HeaderFooterType.EVEN_PAGE_HEADER: HeaderFooter("", True, 12.7),
+            HeaderFooterType.EVEN_PAGE_FOOTER: HeaderFooter("", True, 12.7)
         }
         # Only initialize document if it's not None
         if self.document is not None:

@@ -170,19 +170,32 @@ class DocumentMap(QWidget):
         self.list_widget.clear()
         document = self.editor.document()
         block = document.begin()
-        
+
         while block.isValid():
-            if block.text().strip() and block.text().startswith('#'):
-                self.list_widget.addItem(block.text().lstrip('#').strip())
+            if block.text().strip():
+                # Check for Markdown-style headers (for compatibility)
+                if block.text().startswith('#'):
+                    self.list_widget.addItem(block.text().lstrip('#').strip())
+                else:
+                    # Check for formatted headings by examining text format
+                    # Headings typically have larger font sizes or specific styles
+                    cursor = QTextCursor(block)
+                    char_format = cursor.charFormat()
+                    font_size = char_format.fontPointSize()
+                    font_weight = char_format.fontWeight()
+
+                    # Consider text as a heading if it has larger font (>12pt) or is bold with larger size
+                    if font_size > 12 or (font_weight > 400 and font_size >= 11):
+                        self.list_widget.addItem(block.text().strip())
             block = block.next()
     
     def on_item_clicked(self, item):
         # Find the clicked heading in the document
         document = self.editor.document()
         cursor = QTextCursor(document)
-        
+
         while not cursor.atEnd():
-            cursor.movePosition(QTextCursor.MoveOperation.NextBlock)
+            cursor.movePosition(QTextCursor.NextBlock)
             if cursor.block().text().lstrip('#').strip() == item.text():
                 self.editor.setTextCursor(cursor)
                 self.editor.ensureCursorVisible()

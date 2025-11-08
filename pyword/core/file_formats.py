@@ -251,7 +251,8 @@ class ODTHandler(FileFormatHandler):
 
             extract_text(element)
             return ''.join(text_parts)
-        except:
+        except Exception as e:
+            print(f"Warning: Failed to extract text from ODT element: {e}")
             return ''
 
     def export_document(self, document: 'Document', file_path: str) -> bool:
@@ -716,14 +717,63 @@ class FileFormatManager:
         return handler is not None and handler.can_export()
 
     def import_document(self, file_path: str) -> Optional[Dict[str, Any]]:
-        """Import a document from file."""
+        """
+        Import a document from file.
+
+        Validates file existence, extension, and basic structure before attempting import.
+
+        Args:
+            file_path: Path to the file to import.
+
+        Returns:
+            Dictionary containing document data or None if validation fails or import unsuccessful.
+        """
         path = Path(file_path)
+
+        # Validate file exists
+        if not path.exists():
+            print(f"Error: File does not exist: {file_path}")
+            return None
+
+        # Validate file is readable
+        if not path.is_file():
+            print(f"Error: Path is not a file: {file_path}")
+            return None
+
+        # Validate file has a recognized extension
+        if not path.suffix:
+            print(f"Error: File has no extension: {file_path}")
+            return None
+
         handler = self.get_handler(path.suffix)
 
-        if handler and handler.can_import():
-            return handler.import_document(file_path)
+        # Validate handler exists and can import
+        if not handler:
+            print(f"Error: No handler found for file extension: {path.suffix}")
+            return None
 
-        return None
+        if not handler.can_import():
+            print(f"Error: Import not supported for format: {path.suffix}")
+            return None
+
+        # Validate file is not empty
+        try:
+            if path.stat().st_size == 0:
+                print(f"Warning: File is empty: {file_path}")
+                return {
+                    'content': '',
+                    'title': path.stem,
+                    'author': '',
+                    'created_at': datetime.now().isoformat(),
+                    'modified_at': datetime.now().isoformat(),
+                    'keywords': [],
+                    'metadata': {}
+                }
+        except OSError as e:
+            print(f"Error: Unable to access file: {e}")
+            return None
+
+        return handler.import_document(file_path)
 
     def export_document(self, document: 'Document', file_path: str) -> bool:
         """Export a document to file."""

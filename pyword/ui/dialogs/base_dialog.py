@@ -90,8 +90,8 @@ class BaseDialog(QDialog):
         dialog = cls(title, parent)
         if initial_values:
             dialog.set_values(initial_values)
-        
-        result = dialog.exec_()
+
+        result = dialog.exec()
         if result == QDialog.Accepted:
             return True, dialog.get_values()
         return False, None
