@@ -12,6 +12,7 @@ class QuickAccessToolbar(QToolBar):
 
     def __init__(self, parent=None):
         super().__init__("Quick Access Toolbar", parent)
+        self.setObjectName("QuickAccessToolbar")
         self.setMovable(False)
         self.setFloatable(False)
         self.setIconSize(QSize(16, 16))
