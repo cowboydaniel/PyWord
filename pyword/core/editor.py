@@ -22,6 +22,7 @@ class TextEditor(QTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.zoom_factor = 1.0
+        self.base_font_size = 11  # Track base font size for proper zoom calculations
         self.current_file = None
         self.styles = DocumentStyles()
         self.table_manager = TableManager(self)
@@ -192,15 +193,14 @@ class TextEditor(QTextEdit):
     
     def update_zoom(self):
         """Update the zoom level of the editor."""
-        # Scale the font size
+        # Scale the font size using stored base size
         font = self.font()
-        base_size = 11  # Default font size at 100% (Calibri 11pt)
-        font.setPointSizeF(base_size * self.zoom_factor)
+        font.setPointSizeF(self.base_font_size * self.zoom_factor)
         self.setFont(font)
-        
+
         # Update scroll bars
         self.updateGeometry()
-        
+
         # Notify about zoom change
         if hasattr(self.parent(), 'zoom_changed'):
             self.parent().zoom_changed.emit(int(self.zoom_factor * 100))
@@ -214,6 +214,8 @@ class TextEditor(QTextEdit):
     
     def set_font_size(self, point_size: int):
         """Set font size for selected text or cursor position."""
+        # Update base font size when user changes font size
+        self.base_font_size = point_size
         fmt = QTextCharFormat()
         fmt.setFontPointSize(point_size)
         self.merge_format_on_word_or_selection(fmt)

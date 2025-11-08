@@ -8,10 +8,11 @@ including cell merging, splitting, borders, shading, alignment, and table styles
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
                                QPushButton, QGroupBox, QSpinBox, QDoubleSpinBox,
                                QColorDialog, QCheckBox, QTabWidget, QWidget,
-                               QFormLayout, QLineEdit, QSlider, QRadioButton, QButtonGroup)
+                               QFormLayout, QLineEdit, QSlider, QRadioButton, QButtonGroup,
+                               QMessageBox)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import (QColor, QTextTableFormat, QTextTableCellFormat, QTextLength,
-                          QTextFrameFormat, QTextCharFormat, QBrush, QPen)
+                          QTextFrameFormat, QTextCharFormat, QBrush, QPen, QTextCursor)
 
 
 class TableStyle:
@@ -83,18 +84,113 @@ class AdvancedTableManager:
     def merge_cells(self, start_row, start_col, num_rows, num_cols):
         """Merge a range of cells."""
         table = self.get_current_table()
-        if table:
-            table.mergeCells(start_row, start_col, num_rows, num_cols)
-            return True
-        return False
+        if not table:
+            QMessageBox.warning(
+                None,
+                "No Table Selected",
+                "Please select a table to merge cells."
+            )
+            return False
+
+        # Validate the selection bounds
+        if start_row < 0 or start_col < 0:
+            QMessageBox.warning(
+                None,
+                "Invalid Selection",
+                "Starting row and column must be non-negative."
+            )
+            return False
+
+        if num_rows <= 0 or num_cols <= 0:
+            QMessageBox.warning(
+                None,
+                "Invalid Selection",
+                "Number of rows and columns to merge must be positive."
+            )
+            return False
+
+        # Check if selection is within table bounds
+        if start_row + num_rows > table.rows() or start_col + num_cols > table.columns():
+            QMessageBox.warning(
+                None,
+                "Invalid Selection",
+                f"Selection exceeds table bounds. Table has {table.rows()} rows and {table.columns()} columns."
+            )
+            return False
+
+        # Check if we're actually merging multiple cells (not a single cell)
+        if num_rows == 1 and num_cols == 1:
+            QMessageBox.information(
+                None,
+                "Single Cell",
+                "Cannot merge a single cell. Please select multiple cells."
+            )
+            return False
+
+        table.mergeCells(start_row, start_col, num_rows, num_cols)
+        return True
 
     def split_cell(self, row, col, num_rows, num_cols):
         """Split a cell into multiple cells."""
         table = self.get_current_table()
-        if table:
-            table.splitCell(row, col, num_rows, num_cols)
-            return True
-        return False
+        if not table:
+            QMessageBox.warning(
+                None,
+                "No Table Selected",
+                "Please select a table to split cells."
+            )
+            return False
+
+        # Validate row and column indices
+        if row < 0 or row >= table.rows():
+            QMessageBox.warning(
+                None,
+                "Invalid Row",
+                f"Row index {row} is out of bounds. Table has {table.rows()} rows."
+            )
+            return False
+
+        if col < 0 or col >= table.columns():
+            QMessageBox.warning(
+                None,
+                "Invalid Column",
+                f"Column index {col} is out of bounds. Table has {table.columns()} columns."
+            )
+            return False
+
+        # Validate split dimensions
+        if num_rows <= 0 or num_cols <= 0:
+            QMessageBox.warning(
+                None,
+                "Invalid Split Dimensions",
+                "Number of rows and columns must be positive."
+            )
+            return False
+
+        # Get the cell and check if it's already a merged cell
+        cell = table.cellAt(row, col)
+        if not cell.isValid():
+            QMessageBox.warning(
+                None,
+                "Invalid Cell",
+                f"Cannot access cell at row {row}, column {col}."
+            )
+            return False
+
+        # Check if cell can be split (only split if it's a merged cell or splitting into more cells)
+        cell_row_span = cell.rowSpan()
+        cell_col_span = cell.columnSpan()
+
+        if cell_row_span == 1 and cell_col_span == 1 and (num_rows > 1 or num_cols > 1):
+            QMessageBox.information(
+                None,
+                "Cannot Split",
+                "Cannot split a non-merged cell into multiple cells. This cell is already a single cell."
+            )
+            return False
+
+        table.splitCell(row, col, num_rows, num_cols)
+        return True
 
     def set_cell_background(self, row, col, color):
         """Set the background color of a cell."""
@@ -109,16 +205,72 @@ class AdvancedTableManager:
         return False
 
     def set_cell_border(self, row, col, width, color, style="solid"):
-        """Set the border of a cell."""
+        """Set the border of a cell with width, color, and style."""
         table = self.get_current_table()
-        if table:
-            cell = table.cellAt(row, col)
-            if cell.isValid():
-                cell_format = cell.format().toTableCellFormat()
-                cell_format.setBorder(width)
-                cell_format.setBorderBrush(QBrush(color))
-                cell.setFormat(cell_format)
-                return True
+        if not table:
+            QMessageBox.warning(
+                None,
+                "No Table Selected",
+                "Please select a table to set cell borders."
+            )
+            return False
+
+        # Validate row and column
+        if row < 0 or row >= table.rows():
+            QMessageBox.warning(
+                None,
+                "Invalid Row",
+                f"Row index {row} is out of bounds. Table has {table.rows()} rows."
+            )
+            return False
+
+        if col < 0 or col >= table.columns():
+            QMessageBox.warning(
+                None,
+                "Invalid Column",
+                f"Column index {col} is out of bounds. Table has {table.columns()} columns."
+            )
+            return False
+
+        # Validate width
+        if width < 0:
+            QMessageBox.warning(
+                None,
+                "Invalid Border Width",
+                "Border width must be non-negative."
+            )
+            return False
+
+        cell = table.cellAt(row, col)
+        if cell.isValid():
+            cell_format = cell.format().toTableCellFormat()
+
+            # Set border width
+            cell_format.setBorder(width)
+
+            # Set border color using brush
+            cell_format.setBorderBrush(QBrush(color))
+
+            # Set border style using pen
+            pen_style = Qt.PenStyle.SolidLine
+            if style == "dashed":
+                pen_style = Qt.PenStyle.DashLine
+            elif style == "dotted":
+                pen_style = Qt.PenStyle.DotLine
+            elif style == "double":
+                pen_style = Qt.PenStyle.DashDotLine
+
+            cell_format.setBorderStyle(pen_style)
+
+            # Apply the format to the cell
+            cell.setFormat(cell_format)
+            return True
+
+        QMessageBox.warning(
+            None,
+            "Invalid Cell",
+            f"Cannot access cell at row {row}, column {col}."
+        )
         return False
 
     def set_cell_padding(self, row, col, padding):

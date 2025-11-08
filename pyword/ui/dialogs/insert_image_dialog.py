@@ -2,7 +2,7 @@
 
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel,
                              QPushButton, QLineEdit, QFileDialog, QGroupBox,
-                             QFormLayout, QSpinBox, QComboBox)
+                             QFormLayout, QSpinBox, QComboBox, QCheckBox)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPixmap
 from .base_dialog import BaseDialog
@@ -14,6 +14,8 @@ class InsertImageDialog(BaseDialog):
     def __init__(self, parent=None):
         super().__init__("Insert Image", parent)
         self.image_path = ""
+        self.aspect_ratio = 1.0  # Track aspect ratio for locking
+        self.updating_spinbox = False  # Prevent recursive updates
         self.setup_ui()
 
     def setup_ui(self):
@@ -58,6 +60,7 @@ class InsertImageDialog(BaseDialog):
         self.width_spinbox.setMaximum(2000)
         self.width_spinbox.setValue(300)
         self.width_spinbox.setSuffix(" px")
+        self.width_spinbox.valueChanged.connect(self.on_width_changed)
         size_layout.addRow("Width:", self.width_spinbox)
 
         self.height_spinbox = QSpinBox()
@@ -65,7 +68,13 @@ class InsertImageDialog(BaseDialog):
         self.height_spinbox.setMaximum(2000)
         self.height_spinbox.setValue(200)
         self.height_spinbox.setSuffix(" px")
+        self.height_spinbox.valueChanged.connect(self.on_height_changed)
         size_layout.addRow("Height:", self.height_spinbox)
+
+        # Add aspect ratio lock checkbox
+        self.lock_aspect_ratio = QCheckBox("Lock aspect ratio")
+        self.lock_aspect_ratio.setChecked(True)
+        size_layout.addRow("", self.lock_aspect_ratio)
 
         size_group.setLayout(size_layout)
         layout.addWidget(size_group)
@@ -112,9 +121,18 @@ class InsertImageDialog(BaseDialog):
                 )
                 self.preview_label.setPixmap(scaled_pixmap)
 
-                # Update size spinboxes
+                # Update size spinboxes and aspect ratio
+                self.updating_spinbox = True
                 self.width_spinbox.setValue(pixmap.width())
                 self.height_spinbox.setValue(pixmap.height())
+
+                # Calculate and store aspect ratio
+                if pixmap.height() > 0:
+                    self.aspect_ratio = pixmap.width() / pixmap.height()
+                else:
+                    self.aspect_ratio = 1.0
+
+                self.updating_spinbox = False
 
     def get_image_path(self):
         """Get the selected image path."""
@@ -127,3 +145,25 @@ class InsertImageDialog(BaseDialog):
     def get_height(self):
         """Get the image height."""
         return self.height_spinbox.value()
+
+    def on_width_changed(self, value):
+        """Handle width spinbox value change and enforce aspect ratio lock."""
+        if self.updating_spinbox:
+            return
+
+        if self.lock_aspect_ratio.isChecked() and self.aspect_ratio > 0:
+            self.updating_spinbox = True
+            new_height = int(value / self.aspect_ratio)
+            self.height_spinbox.setValue(new_height)
+            self.updating_spinbox = False
+
+    def on_height_changed(self, value):
+        """Handle height spinbox value change and enforce aspect ratio lock."""
+        if self.updating_spinbox:
+            return
+
+        if self.lock_aspect_ratio.isChecked() and self.aspect_ratio > 0:
+            self.updating_spinbox = True
+            new_width = int(value * self.aspect_ratio)
+            self.width_spinbox.setValue(new_width)
+            self.updating_spinbox = False
