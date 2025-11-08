@@ -134,45 +134,32 @@ class ColumnManager(QObject):
         self._update_columns()
     
     def _update_columns(self):
-        """Update the document's column layout."""
-        if self.settings.layout == ColumnLayout.ONE_COLUMN:
-            # Reset to single column
-            root_frame = self.document.rootFrame()
-            frame_format = root_frame.frameFormat()
-            frame_format.setColumns(1)
-            frame_format.setColumnWidth(0, 0)  # 0 means use all available width
-            root_frame.setFrameFormat(frame_format)
-            return
-        
-        # Get the number of columns and their widths
-        num_columns = abs(self.settings.layout.value)
-        
-        # Get column widths
-        if self.settings.equal_width or not self.settings.custom_widths:
-            widths = self.settings.layout.get_column_widths()
-        else:
-            widths = self.settings.custom_widths
-            num_columns = len(widths)
-        
-        # Set up the root frame format
-        root_frame = self.document.rootFrame()
-        frame_format = root_frame.frameFormat()
-        
-        # Set column properties
-        frame_format.setColumnCount(num_columns)
-        frame_format.setColumnWidths([int(w * 5000) for w in widths])  # Scale for better precision
-        frame_format.setColumnSpacing(self.settings.spacing)
-        
-        # Add line between columns if enabled
-        if self.settings.line_between and num_columns > 1:
-            frame_format.setProperty(QTextFormat.Property.FrameBorder, 1)
-            frame_format.setProperty(QTextFormat.Property.FrameBorderBrush, Qt.GlobalColor.gray)
-            frame_format.setProperty(QTextFormat.Property.FrameBorderStyle, Qt.PenStyle.SolidLine)
-        else:
-            frame_format.clearProperty(QTextFormat.Property.FrameBorder)
-        
-        # Apply the format
-        root_frame.setFrameFormat(frame_format)
+        """Update the document's column layout.
+
+        Note: PySide6's QTextFrameFormat doesn't support multi-column layouts
+        directly through setColumns/setColumnCount methods. This is a known
+        limitation of Qt's text framework. Multi-column layout would require
+        a custom implementation using QTextTable or manual layout management.
+
+        For now, this method is a placeholder that doesn't crash but also
+        doesn't implement true column layout functionality.
+        """
+        # PySide6 compatibility: QTextFrameFormat doesn't have column-related methods
+        # The following methods don't exist in PySide6:
+        # - setColumns()
+        # - setColumnWidth()
+        # - setColumnCount()
+        # - setColumnWidths()
+        # - setColumnSpacing()
+
+        # To properly implement multi-column layout in PySide6, we would need to:
+        # 1. Use QTextTable to simulate columns
+        # 2. Implement custom rendering/layout
+        # 3. Use a different approach entirely
+
+        # For now, we'll just return to avoid crashes
+        # TODO: Implement proper multi-column support for PySide6
+        return
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert column settings to a dictionary for serialization."""
