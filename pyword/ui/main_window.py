@@ -340,12 +340,12 @@ class MainWindow(QMainWindow):
         editor_row_layout.setContentsMargins(0, 0, 0, 0)
         editor_row_layout.setSpacing(0)
 
-        # Add left stretch to center the page horizontally
-        editor_row_layout.addStretch()
-
-        # Vertical ruler
+        # Vertical ruler - anchored to left edge
         self.vertical_ruler = VerticalRuler(self.editor_area)
         editor_row_layout.addWidget(self.vertical_ruler)
+
+        # Add left stretch to center the page horizontally
+        editor_row_layout.addStretch()
 
         # Tab widget for multiple documents (hide tabs for Word-like SDI)
         self.tab_widget = QTabWidget()
