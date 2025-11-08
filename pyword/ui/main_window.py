@@ -1130,25 +1130,52 @@ class MainWindow(QMainWindow):
 
     def on_document_activated(self, document: Document):
         """Handle when a document is activated.
-        
+
         Args:
             document: The activated document
         """
         self.current_document = document
         editor = self.current_editor()
-        
+
         if editor:
             # Connect document change signals
             editor.undoAvailable.connect(self.actionUndo.setEnabled)
             editor.redoAvailable.connect(self.actionRedo.setEnabled)
             editor.textChanged.connect(self.on_text_changed)
-            
+
             # Update undo/redo button states
             self.actionUndo.setEnabled(editor.document().isUndoAvailable())
             self.actionRedo.setEnabled(editor.document().isRedoAvailable())
-            
+
             # Update word count
             self.update_word_count()
+
+    def on_document_closed(self, document: Document):
+        """Handle when a document is closed.
+
+        Args:
+            document: The closed document
+        """
+        # Update current document if the closed one was active
+        if self.current_document == document:
+            self.current_document = None
+
+        # Update UI
+        self.update_ui()
+        self.update_window_title()
+
+    def on_document_saved(self, document: Document, file_path: str):
+        """Handle when a document is saved.
+
+        Args:
+            document: The saved document
+            file_path: Path where document was saved
+        """
+        # Update window title to remove modified indicator
+        self.update_window_title()
+
+        # Update status bar
+        self.update_status_bar()
 
     def on_text_changed(self):
         """Handle text changes in the editor."""
