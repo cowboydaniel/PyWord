@@ -1,4 +1,5 @@
 from datetime import datetime
+from pathlib import Path
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QSplitter, QTabWidget,
                              QStatusBar, QMenuBar, QMenu, QToolBar, QFileDialog, QMessageBox,
                              QDockWidget, QLabel, QSizePolicy, QApplication, QDialog,
@@ -45,27 +46,25 @@ class MainWindow(QMainWindow):
         self.document_manager = DocumentManager()
         self.settings = QSettings("PyWord", "Editor")
         self.print_manager = PrintManager(self)
+        self.current_document = None  # Initialize current document
 
         # Initialize and apply theme (Microsoft Word style)
         self.theme_manager = ThemeManager(self)
         self.theme_manager.apply_theme()
 
-        # Setup UI
-        self.setup_ui()
-        
-        # Connect print actions
-        self.setup_print_connections()
-        
-        # Load settings
-        self.load_settings()
-        
-        # Create document manager UI
+        # Create document manager UI (before setup_ui to avoid AttributeError)
         self.document_ui = DocumentManagerUI(self.document_manager, self)
-        
+
         # Connect document UI signals
         self.document_ui.document_activated.connect(self.on_document_activated)
         self.document_ui.document_closed.connect(self.on_document_closed)
         self.document_ui.document_saved.connect(self.on_document_saved)
+
+        # Setup UI
+        self.setup_ui()
+
+        # Load settings
+        self.load_settings()
         
         # Connect text changes to update word count
         if self.current_editor():
@@ -78,14 +77,6 @@ class MainWindow(QMainWindow):
         if not self.document_manager.documents:
             self.document_ui.new_document()
     
-    def setup_print_connections(self):
-        """Connect print-related signals and slots."""
-        # Connect print actions
-        self.actionPrint.triggered.connect(self.print_document)
-        self.actionPrint_Preview.triggered.connect(self.print_preview)
-        self.actionPage_Setup.triggered.connect(self.page_setup)
-        self.actionPrint.triggered.connect(self.print_document)
-        
     def print_document(self):
         """Print the current document."""
         if not self.current_editor():
@@ -639,8 +630,11 @@ class MainWindow(QMainWindow):
         self.table_menu.addAction(split_cells_action)
         
         self.table_menu.addSeparator()
-        
+
         table_properties_action = QAction("Table P&roperties...", self)
+        table_properties_action.triggered.connect(self.show_table_properties)
+        self.table_menu.addAction(table_properties_action)
+
     def update_ui(self):
         """Update the UI based on the current state."""
         has_document = self.document_ui.current_document is not None
@@ -986,12 +980,14 @@ class MainWindow(QMainWindow):
             self.update_status_bar()
     
     def toggle_standard_toolbar(self, visible):
-        """Toggle the standard toolbar visibility."""
-        self.main_toolbar.setVisible(visible)
-    
+        """Toggle the ribbon visibility."""
+        if hasattr(self, 'ribbon'):
+            self.ribbon.setVisible(visible)
+
     def toggle_formatting_toolbar(self, visible):
-        """Toggle the formatting toolbar visibility."""
-        self.format_toolbar.setVisible(visible)
+        """Toggle the ribbon visibility."""
+        if hasattr(self, 'ribbon'):
+            self.ribbon.setVisible(visible)
     
     def toggle_navigation_panel(self, visible):
         """Toggle the navigation panel visibility."""
