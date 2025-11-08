@@ -11,6 +11,7 @@ from .page_setup import PageSetup
 
 if TYPE_CHECKING:
     from ..features.headers_footers import HeaderFooterManager, HeaderFooterType
+    from ..features.footnotes_endnotes import NoteManager
 
 # Import file format manager
 from .file_formats import format_manager
@@ -84,6 +85,7 @@ class Document:
     _content_type: str = field(init=False, default="")
     _encoding: str = field(init=False, default="utf-8")
     _header_footer_manager: Optional['HeaderFooterManager'] = field(init=False, default=None)
+    _note_manager: Optional['NoteManager'] = field(init=False, default=None)
     
     def __post_init__(self):
         if self.file_path:
@@ -100,16 +102,20 @@ class Document:
         # Initialize header/footer manager
         from ..features.headers_footers import HeaderFooterManager, HeaderFooterType
         self._header_footer_manager = HeaderFooterManager(None)  # Document will be set when loaded in UI
-        
+
         # Set default header/footer content
         self._header_footer_manager.set_header_footer_content(
-            HeaderFooterType.HEADER, 
+            HeaderFooterType.HEADER,
             f"{self.title if self.title else 'Untitled Document'}\t\tPage \\n"
         )
         self._header_footer_manager.set_header_footer_content(
             HeaderFooterType.FOOTER,
             "Created with PyWord\t\\t\\d"
         )
+
+        # Initialize note manager
+        from ..features.footnotes_endnotes import NoteManager
+        self._note_manager = NoteManager()
     
     @property
     def content_type(self) -> str:
@@ -340,6 +346,14 @@ class Document:
             from ..features.headers_footers import HeaderFooterManager
             self._header_footer_manager = HeaderFooterManager(None)  # Document will be set when loaded in UI
         return self._header_footer_manager
+
+    @property
+    def note_manager(self) -> 'NoteManager':
+        """Get the note manager for this document."""
+        if self._note_manager is None:
+            from ..features.footnotes_endnotes import NoteManager
+            self._note_manager = NoteManager()
+        return self._note_manager
         
     def get_metadata(self) -> Dict[str, Any]:
         """

@@ -2105,106 +2105,279 @@ class MainWindow(QMainWindow):
         """Insert shapes into document."""
         editor = self.current_editor()
         if editor:
+            from PIL import Image, ImageDraw
+            import tempfile
+            import os
+
             # Offer basic shape options
-            shapes = ["Rectangle", "Circle", "Triangle", "Arrow", "Line", "Star"]
+            shapes = ["Rectangle", "Circle", "Triangle", "Arrow", "Line", "Star", "Diamond", "Pentagon"]
             shape, ok = QInputDialog.getItem(self, "Insert Shapes", "Select shape:", shapes, 0, False)
 
             if ok and shape:
-                cursor = editor.textCursor()
+                try:
+                    # Create a new image with transparent background
+                    size = (200, 200)
+                    img = Image.new('RGBA', size, (255, 255, 255, 0))
+                    draw = ImageDraw.Draw(img)
 
-                # Insert a text representation of the shape
-                shape_format = QTextCharFormat()
-                shape_format.setFontPointSize(24)
-                shape_format.setForeground(QColor(0, 102, 204))
+                    # Blue fill color
+                    fill_color = (0, 102, 204, 255)
+                    outline_color = (0, 51, 102, 255)
 
-                shape_symbols = {
-                    "Rectangle": "▭",
-                    "Circle": "●",
-                    "Triangle": "▲",
-                    "Arrow": "➔",
-                    "Line": "─",
-                    "Star": "★"
-                }
+                    # Draw the selected shape
+                    if shape == "Rectangle":
+                        draw.rectangle([20, 20, 180, 180], fill=fill_color, outline=outline_color, width=3)
+                    elif shape == "Circle":
+                        draw.ellipse([20, 20, 180, 180], fill=fill_color, outline=outline_color, width=3)
+                    elif shape == "Triangle":
+                        draw.polygon([(100, 20), (20, 180), (180, 180)], fill=fill_color, outline=outline_color)
+                    elif shape == "Arrow":
+                        # Arrow pointing right
+                        draw.polygon([(20, 80), (120, 80), (120, 40), (180, 100), (120, 160), (120, 120), (20, 120)],
+                                   fill=fill_color, outline=outline_color)
+                    elif shape == "Line":
+                        draw.line([(20, 100), (180, 100)], fill=outline_color, width=5)
+                    elif shape == "Star":
+                        # 5-pointed star
+                        points = []
+                        import math
+                        for i in range(10):
+                            angle = (i * 36 - 90) * math.pi / 180
+                            radius = 80 if i % 2 == 0 else 35
+                            x = 100 + radius * math.cos(angle)
+                            y = 100 + radius * math.sin(angle)
+                            points.append((x, y))
+                        draw.polygon(points, fill=fill_color, outline=outline_color)
+                    elif shape == "Diamond":
+                        draw.polygon([(100, 20), (180, 100), (100, 180), (20, 100)], fill=fill_color, outline=outline_color)
+                    elif shape == "Pentagon":
+                        import math
+                        points = []
+                        for i in range(5):
+                            angle = (i * 72 - 90) * math.pi / 180
+                            x = 100 + 80 * math.cos(angle)
+                            y = 100 + 80 * math.sin(angle)
+                            points.append((x, y))
+                        draw.polygon(points, fill=fill_color, outline=outline_color)
 
-                cursor.insertText(f" {shape_symbols.get(shape, '▭')} ", shape_format)
-                QMessageBox.information(self, "Shape Inserted",
-                    f"{shape} inserted.\n\nNote: Full shape support requires drawing canvas implementation.")
+                    # Save to temporary file
+                    with tempfile.NamedTemporaryFile(mode='wb', suffix='.png', delete=False) as tmp:
+                        img.save(tmp, 'PNG')
+                        tmp_path = tmp.name
+
+                    # Insert the image
+                    editor.insert_image(tmp_path, width=150, height=150)
+
+                    # Clean up temp file after a delay (Qt will load it)
+                    # Note: In production, you'd want better temp file management
+
+                except Exception as e:
+                    QMessageBox.warning(self, "Shape Error", f"Failed to create shape: {str(e)}")
 
     def insert_chart(self):
         """Insert a chart into document."""
         editor = self.current_editor()
         if editor:
+            import tempfile
+            try:
+                import matplotlib
+                matplotlib.use('Agg')  # Use non-interactive backend
+                import matplotlib.pyplot as plt
+                import numpy as np
+            except ImportError:
+                QMessageBox.warning(self, "Chart Error", "Matplotlib is required for charts. Please install it:\npip install matplotlib")
+                return
+
             # Offer chart types
             chart_types = ["Column Chart", "Bar Chart", "Line Chart", "Pie Chart", "Area Chart"]
             chart_type, ok = QInputDialog.getItem(self, "Insert Chart", "Select chart type:", chart_types, 0, False)
 
             if ok and chart_type:
-                cursor = editor.textCursor()
+                try:
+                    # Sample data for demonstration
+                    categories = ['A', 'B', 'C', 'D', 'E']
+                    values = [23, 45, 56, 78, 32]
 
-                # Insert chart placeholder
-                chart_format = QTextCharFormat()
-                chart_format.setBackground(QColor(240, 240, 240))
-                chart_format.setFontFamily("Courier New")
+                    # Create figure
+                    fig, ax = plt.subplots(figsize=(6, 4))
+                    fig.patch.set_facecolor('white')
 
-                cursor.insertText("\n", chart_format)
-                cursor.insertText(f"[{chart_type}]\n", chart_format)
-                cursor.insertText("┌─────────────────┐\n", chart_format)
-                cursor.insertText("│  Chart Data     │\n", chart_format)
-                cursor.insertText("│  ▃▅▇█ ▃▅▇      │\n", chart_format)
-                cursor.insertText("└─────────────────┘\n", chart_format)
+                    # Create the appropriate chart type
+                    if chart_type == "Column Chart":
+                        ax.bar(categories, values, color='#0066CC')
+                        ax.set_ylabel('Values')
+                        ax.set_title('Column Chart')
+                    elif chart_type == "Bar Chart":
+                        ax.barh(categories, values, color='#0066CC')
+                        ax.set_xlabel('Values')
+                        ax.set_title('Bar Chart')
+                    elif chart_type == "Line Chart":
+                        ax.plot(categories, values, marker='o', color='#0066CC', linewidth=2, markersize=8)
+                        ax.set_ylabel('Values')
+                        ax.set_title('Line Chart')
+                        ax.grid(True, alpha=0.3)
+                    elif chart_type == "Pie Chart":
+                        ax.pie(values, labels=categories, autopct='%1.1f%%', startangle=90)
+                        ax.set_title('Pie Chart')
+                    elif chart_type == "Area Chart":
+                        ax.fill_between(range(len(categories)), values, alpha=0.7, color='#0066CC')
+                        ax.plot(categories, values, color='#003366', linewidth=2)
+                        ax.set_ylabel('Values')
+                        ax.set_title('Area Chart')
+                        ax.grid(True, alpha=0.3)
 
-                QMessageBox.information(self, "Chart Inserted",
-                    f"{chart_type} placeholder inserted.\n\nNote: Full chart support requires charting library integration (e.g., matplotlib).")
+                    plt.tight_layout()
+
+                    # Save to temporary file
+                    with tempfile.NamedTemporaryFile(mode='wb', suffix='.png', delete=False) as tmp:
+                        plt.savefig(tmp.name, dpi=100, bbox_inches='tight')
+                        tmp_path = tmp.name
+
+                    plt.close(fig)
+
+                    # Insert the chart image
+                    editor.insert_image(tmp_path, width=400, height=300)
+
+                except Exception as e:
+                    QMessageBox.warning(self, "Chart Error", f"Failed to create chart: {str(e)}")
 
     def insert_smartart(self):
         """Insert SmartArt graphic."""
         editor = self.current_editor()
         if editor:
+            import tempfile
+            try:
+                import matplotlib
+                matplotlib.use('Agg')
+                import matplotlib.pyplot as plt
+                import matplotlib.patches as mpatches
+                from matplotlib.patches import FancyBboxPatch, FancyArrowPatch
+            except ImportError:
+                QMessageBox.warning(self, "SmartArt Error", "Matplotlib is required for SmartArt. Please install it:\npip install matplotlib")
+                return
+
             # Offer SmartArt types
             smartart_types = ["List", "Process", "Cycle", "Hierarchy", "Relationship", "Matrix", "Pyramid"]
             smartart_type, ok = QInputDialog.getItem(self, "Insert SmartArt", "Select SmartArt type:", smartart_types, 0, False)
 
             if ok and smartart_type:
-                cursor = editor.textCursor()
+                try:
+                    fig, ax = plt.subplots(figsize=(7, 5))
+                    ax.set_xlim(0, 10)
+                    ax.set_ylim(0, 10)
+                    ax.axis('off')
+                    fig.patch.set_facecolor('white')
 
-                # Insert SmartArt placeholder
-                smartart_format = QTextCharFormat()
-                smartart_format.setBackground(QColor(230, 245, 255))
-                smartart_format.setFontFamily("Courier New")
+                    box_color = '#0066CC'
+                    text_color = 'white'
 
-                cursor.insertText("\n", smartart_format)
-                cursor.insertText(f"[SmartArt: {smartart_type}]\n", smartart_format)
+                    if smartart_type == "Process":
+                        # Three boxes with arrows
+                        for i, label in enumerate(['Step 1', 'Step 2', 'Step 3']):
+                            x = 1 + i * 3
+                            box = FancyBboxPatch((x, 4), 1.5, 1.2, boxstyle="round,pad=0.1",
+                                                edgecolor='#003366', facecolor=box_color, linewidth=2)
+                            ax.add_patch(box)
+                            ax.text(x + 0.75, 4.6, label, ha='center', va='center', color=text_color, fontsize=10, weight='bold')
+                            if i < 2:
+                                ax.annotate('', xy=(x + 2, 4.6), xytext=(x + 1.6, 4.6),
+                                          arrowprops=dict(arrowstyle='->', lw=2, color='#003366'))
 
-                # Simple representations
-                if smartart_type == "Process":
-                    cursor.insertText("┌─────┐  ➔  ┌─────┐  ➔  ┌─────┐\n", smartart_format)
-                    cursor.insertText("│Step 1│      │Step 2│      │Step 3│\n", smartart_format)
-                    cursor.insertText("└─────┘      └─────┘      └─────┘\n", smartart_format)
-                elif smartart_type == "Hierarchy":
-                    cursor.insertText("        ┌─────┐\n", smartart_format)
-                    cursor.insertText("        │ Top │\n", smartart_format)
-                    cursor.insertText("        └──┬──┘\n", smartart_format)
-                    cursor.insertText("     ┌─────┼─────┐\n", smartart_format)
-                    cursor.insertText("   ┌─┴─┐ ┌─┴─┐ ┌─┴─┐\n", smartart_format)
-                    cursor.insertText("   │ A │ │ B │ │ C │\n", smartart_format)
-                    cursor.insertText("   └───┘ └───┘ └───┘\n", smartart_format)
-                elif smartart_type == "Cycle":
-                    cursor.insertText("   ┌─────┐\n", smartart_format)
-                    cursor.insertText("   │  1  │\n", smartart_format)
-                    cursor.insertText(" ↗ └─────┘ ↘\n", smartart_format)
-                    cursor.insertText("┌─────┐   ┌─────┐\n", smartart_format)
-                    cursor.insertText("│  4  │   │  2  │\n", smartart_format)
-                    cursor.insertText("└─────┘   └─────┘\n", smartart_format)
-                    cursor.insertText(" ↖ ┌─────┐ ↙\n", smartart_format)
-                    cursor.insertText("   │  3  │\n", smartart_format)
-                    cursor.insertText("   └─────┘\n", smartart_format)
-                else:
-                    cursor.insertText("┌──────────────────┐\n", smartart_format)
-                    cursor.insertText(f"│ {smartart_type} Diagram    │\n", smartart_format)
-                    cursor.insertText("└──────────────────┘\n", smartart_format)
+                    elif smartart_type == "Hierarchy":
+                        # Top box
+                        box = FancyBboxPatch((4, 7.5), 2, 1, boxstyle="round,pad=0.1",
+                                            edgecolor='#003366', facecolor=box_color, linewidth=2)
+                        ax.add_patch(box)
+                        ax.text(5, 8, 'Manager', ha='center', va='center', color=text_color, fontsize=10, weight='bold')
+                        # Three lower boxes
+                        for i, label in enumerate(['Team A', 'Team B', 'Team C']):
+                            x = 1 + i * 3
+                            box = FancyBboxPatch((x, 5), 2, 1, boxstyle="round,pad=0.1",
+                                                edgecolor='#003366', facecolor=box_color, linewidth=2)
+                            ax.add_patch(box)
+                            ax.text(x + 1, 5.5, label, ha='center', va='center', color=text_color, fontsize=9, weight='bold')
+                            # Connect to top
+                            ax.plot([x + 1, 5], [6, 7.5], 'k-', lw=1.5, color='#003366')
 
-                QMessageBox.information(self, "SmartArt Inserted",
-                    f"{smartart_type} SmartArt placeholder inserted.\n\nNote: Full SmartArt requires graphics library integration.")
+                    elif smartart_type == "Cycle":
+                        # Four boxes in a circle
+                        import numpy as np
+                        labels = ['Phase 1', 'Phase 2', 'Phase 3', 'Phase 4']
+                        angles = [90, 0, 270, 180]
+                        for i, (label, angle) in enumerate(zip(labels, angles)):
+                            rad = np.radians(angle)
+                            x = 5 + 2.5 * np.cos(rad) - 0.75
+                            y = 5 + 2.5 * np.sin(rad) - 0.4
+                            box = FancyBboxPatch((x, y), 1.5, 0.8, boxstyle="round,pad=0.1",
+                                                edgecolor='#003366', facecolor=box_color, linewidth=2)
+                            ax.add_patch(box)
+                            ax.text(x + 0.75, y + 0.4, label, ha='center', va='center', color=text_color, fontsize=9, weight='bold')
+                        # Add circular arrows
+                        circle = mpatches.Circle((5, 5), 2.5, fill=False, edgecolor='#003366', linestyle='--', linewidth=1.5, alpha=0.5)
+                        ax.add_patch(circle)
+
+                    elif smartart_type == "List":
+                        # Vertical list with bullets
+                        for i, label in enumerate(['Item 1', 'Item 2', 'Item 3', 'Item 4']):
+                            y = 7.5 - i * 1.8
+                            box = FancyBboxPatch((2, y), 6, 1, boxstyle="round,pad=0.1",
+                                                edgecolor='#003366', facecolor=box_color, linewidth=2)
+                            ax.add_patch(box)
+                            ax.text(5, y + 0.5, label, ha='center', va='center', color=text_color, fontsize=10, weight='bold')
+
+                    elif smartart_type == "Matrix":
+                        # 2x2 grid
+                        labels = [['Q1', 'Q2'], ['Q3', 'Q4']]
+                        for i in range(2):
+                            for j in range(2):
+                                x = 2 + j * 3.5
+                                y = 6 - i * 3
+                                box = FancyBboxPatch((x, y), 2.5, 2, boxstyle="round,pad=0.1",
+                                                    edgecolor='#003366', facecolor=box_color, linewidth=2)
+                                ax.add_patch(box)
+                                ax.text(x + 1.25, y + 1, labels[i][j], ha='center', va='center',
+                                       color=text_color, fontsize=12, weight='bold')
+
+                    elif smartart_type == "Pyramid":
+                        # Three-level pyramid
+                        levels = [('Top', 1), ('Middle', 2), ('Base', 3)]
+                        for i, (label, width) in enumerate(levels):
+                            y = 7 - i * 2.5
+                            x = 5 - width * 0.8
+                            box = FancyBboxPatch((x, y), width * 1.6, 1.5, boxstyle="round,pad=0.1",
+                                                edgecolor='#003366', facecolor=box_color, linewidth=2, alpha=0.9 - i*0.2)
+                            ax.add_patch(box)
+                            ax.text(5, y + 0.75, label, ha='center', va='center', color=text_color, fontsize=10, weight='bold')
+
+                    else:  # Relationship
+                        # Connected boxes showing relationships
+                        positions = [(2, 7), (2, 3), (8, 7), (8, 3)]
+                        labels = ['A', 'B', 'C', 'D']
+                        for (x, y), label in zip(positions, labels):
+                            box = FancyBboxPatch((x, y), 1.5, 1, boxstyle="round,pad=0.1",
+                                                edgecolor='#003366', facecolor=box_color, linewidth=2)
+                            ax.add_patch(box)
+                            ax.text(x + 0.75, y + 0.5, label, ha='center', va='center', color=text_color, fontsize=10, weight='bold')
+                        # Draw connections
+                        ax.plot([3.5, 8], [7.5, 7.5], 'k-', lw=1.5, color='#003366', alpha=0.6)
+                        ax.plot([3.5, 8], [3.5, 3.5], 'k-', lw=1.5, color='#003366', alpha=0.6)
+                        ax.plot([2.75, 2.75], [7, 4], 'k-', lw=1.5, color='#003366', alpha=0.6)
+                        ax.plot([8.75, 8.75], [7, 4], 'k-', lw=1.5, color='#003366', alpha=0.6)
+
+                    plt.tight_layout()
+
+                    # Save to temporary file
+                    with tempfile.NamedTemporaryFile(mode='wb', suffix='.png', delete=False) as tmp:
+                        plt.savefig(tmp.name, dpi=100, bbox_inches='tight', facecolor='white')
+                        tmp_path = tmp.name
+
+                    plt.close(fig)
+
+                    # Insert the SmartArt image
+                    editor.insert_image(tmp_path, width=400, height=300)
+
+                except Exception as e:
+                    QMessageBox.warning(self, "SmartArt Error", f"Failed to create SmartArt: {str(e)}")
 
     def insert_bookmark(self):
         """Insert a bookmark at current position."""
@@ -2218,53 +2391,41 @@ class MainWindow(QMainWindow):
 
     def insert_header(self):
         """Edit document header."""
-        editor = self.current_editor()
-        if editor:
-            # Ask user for header content
-            text, ok = QInputDialog.getText(self, "Insert Header", "Enter header text:")
+        if self.current_document:
+            from ..features.headers_footers import HeaderFooterDialog, HeaderFooterType
 
-            if ok and text:
-                # In a full implementation, this would be stored separately as document header
-                # For now, insert as formatted text at top of document
-                cursor = editor.textCursor()
-                cursor.movePosition(QTextCursor.Start)
+            # Get the header/footer manager from the document
+            hf_manager = self.current_document.header_footer_manager
 
-                # Format as header
-                header_format = QTextCharFormat()
-                header_format.setFontPointSize(10)
-                header_format.setForeground(QColor(128, 128, 128))
+            # Set the document if not already set
+            editor = self.current_editor()
+            if editor and hf_manager.document is None:
+                hf_manager.document = editor.document()
+                hf_manager._init_document()
 
-                # Add separator line
-                cursor.insertText(f"{text}\n", header_format)
-                cursor.insertText("─" * 80 + "\n\n")
-
-                QMessageBox.information(self, "Header Added",
-                    "Header text inserted at top of document.\n\nNote: Full header support requires document section management.")
+            # Show the header dialog
+            dialog = HeaderFooterDialog(hf_manager, HeaderFooterType.HEADER, self)
+            if dialog.exec() == QDialog.Accepted:
+                QMessageBox.information(self, "Header", "Header has been updated.")
 
     def insert_footer(self):
         """Edit document footer."""
-        editor = self.current_editor()
-        if editor:
-            # Ask user for footer content
-            text, ok = QInputDialog.getText(self, "Insert Footer", "Enter footer text:")
+        if self.current_document:
+            from ..features.headers_footers import HeaderFooterDialog, HeaderFooterType
 
-            if ok and text:
-                # In a full implementation, this would be stored separately as document footer
-                # For now, insert as formatted text at bottom of document
-                cursor = editor.textCursor()
-                cursor.movePosition(QTextCursor.End)
+            # Get the header/footer manager from the document
+            hf_manager = self.current_document.header_footer_manager
 
-                # Format as footer
-                footer_format = QTextCharFormat()
-                footer_format.setFontPointSize(10)
-                footer_format.setForeground(QColor(128, 128, 128))
+            # Set the document if not already set
+            editor = self.current_editor()
+            if editor and hf_manager.document is None:
+                hf_manager.document = editor.document()
+                hf_manager._init_document()
 
-                # Add separator line
-                cursor.insertText("\n\n" + "─" * 80 + "\n")
-                cursor.insertText(f"{text}\n", footer_format)
-
-                QMessageBox.information(self, "Footer Added",
-                    "Footer text inserted at bottom of document.\n\nNote: Full footer support requires document section management.")
+            # Show the footer dialog
+            dialog = HeaderFooterDialog(hf_manager, HeaderFooterType.FOOTER, self)
+            if dialog.exec() == QDialog.Accepted:
+                QMessageBox.information(self, "Footer", "Footer has been updated.")
 
     def insert_page_number(self):
         """Insert page number."""
@@ -2616,47 +2777,62 @@ class MainWindow(QMainWindow):
     def insert_footnote(self):
         """Insert footnote."""
         editor = self.current_editor()
-        if editor:
+        if editor and self.current_document:
             cursor = editor.textCursor()
 
             # Get footnote text
             text, ok = QInputDialog.getText(self, "Insert Footnote", "Enter footnote text:")
 
             if ok and text:
+                # Get the note manager from the document
+                note_manager = self.current_document.note_manager
+
+                # Add the footnote to the manager and get its number
+                position = cursor.position()
+                footnote_number = note_manager.add_footnote(text, position)
+
                 # Insert footnote marker (superscript number)
                 marker_format = QTextCharFormat()
                 marker_format.setVerticalAlignment(QTextCharFormat.AlignSuperScript)
                 marker_format.setForeground(QColor(0, 0, 255))
+                marker_format.setFontWeight(QFont.Bold)
 
-                # Count existing footnotes (simple implementation)
-                footnote_number = 1
                 cursor.insertText(f"[{footnote_number}]", marker_format)
 
-                # Store footnote (in a real implementation, this would be stored separately)
+                # Show footnote text in a status message
                 QMessageBox.information(self, "Footnote Inserted",
-                    f"Footnote {footnote_number} inserted.\n\nNote: Full footnote implementation requires document-level footnote management.")
+                    f"Footnote {footnote_number} inserted with text:\n\n{text}\n\nThe footnote is tracked in the document.")
 
     def insert_endnote(self):
         """Insert endnote."""
         editor = self.current_editor()
-        if editor:
+        if editor and self.current_document:
             cursor = editor.textCursor()
 
             # Get endnote text
             text, ok = QInputDialog.getText(self, "Insert Endnote", "Enter endnote text:")
 
             if ok and text:
+                # Get the note manager from the document
+                note_manager = self.current_document.note_manager
+
+                # Add the endnote to the manager and get its number
+                position = cursor.position()
+                endnote_number = note_manager.add_endnote(text, position)
+
                 # Insert endnote marker (superscript roman numeral)
                 marker_format = QTextCharFormat()
                 marker_format.setVerticalAlignment(QTextCharFormat.AlignSuperScript)
                 marker_format.setForeground(QColor(128, 0, 128))
+                marker_format.setFontWeight(QFont.Bold)
 
-                # Use roman numerals for endnotes
-                endnote_number = "i"
-                cursor.insertText(f"[{endnote_number}]", marker_format)
+                # Convert number to roman numeral
+                roman_numeral = note_manager.to_roman(endnote_number)
+                cursor.insertText(f"[{roman_numeral}]", marker_format)
 
+                # Show endnote text in a status message
                 QMessageBox.information(self, "Endnote Inserted",
-                    f"Endnote {endnote_number} inserted.\n\nNote: Full endnote implementation requires document-level endnote management.")
+                    f"Endnote {roman_numeral} inserted with text:\n\n{text}\n\nThe endnote is tracked in the document.")
 
     def insert_citation(self):
         """Insert citation."""
