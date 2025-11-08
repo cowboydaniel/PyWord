@@ -1235,8 +1235,15 @@ class MainWindow(QMainWindow):
         editor = self.get_current_editor()
         if editor:
             cursor = editor.textCursor()
-            if cursor.currentTable():
-                cursor.currentTable().removeRows(0, cursor.currentTable().rows())
+            table = cursor.currentTable()
+            if table:
+                # Get the table's frame and remove it entirely
+                cursor.movePosition(QTextCursor.Start)
+                cursor = table.firstCursorPosition()
+                cursor.movePosition(QTextCursor.PreviousCharacter)
+                cursor.movePosition(QTextCursor.NextCharacter, QTextCursor.KeepAnchor,
+                                  table.lastCursorPosition().position() - cursor.position() + 1)
+                cursor.removeSelectedText()
     
     def insert_table_row(self, above):
         """Insert a row above or below the current row."""

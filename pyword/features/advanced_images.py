@@ -12,7 +12,7 @@ This module provides advanced image manipulation features including:
 from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, QComboBox,
                                QPushButton, QGroupBox, QSpinBox, QDoubleSpinBox,
                                QSlider, QFormLayout, QCheckBox, QTabWidget, QWidget,
-                               QFileDialog, QMessageBox)
+                               QFileDialog, QMessageBox, QApplication)
 from PySide6.QtCore import Qt, QSize, QRectF
 from PySide6.QtGui import (QImage, QPixmap, QTransform, QTextImageFormat, QTextCursor,
                           QImageReader, QImageWriter, QPainter, QColor, QTextDocument)
@@ -50,6 +50,11 @@ class AdvancedImageManager:
     def insert_image(self, image_path, width=None, height=None):
         """Insert an image into the document."""
         if not os.path.exists(image_path):
+            QMessageBox.warning(
+                None,
+                "Image Not Found",
+                f"The image file '{image_path}' does not exist."
+            )
             return False
 
         cursor = self.parent.textCursor()
@@ -57,6 +62,28 @@ class AdvancedImageManager:
         # Load the image
         image = QImage(image_path)
         if image.isNull():
+            QMessageBox.warning(
+                None,
+                "Invalid Image",
+                f"The file '{image_path}' is not a valid image format."
+            )
+            return False
+
+        # Validate width and height if provided
+        if width is not None and (width <= 0 or not isinstance(width, (int, float))):
+            QMessageBox.warning(
+                None,
+                "Invalid Width",
+                f"Image width must be a positive number. Got: {width}"
+            )
+            return False
+
+        if height is not None and (height <= 0 or not isinstance(height, (int, float))):
+            QMessageBox.warning(
+                None,
+                "Invalid Height",
+                f"Image height must be a positive number. Got: {height}"
+            )
             return False
 
         # Create image format
@@ -102,6 +129,28 @@ class AdvancedImageManager:
         """Resize the current image."""
         image_format = self.get_current_image()
         if not image_format:
+            QMessageBox.warning(
+                None,
+                "No Image Selected",
+                "Please select an image to resize."
+            )
+            return False
+
+        # Validate width and height are positive if provided
+        if width is not None and width <= 0:
+            QMessageBox.warning(
+                None,
+                "Invalid Width",
+                f"Image width must be a positive number. Got: {width}"
+            )
+            return False
+
+        if height is not None and height <= 0:
+            QMessageBox.warning(
+                None,
+                "Invalid Height",
+                f"Image height must be a positive number. Got: {height}"
+            )
             return False
 
         cursor = self.parent.textCursor()
@@ -110,6 +159,11 @@ class AdvancedImageManager:
         # Load original image
         image = QImage(image_path)
         if image.isNull():
+            QMessageBox.warning(
+                None,
+                "Invalid Image",
+                f"Unable to load the image from '{image_path}'."
+            )
             return False
 
         # Calculate new size
