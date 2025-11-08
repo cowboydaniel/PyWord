@@ -5,7 +5,8 @@ from PySide6.QtCore import Qt, QPointF, QRectF, QSizeF, QObject, Signal, QPoint
 from PySide6.QtGui import (
     QPainter, QPen, QBrush, QColor, QPainterPath, QFont, QFontMetrics,
     QTextFormat, QTextCharFormat, QTextFrameFormat, QTextCursor,
-    QTextDocument, QTextFrame, QTextObject, QTextBlockFormat, QTextBlock
+    QTextDocument, QTextFrame, QTextObject, QTextBlockFormat, QTextBlock,
+    QMouseEvent
 )
 from PySide6.QtWidgets import (
     QGraphicsItem, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsPathItem,
