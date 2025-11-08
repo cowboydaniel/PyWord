@@ -306,6 +306,50 @@ class MainWindow(QMainWindow):
         if 'paste' in self.ribbon.buttons:
             self.ribbon.buttons['paste'].clicked.connect(self.paste)
 
+        # Home tab - Font group
+        if 'font_family' in self.ribbon.buttons:
+            self.ribbon.buttons['font_family'].currentFontChanged.connect(self.on_font_family_changed)
+        if 'font_size' in self.ribbon.buttons:
+            self.ribbon.buttons['font_size'].valueChanged.connect(self.on_font_size_changed)
+        if 'font_size_up' in self.ribbon.buttons:
+            self.ribbon.buttons['font_size_up'].clicked.connect(self.increase_font_size)
+        if 'font_size_down' in self.ribbon.buttons:
+            self.ribbon.buttons['font_size_down'].clicked.connect(self.decrease_font_size)
+        if 'bold' in self.ribbon.buttons:
+            self.ribbon.buttons['bold'].clicked.connect(self.toggle_bold)
+        if 'italic' in self.ribbon.buttons:
+            self.ribbon.buttons['italic'].clicked.connect(self.toggle_italic)
+        if 'underline' in self.ribbon.buttons:
+            self.ribbon.buttons['underline'].clicked.connect(self.toggle_underline)
+        if 'strikethrough' in self.ribbon.buttons:
+            self.ribbon.buttons['strikethrough'].clicked.connect(self.toggle_strikethrough)
+        if 'subscript' in self.ribbon.buttons:
+            self.ribbon.buttons['subscript'].clicked.connect(self.toggle_subscript)
+        if 'superscript' in self.ribbon.buttons:
+            self.ribbon.buttons['superscript'].clicked.connect(self.toggle_superscript)
+        if 'highlight_color' in self.ribbon.buttons:
+            self.ribbon.buttons['highlight_color'].clicked.connect(self.select_highlight_color)
+        if 'font_color' in self.ribbon.buttons:
+            self.ribbon.buttons['font_color'].clicked.connect(self.select_font_color)
+
+        # Home tab - Paragraph group
+        if 'bullets' in self.ribbon.buttons:
+            self.ribbon.buttons['bullets'].clicked.connect(self.toggle_bullets)
+        if 'numbering' in self.ribbon.buttons:
+            self.ribbon.buttons['numbering'].clicked.connect(self.toggle_numbering)
+        if 'decrease_indent' in self.ribbon.buttons:
+            self.ribbon.buttons['decrease_indent'].clicked.connect(self.decrease_indent)
+        if 'increase_indent' in self.ribbon.buttons:
+            self.ribbon.buttons['increase_indent'].clicked.connect(self.increase_indent)
+        if 'align_left' in self.ribbon.buttons:
+            self.ribbon.buttons['align_left'].clicked.connect(self.align_left)
+        if 'align_center' in self.ribbon.buttons:
+            self.ribbon.buttons['align_center'].clicked.connect(self.align_center)
+        if 'align_right' in self.ribbon.buttons:
+            self.ribbon.buttons['align_right'].clicked.connect(self.align_right)
+        if 'align_justify' in self.ribbon.buttons:
+            self.ribbon.buttons['align_justify'].clicked.connect(self.align_justify)
+
         # Home tab - Editing group
         if 'find' in self.ribbon.buttons:
             self.ribbon.buttons['find'].clicked.connect(self.find)
@@ -1288,6 +1332,161 @@ class MainWindow(QMainWindow):
         editor = self.get_current_editor()
         if editor:
             editor.select_all()
+
+    # Font formatting methods
+    def on_font_family_changed(self, font):
+        """Handle font family change."""
+        editor = self.current_editor()
+        if editor:
+            editor.set_font_family(font.family())
+
+    def on_font_size_changed(self, size):
+        """Handle font size change."""
+        editor = self.current_editor()
+        if editor:
+            editor.set_font_size(size)
+
+    def increase_font_size(self):
+        """Increase font size by 1 point."""
+        if 'font_size' in self.ribbon.buttons:
+            current = self.ribbon.buttons['font_size'].value()
+            self.ribbon.buttons['font_size'].setValue(current + 1)
+
+    def decrease_font_size(self):
+        """Decrease font size by 1 point."""
+        if 'font_size' in self.ribbon.buttons:
+            current = self.ribbon.buttons['font_size'].value()
+            self.ribbon.buttons['font_size'].setValue(max(8, current - 1))
+
+    def toggle_bold(self):
+        """Toggle bold formatting."""
+        editor = self.current_editor()
+        if editor:
+            editor.text_bold()
+
+    def toggle_italic(self):
+        """Toggle italic formatting."""
+        editor = self.current_editor()
+        if editor:
+            editor.text_italic()
+
+    def toggle_underline(self):
+        """Toggle underline formatting."""
+        editor = self.current_editor()
+        if editor:
+            editor.text_underline()
+
+    def toggle_strikethrough(self):
+        """Toggle strikethrough formatting."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+            fmt = cursor.charFormat()
+            fmt.setFontStrikeOut(not fmt.fontStrikeOut())
+            if not cursor.hasSelection():
+                cursor.select(QTextCursor.WordUnderCursor)
+            cursor.mergeCharFormat(fmt)
+
+    def toggle_subscript(self):
+        """Toggle subscript formatting."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+            fmt = cursor.charFormat()
+            if fmt.verticalAlignment() == QTextCharFormat.AlignSubScript:
+                fmt.setVerticalAlignment(QTextCharFormat.AlignNormal)
+            else:
+                fmt.setVerticalAlignment(QTextCharFormat.AlignSubScript)
+            if not cursor.hasSelection():
+                cursor.select(QTextCursor.WordUnderCursor)
+            cursor.mergeCharFormat(fmt)
+
+    def toggle_superscript(self):
+        """Toggle superscript formatting."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+            fmt = cursor.charFormat()
+            if fmt.verticalAlignment() == QTextCharFormat.AlignSuperScript:
+                fmt.setVerticalAlignment(QTextCharFormat.AlignNormal)
+            else:
+                fmt.setVerticalAlignment(QTextCharFormat.AlignSuperScript)
+            if not cursor.hasSelection():
+                cursor.select(QTextCursor.WordUnderCursor)
+            cursor.mergeCharFormat(fmt)
+
+    def select_highlight_color(self):
+        """Select highlight color."""
+        editor = self.current_editor()
+        if editor:
+            color = QColorDialog.getColor(Qt.yellow, self, "Select Highlight Color")
+            if color.isValid():
+                editor.set_highlight_color(color)
+
+    def select_font_color(self):
+        """Select font color."""
+        editor = self.current_editor()
+        if editor:
+            color = QColorDialog.getColor(Qt.black, self, "Select Font Color")
+            if color.isValid():
+                editor.set_text_color(color)
+
+    # Paragraph formatting methods
+    def toggle_bullets(self):
+        """Toggle bullet list."""
+        editor = self.current_editor()
+        if editor:
+            editor.insert_bullet_list()
+
+    def toggle_numbering(self):
+        """Toggle numbered list."""
+        editor = self.current_editor()
+        if editor:
+            editor.insert_numbered_list()
+
+    def decrease_indent(self):
+        """Decrease indent."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+            fmt = cursor.blockFormat()
+            indent = fmt.indent()
+            if indent > 0:
+                fmt.setIndent(indent - 1)
+                cursor.setBlockFormat(fmt)
+
+    def increase_indent(self):
+        """Increase indent."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+            fmt = cursor.blockFormat()
+            fmt.setIndent(fmt.indent() + 1)
+            cursor.setBlockFormat(fmt)
+
+    def align_left(self):
+        """Align text left."""
+        editor = self.current_editor()
+        if editor:
+            editor.set_alignment(Qt.AlignLeft)
+
+    def align_center(self):
+        """Align text center."""
+        editor = self.current_editor()
+        if editor:
+            editor.set_alignment(Qt.AlignCenter)
+
+    def align_right(self):
+        """Align text right."""
+        editor = self.current_editor()
+        if editor:
+            editor.set_alignment(Qt.AlignRight)
+
+    def align_justify(self):
+        """Justify text."""
+        editor = self.current_editor()
+        if editor:
+            editor.set_alignment(Qt.AlignJustify)
     
     def find(self):
         """Open find dialog."""
