@@ -517,21 +517,28 @@ class DocumentManager:
         if len(self.recent_documents) > self.max_recent_docs:
             self.recent_documents = self.recent_documents[:self.max_recent_docs]
     
-    def close_document(self, index: Optional[int] = None, 
+    def close_document(self, index = None,
                       force: bool = False) -> bool:
         """
-        Close a document by index or the current document.
-        
+        Close a document by index, document object, or the current document.
+
         Args:
-            index: Index of the document to close. If None, closes the current document.
+            index: Index of the document to close, a Document object, or None to close the current document.
             force: If True, close without checking for unsaved changes.
-            
+
         Returns:
             bool: True if document was closed, False if operation was cancelled.
         """
+        # Handle different input types
         if index is None:
             index = self.current_document_index
-            
+        elif not isinstance(index, int):
+            # Assume it's a Document object, find its index
+            try:
+                index = self.documents.index(index)
+            except (ValueError, AttributeError):
+                return False
+
         if not 0 <= index < len(self.documents):
             return False
         
