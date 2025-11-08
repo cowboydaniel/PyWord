@@ -4,8 +4,8 @@ from typing import Optional, Dict, Any
 from PySide6.QtCore import QMarginsF
 
 class PageOrientation(Enum):
-    PORTRAIT = auto()
-    LANDSCAPE = auto()
+    PORTRAIT = 0
+    LANDSCAPE = 1
 
 @dataclass
 class PageMargins:
