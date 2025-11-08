@@ -41,26 +41,29 @@ class QuickAccessToolbar(QToolBar):
         self.load_configuration()
 
     def setup_ui(self):
-        """Initialize the toolbar UI."""
+        """Initialize the toolbar UI (Microsoft Word style)."""
         self.setStyleSheet("""
             QToolBar {
-                background: #f3f3f3;
+                background: #FFFFFF;
                 border: none;
+                border-bottom: 1px solid #D2D0CE;
                 spacing: 2px;
-                padding: 2px;
+                padding: 2px 8px;
             }
             QToolButton {
                 border: 1px solid transparent;
-                border-radius: 3px;
-                padding: 3px;
+                border-radius: 2px;
+                padding: 4px;
                 background: transparent;
+                color: #323130;
             }
             QToolButton:hover {
-                background: rgba(0, 120, 215, 0.1);
-                border: 1px solid rgba(0, 120, 215, 0.3);
+                background-color: #F3F2F1;
+                border: 1px solid #EDEBE9;
             }
             QToolButton:pressed {
-                background: rgba(0, 120, 215, 0.2);
+                background-color: #EDEBE9;
+                border: 1px solid #E1DFDD;
             }
         """)
 
