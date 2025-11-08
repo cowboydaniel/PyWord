@@ -35,7 +35,10 @@ class DocumentTabWidget(QTabWidget):
         self.setMovable(True)
         self.setDocumentMode(True)
         self.setElideMode(Qt.TextElideMode.ElideRight)
-        
+
+        # Hide tab bar for Microsoft Word style (single document interface)
+        self.tabBar().setVisible(False)
+
         # Connect signals
         self.tabCloseRequested.connect(self.on_tab_close_requested)
         self.currentChanged.connect(self.on_current_changed)
@@ -131,21 +134,23 @@ class DocumentManagerUI(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        
-        # Create toolbar
+
+        # Create toolbar (hidden for Word-like interface - using ribbon instead)
         self.toolbar = self.create_toolbar()
+        self.toolbar.setVisible(False)
         layout.addWidget(self.toolbar)
-        
+
         # Create tab widget for documents
         self.tab_widget = DocumentTabWidget()
         layout.addWidget(self.tab_widget)
-        
-        # Status bar
+
+        # Status bar (hidden - using main window status bar instead)
         self.status_bar = QLabel()
         self.status_bar.setFrameStyle(QLabel.StyledPanel | QLabel.Sunken)
         self.status_bar.setStyleSheet("padding: 2px;")
+        self.status_bar.setVisible(False)
         layout.addWidget(self.status_bar)
-        
+
         # Update UI state
         self.update_ui_state()
     

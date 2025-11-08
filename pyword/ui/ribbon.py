@@ -2,7 +2,8 @@
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QToolButton,
                                QLabel, QFrame, QScrollArea, QSizePolicy, QPushButton,
-                               QButtonGroup, QGridLayout, QSpacerItem, QMenu, QStackedWidget)
+                               QButtonGroup, QGridLayout, QSpacerItem, QMenu, QStackedWidget,
+                               QComboBox, QFontComboBox, QSpinBox, QListWidget, QTextEdit)
 from PySide6.QtCore import Qt, Signal, QSize
 from PySide6.QtGui import QIcon, QAction, QFont, QColor
 
@@ -154,16 +155,128 @@ class RibbonGroup(QWidget):
             self.current_col += col_span
 
 
+class BackstageView(QWidget):
+    """Microsoft Word-style backstage view shown when File tab is clicked."""
+
+    close_requested = Signal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setup_ui()
+
+    def setup_ui(self):
+        """Initialize the backstage view UI."""
+        main_layout = QHBoxLayout(self)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+
+        # Left sidebar (colored, like Word)
+        self.sidebar = QWidget()
+        self.sidebar.setFixedWidth(200)
+        self.sidebar.setStyleSheet("""
+            QWidget {
+                background-color: #2B579A;
+            }
+        """)
+        sidebar_layout = QVBoxLayout(self.sidebar)
+        sidebar_layout.setContentsMargins(0, 0, 0, 0)
+        sidebar_layout.setSpacing(0)
+
+        # Back button
+        back_btn = QPushButton("← Back")
+        back_btn.setFlat(True)
+        back_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2B579A;
+                color: white;
+                border: none;
+                padding: 15px 20px;
+                text-align: left;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #1E4A7E;
+            }
+        """)
+        back_btn.clicked.connect(self.close_requested.emit)
+        sidebar_layout.addWidget(back_btn)
+
+        # Menu items
+        menu_items = [
+            "Info",
+            "New",
+            "Open",
+            "Save",
+            "Save As",
+            "Print",
+            "Share",
+            "Export",
+            "Close"
+        ]
+
+        self.menu_buttons = []
+        for item in menu_items:
+            btn = QPushButton(item)
+            btn.setFlat(True)
+            btn.setCheckable(True)
+            btn.setStyleSheet("""
+                QPushButton {
+                    background-color: transparent;
+                    color: white;
+                    border: none;
+                    padding: 12px 20px;
+                    text-align: left;
+                    font-size: 13px;
+                }
+                QPushButton:hover {
+                    background-color: #1E4A7E;
+                }
+                QPushButton:checked {
+                    background-color: #1E4A7E;
+                }
+            """)
+            self.menu_buttons.append(btn)
+            sidebar_layout.addWidget(btn)
+
+        sidebar_layout.addStretch()
+        main_layout.addWidget(self.sidebar)
+
+        # Right content area
+        self.content_area = QWidget()
+        self.content_area.setStyleSheet("""
+            QWidget {
+                background-color: white;
+            }
+        """)
+        content_layout = QVBoxLayout(self.content_area)
+        content_layout.setContentsMargins(40, 40, 40, 40)
+
+        # Placeholder content
+        title = QLabel("Info")
+        title.setStyleSheet("font-size: 24px; font-weight: bold; color: #323130;")
+        content_layout.addWidget(title)
+
+        desc = QLabel("Protect Document\nInspect Document\nManage Document")
+        desc.setStyleSheet("font-size: 14px; color: #605E5C; margin-top: 20px;")
+        content_layout.addWidget(desc)
+
+        content_layout.addStretch()
+
+        main_layout.addWidget(self.content_area, 1)
+
+
 class RibbonBar(QWidget):
     """Modern ribbon interface bar."""
 
     tab_changed = Signal(int)
+    file_tab_clicked = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.tabs = []
         self.tab_buttons = []
         self.current_tab_index = 0
+        self.backstage_view = None
         self.setup_ui()
 
     def setup_ui(self):
@@ -259,6 +372,13 @@ class RibbonBar(QWidget):
     def set_current_tab(self, index: int):
         """Set the current active tab."""
         if 0 <= index < len(self.tabs):
+            # Check if this is the File tab (index 0)
+            if index == 0 and self.tabs[0].title == "File":
+                # Emit signal for File tab click
+                self.file_tab_clicked.emit()
+                # Don't change the visual state - keep previous tab selected
+                return
+
             # Uncheck all buttons
             for btn in self.tab_buttons:
                 btn.setChecked(False)
@@ -270,6 +390,25 @@ class RibbonBar(QWidget):
             self.stacked_widget.setCurrentIndex(index)
             self.current_tab_index = index
             self.tab_changed.emit(index)
+
+    def show_backstage(self):
+        """Show the backstage view."""
+        if not self.backstage_view:
+            # Create backstage view as a child of the main window
+            parent = self.window()
+            self.backstage_view = BackstageView(parent)
+            self.backstage_view.close_requested.connect(self.hide_backstage)
+
+        # Position it to cover the entire window
+        parent = self.window()
+        self.backstage_view.setGeometry(0, 0, parent.width(), parent.height())
+        self.backstage_view.raise_()
+        self.backstage_view.show()
+
+    def hide_backstage(self):
+        """Hide the backstage view."""
+        if self.backstage_view:
+            self.backstage_view.hide()
 
     def create_file_tab(self) -> RibbonTab:
         """Create the File tab with document operations (backstage view)."""
@@ -303,39 +442,142 @@ class RibbonBar(QWidget):
 
         # Clipboard group
         clipboard_group = RibbonGroup("Clipboard")
-        # Note: Icons would be loaded from resources in a real implementation
         clipboard_group.add_large_button(QIcon(), "Paste", "Paste from clipboard")
         clipboard_group.add_small_button(QIcon(), "Cut", "Cut to clipboard")
         clipboard_group.add_small_button(QIcon(), "Copy", "Copy to clipboard")
-        clipboard_group.add_small_button(QIcon(), "Format", "Format painter")
+        clipboard_group.add_small_button(QIcon(), "Format\nPainter", "Format painter")
         tab.add_group(clipboard_group)
 
-        # Font group
+        # Font group (with selectors)
         font_group = RibbonGroup("Font")
-        font_group.add_small_button(QIcon(), "Bold", "Bold")
-        font_group.add_small_button(QIcon(), "Italic", "Italic")
-        font_group.add_small_button(QIcon(), "Underline", "Underline")
-        font_group.add_small_button(QIcon(), "Strike", "Strikethrough")
-        font_group.add_small_button(QIcon(), "Color", "Font color")
-        font_group.add_small_button(QIcon(), "Highlight", "Highlight")
+
+        # Row 0: Font selector
+        font_combo = QFontComboBox()
+        font_combo.setMaximumWidth(150)
+        font_combo.setMinimumWidth(120)
+        font_combo.setStyleSheet("""
+            QFontComboBox {
+                border: 1px solid #D2D0CE;
+                border-radius: 2px;
+                padding: 3px;
+                background: white;
+            }
+        """)
+        font_group.content_layout.addWidget(font_combo, 0, 0, 1, 2)
+
+        # Row 0: Font size
+        size_spin = QSpinBox()
+        size_spin.setRange(8, 72)
+        size_spin.setValue(11)
+        size_spin.setMaximumWidth(50)
+        size_spin.setStyleSheet("""
+            QSpinBox {
+                border: 1px solid #D2D0CE;
+                border-radius: 2px;
+                padding: 3px;
+                background: white;
+            }
+        """)
+        font_group.content_layout.addWidget(size_spin, 0, 2, 1, 1)
+
+        # Row 1: Bold, Italic, Underline buttons
+        font_group.current_col = 0
+        font_group.current_row = 1
+        bold_btn = font_group.add_small_button(QIcon(), "B", "Bold (Ctrl+B)")
+        bold_btn.setFont(QFont("Arial", 10, QFont.Bold))
+
+        italic_btn = font_group.add_small_button(QIcon(), "I", "Italic (Ctrl+I)")
+        italic_btn.setFont(QFont("Arial", 10, QFont.Normal, True))
+
+        underline_btn = font_group.add_small_button(QIcon(), "U", "Underline (Ctrl+U)")
+        underline_font = QFont("Arial", 10)
+        underline_font.setUnderline(True)
+        underline_btn.setFont(underline_font)
+
+        # Row 2: More formatting
+        font_group.current_col = 0
+        font_group.current_row = 2
+        font_group.add_small_button(QIcon(), "abc", "Strikethrough")
+        font_group.add_small_button(QIcon(), "A▾", "Font Color")
+        font_group.add_small_button(QIcon(), "ab", "Highlight Color")
+
         tab.add_group(font_group)
 
         # Paragraph group
         paragraph_group = RibbonGroup("Paragraph")
-        paragraph_group.add_small_button(QIcon(), "Bullets", "Bullets")
-        paragraph_group.add_small_button(QIcon(), "Numbering", "Numbering")
-        paragraph_group.add_small_button(QIcon(), "Align Left", "Align left")
-        paragraph_group.add_small_button(QIcon(), "Center", "Center")
-        paragraph_group.add_small_button(QIcon(), "Align Right", "Align right")
-        paragraph_group.add_small_button(QIcon(), "Justify", "Justify")
+
+        # Row 0: Lists and decrease/increase indent
+        paragraph_group.add_small_button(QIcon(), "• ▾", "Bullets")
+        paragraph_group.add_small_button(QIcon(), "1. ▾", "Numbering")
+        paragraph_group.add_small_button(QIcon(), "⬅", "Decrease Indent")
+
+        # Row 1: Alignment buttons
+        paragraph_group.current_col = 0
+        paragraph_group.current_row = 1
+        paragraph_group.add_small_button(QIcon(), "≡", "Align Left")
+        paragraph_group.add_small_button(QIcon(), "▬", "Center")
+        paragraph_group.add_small_button(QIcon(), "≡", "Align Right")
+
+        # Row 2: More paragraph options
+        paragraph_group.current_col = 0
+        paragraph_group.current_row = 2
+        paragraph_group.add_small_button(QIcon(), "≣", "Justify")
+        paragraph_group.add_small_button(QIcon(), "↔", "Line Spacing")
+        paragraph_group.add_small_button(QIcon(), "⬜", "Shading")
+
         tab.add_group(paragraph_group)
 
         # Styles group
         styles_group = RibbonGroup("Styles")
-        styles_group.add_small_button(QIcon(), "Heading 1", "Heading 1")
-        styles_group.add_small_button(QIcon(), "Heading 2", "Heading 2")
-        styles_group.add_small_button(QIcon(), "Normal", "Normal text")
+
+        # Create style preview boxes
+        style_layout = QHBoxLayout()
+        style_layout.setSpacing(2)
+
+        # Add some common styles
+        styles = [
+            ("Normal", "Arial", 11, False, False),
+            ("Heading 1", "Arial", 16, True, False),
+            ("Heading 2", "Arial", 13, True, False),
+            ("Title", "Arial", 26, True, False),
+        ]
+
+        for style_name, font_name, font_size, bold, italic in styles:
+            style_btn = QPushButton(style_name)
+            style_btn.setMinimumWidth(70)
+            style_btn.setMaximumHeight(60)
+            font = QFont(font_name, min(font_size, 11))  # Scale down for preview
+            font.setBold(bold)
+            font.setItalic(italic)
+            style_btn.setFont(font)
+            style_btn.setStyleSheet("""
+                QPushButton {
+                    border: 1px solid #D2D0CE;
+                    border-radius: 2px;
+                    padding: 8px 4px;
+                    background: white;
+                    text-align: center;
+                }
+                QPushButton:hover {
+                    background-color: #F3F2F1;
+                    border: 1px solid #0078D4;
+                }
+            """)
+            style_layout.addWidget(style_btn)
+
+        # Add the style layout to the group
+        style_container = QWidget()
+        style_container.setLayout(style_layout)
+        styles_group.content_layout.addWidget(style_container, 0, 0, 3, 4)
+
         tab.add_group(styles_group)
+
+        # Editing group
+        editing_group = RibbonGroup("Editing")
+        editing_group.add_large_button(QIcon(), "Find", "Find text")
+        editing_group.add_small_button(QIcon(), "Replace", "Find and replace")
+        editing_group.add_small_button(QIcon(), "Select", "Select text")
+        tab.add_group(editing_group)
 
         return tab
 
