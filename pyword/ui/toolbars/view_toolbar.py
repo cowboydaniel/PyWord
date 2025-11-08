@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QToolBar, QAction, QComboBox, QLabel
+from PySide6.QtWidgets import QToolBar, QComboBox, QLabel
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QIcon, QKeySequence
+from PySide6.QtGui import QIcon, QKeySequence, QAction
 
 class ViewToolBar(QToolBar):
     def __init__(self, parent=None):
