@@ -74,7 +74,10 @@ class MainWindow(QMainWindow):
         
         # Setup zoom shortcuts
         self.setup_zoom_shortcuts()
-        
+
+        # Create undo/redo actions (needed for shortcuts and connections)
+        self.setup_edit_actions()
+
         # Create a new document by default if none exists
         if not self.document_manager.documents:
             self.document_ui.new_document()
@@ -153,14 +156,30 @@ class MainWindow(QMainWindow):
         # Zoom in: Ctrl++
         zoom_in = QShortcut(QKeySequence("Ctrl++"), self)
         zoom_in.activated.connect(self.zoom_in)
-        
+
         # Zoom out: Ctrl+-
         zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
         zoom_out.activated.connect(self.zoom_out)
-        
+
         # Reset zoom: Ctrl+0
         zoom_reset = QShortcut(QKeySequence("Ctrl+0"), self)
         zoom_reset.activated.connect(self.zoom_reset)
+
+    def setup_edit_actions(self):
+        """Setup edit actions (undo/redo) for keyboard shortcuts."""
+        # Undo action
+        self.actionUndo = QAction("&Undo", self)
+        self.actionUndo.setShortcut("Ctrl+Z")
+        self.actionUndo.triggered.connect(self.undo)
+        self.actionUndo.setEnabled(False)
+        self.addAction(self.actionUndo)
+
+        # Redo action
+        self.actionRedo = QAction("&Redo", self)
+        self.actionRedo.setShortcut("Ctrl+Y")
+        self.actionRedo.triggered.connect(self.redo)
+        self.actionRedo.setEnabled(False)
+        self.addAction(self.actionRedo)
     
     def zoom_in(self):
         """Zoom in the current editor."""
