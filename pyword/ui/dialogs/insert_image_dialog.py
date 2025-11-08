@@ -12,8 +12,7 @@ class InsertImageDialog(BaseDialog):
     """Dialog for inserting an image."""
 
     def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Insert Image")
+        super().__init__("Insert Image", parent)
         self.image_path = ""
         self.setup_ui()
 

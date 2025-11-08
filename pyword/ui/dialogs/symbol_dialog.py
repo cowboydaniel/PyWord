@@ -12,8 +12,7 @@ class SymbolDialog(BaseDialog):
     """Dialog for inserting special characters and symbols."""
 
     def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Insert Symbol")
+        super().__init__("Insert Symbol", parent)
         self.selected_symbol = ""
         self.setup_ui()
 

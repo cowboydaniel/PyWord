@@ -10,9 +10,8 @@ class InsertLinkDialog(BaseDialog):
     """Dialog for inserting a hyperlink."""
 
     def __init__(self, selected_text="", parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Insert Hyperlink")
         self.selected_text = selected_text
+        super().__init__("Insert Hyperlink", parent)
         self.setup_ui()
 
     def setup_ui(self):
