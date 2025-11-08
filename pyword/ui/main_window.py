@@ -26,6 +26,8 @@ from .toolbars import MainToolBar, FormatToolBar, TableToolBar, ReviewToolBar, V
 from .panels import NavigationPanel, StylesPanel, DocumentMapPanel, CommentsPanel
 from .ribbon import RibbonBar
 from .theme_manager import ThemeManager, Theme
+from .quick_access_toolbar import QuickAccessToolbar
+from .ruler import HorizontalRuler, VerticalRuler
 from .dialogs import (NewDocumentDialog, PageSetupDialog, PrintPreviewDialog, InsertTableDialog,
                      InsertImageDialog, InsertLinkDialog, FindReplaceDialog, WordCountDialog,
                      GoToDialog, OptionsDialog, AboutDialog, StyleDialog, TablePropertiesDialog,
@@ -128,16 +130,23 @@ class MainWindow(QMainWindow):
         """Update the word count in the status bar."""
         if not self.current_editor():
             return
-            
+
         text = self.current_editor().toPlainText()
-        word_count = len(text.split())
-        char_count = len(text)
-        self.word_count_label.setText(f"Words: {word_count} | Chars: {char_count}")
+        word_count = len(text.split()) if text.strip() else 0
+
+        # Update status bar (Microsoft Word style)
+        self.page_word_label.setText(f"Page 1 of 1  {word_count} words")
     
     def update_zoom_display(self, zoom_level: int):
         """Update the zoom level display in the status bar."""
         self.current_zoom = zoom_level
         self.zoom_label.setText(f"{zoom_level}%")
+
+        # Update rulers to reflect zoom level
+        if hasattr(self, 'horizontal_ruler'):
+            self.horizontal_ruler.set_zoom(zoom_level)
+        if hasattr(self, 'vertical_ruler'):
+            self.vertical_ruler.set_zoom(zoom_level)
     
     def setup_zoom_shortcuts(self):
         """Setup keyboard shortcuts for zooming."""
@@ -199,26 +208,42 @@ class MainWindow(QMainWindow):
         
         # Create status bar
         self.setup_status_bar()
-        
-        # Create menus
-        self.setup_menus()
-        
+
+        # Create menus (commented out for Word-like interface)
+        # self.setup_menus()
+
+        # Hide side panels by default (make them toggleable)
+        self.left_panel.setVisible(False)
+        self.right_panel.setVisible(False)
+
         # Update UI
         self.update_ui()
     
     def setup_toolbars(self):
         """Create and setup the ribbon interface."""
+        # Create Quick Access Toolbar (above ribbon)
+        self.quick_access_toolbar = QuickAccessToolbar(self)
+        self.addToolBar(Qt.TopToolBarArea, self.quick_access_toolbar)
+
+        # Connect Quick Access Toolbar commands
+        self.quick_access_toolbar.connect_command('save', self.save_document)
+        self.quick_access_toolbar.connect_command('undo', self.undo)
+        self.quick_access_toolbar.connect_command('redo', self.redo)
+        self.quick_access_toolbar.connect_command('print', self.print_document)
+
         # Create ribbon interface (Microsoft Word style)
         self.ribbon = RibbonBar(self)
         self.main_layout.addWidget(self.ribbon)
 
-        # Create and add ribbon tabs
+        # Create and add ribbon tabs (File tab first, like Word)
+        file_tab = self.ribbon.create_file_tab()
         home_tab = self.ribbon.create_home_tab()
         insert_tab = self.ribbon.create_insert_tab()
         design_tab = self.ribbon.create_design_tab()
         layout_tab = self.ribbon.create_layout_tab()
         view_tab = self.ribbon.create_view_tab()
 
+        self.ribbon.add_tab(file_tab)
         self.ribbon.add_tab(home_tab)
         self.ribbon.add_tab(insert_tab)
         self.ribbon.add_tab(design_tab)
@@ -269,15 +294,33 @@ class MainWindow(QMainWindow):
         editor_layout = QVBoxLayout(self.editor_area)
         editor_layout.setContentsMargins(0, 0, 0, 0)
         editor_layout.setSpacing(0)
-        
-        # Tab widget for multiple documents
+
+        # Horizontal ruler
+        self.horizontal_ruler = HorizontalRuler(self.editor_area)
+        editor_layout.addWidget(self.horizontal_ruler)
+
+        # Create horizontal layout for vertical ruler and editor
+        editor_row_layout = QHBoxLayout()
+        editor_row_layout.setContentsMargins(0, 0, 0, 0)
+        editor_row_layout.setSpacing(0)
+
+        # Vertical ruler
+        self.vertical_ruler = VerticalRuler(self.editor_area)
+        editor_row_layout.addWidget(self.vertical_ruler)
+
+        # Tab widget for multiple documents (hide tabs for Word-like SDI)
         self.tab_widget = QTabWidget()
         self.tab_widget.setTabsClosable(True)
         self.tab_widget.setMovable(True)
         self.tab_widget.tabCloseRequested.connect(self.close_tab)
         self.tab_widget.currentChanged.connect(self.tab_changed)
-        
-        editor_layout.addWidget(self.tab_widget)
+
+        # Hide tab bar for single-document interface (Microsoft Word style)
+        self.tab_widget.tabBar().setVisible(False)
+
+        editor_row_layout.addWidget(self.tab_widget)
+        editor_layout.addLayout(editor_row_layout)
+
         self.main_splitter.addWidget(self.editor_area)
     
     def setup_right_panel(self):
@@ -309,34 +352,36 @@ class MainWindow(QMainWindow):
         self.addDockWidget(Qt.RightDockWidgetArea, self.right_panel)
     
     def setup_status_bar(self):
-        """Setup the status bar."""
+        """Setup the status bar (Microsoft Word style)."""
         # Create status bar
         self.status_bar = QStatusBar()
+        self.status_bar.setStyleSheet("""
+            QStatusBar {
+                background-color: #F3F2F1;
+                border-top: 1px solid #D2D0CE;
+                padding: 2px 8px;
+            }
+            QLabel {
+                color: #323130;
+                font-size: 12px;
+                padding: 0 4px;
+            }
+        """)
         self.setStatusBar(self.status_bar)
-        
-        # Add status bar widgets
-        self.word_count_label = QLabel("Words: 0")
-        self.page_info_label = QLabel("Page: 1")
+
+        # Left side: Page and word count
+        self.page_word_label = QLabel("Page 1 of 1  0 words")
+        self.status_bar.addWidget(self.page_word_label)
+
+        # Add spacer
+        self.status_bar.addWidget(QLabel(""), 1)  # Stretch
+
+        # Right side: Zoom level
         self.zoom_label = QLabel("100%")
-        
-        self.status_bar.addPermanentWidget(self.word_count_label, 1)
-        self.status_bar.addPermanentWidget(self.page_info_label, 1)
-        self.status_bar.addPermanentWidget(self.zoom_label, 0)
-        
+        self.status_bar.addPermanentWidget(self.zoom_label)
+
         # Connect zoom signal
         self.zoom_changed.connect(self.update_zoom_display)
-        
-        # Page info
-        self.page_info = QLabel("Page 1 of 1")
-        self.status_bar.addPermanentWidget(self.page_info)
-        
-        # Word count
-        self.word_count = QLabel("Words: 0")
-        self.status_bar.addPermanentWidget(self.word_count)
-        
-        # Zoom level
-        self.zoom_level = QLabel("100%")
-        self.status_bar.addPermanentWidget(self.zoom_level)
     
     def setup_menus(self):
         """Setup all menus."""

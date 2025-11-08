@@ -65,12 +65,16 @@ class ThemeManager(QObject):
 
         # Microsoft Word 2019/365 inspired theme stylesheet
         stylesheet = """
+            * {
+                font-family: "Segoe UI", "Calibri", sans-serif;
+            }
+
             QMainWindow {
-                background-color: #F3F2F1;
+                background-color: #FFFFFF;
             }
 
             QWidget#centralWidget {
-                background-color: #F3F2F1;
+                background-color: #FFFFFF;
             }
 
             QMenuBar {
@@ -158,11 +162,12 @@ class ThemeManager(QObject):
             }
 
             QTextEdit {
-                background-color: #F3F2F1;
+                background-color: #FFFFFF;
                 color: #000000;
                 border: none;
                 selection-background-color: #0078D4;
                 selection-color: #FFFFFF;
+                font-family: "Calibri", "Segoe UI", sans-serif;
             }
 
             QDockWidget {
