@@ -6,8 +6,10 @@ from typing import Optional, List, Dict, Any, Union, Tuple, TYPE_CHECKING
 from datetime import datetime
 from pathlib import Path
 
+# Import PageSetup (needed at runtime for default_factory)
+from .page_setup import PageSetup
+
 if TYPE_CHECKING:
-    from .page_setup import PageSetup
     from ..features.headers_footers import HeaderFooterManager, HeaderFooterType
 
 # Import file format manager

@@ -651,34 +651,34 @@ class MainWindow(QMainWindow):
         """Update the status bar with current document information."""
         if not hasattr(self, 'status_bar'):
             return
-            
+
         doc = self.document_ui.current_document
         if not doc:
-            self.status_bar.clear()
+            self.status_bar.clearMessage()
             return
-            
+
         # Get document statistics
         stats = doc.get_metadata()
-        
+
         # Format status text
         status_text = []
-        
+
         # Document name
         if doc.file_path:
             status_text.append(f"{Path(doc.file_path).name}")
         else:
             status_text.append("Untitled")
-            
+
         # Modified indicator
         if doc.modified:
             status_text[-1] += " *"
-            
+
         # Page/word count
         status_text.append(f"Words: {stats.get('word_count', 0)}")
         status_text.append(f"Chars: {stats.get('char_count', 0)}")
-        
+
         # Update status bar
-        self.status_bar.setText(" | ".join(status_text))
+        self.status_bar.showMessage(" | ".join(status_text))
 
     # Document management
     def new_document(self):
