@@ -26,14 +26,14 @@ class ShapeType(Enum):
 
 @dataclass
 class ShapeStyle:
-    fill_color: QColor = QColor(255, 255, 255, 200)  # White with some transparency
-    stroke_color: QColor = QColor(0, 0, 0)  # Black
+    fill_color: QColor = field(default_factory=lambda: QColor(255, 255, 255, 200))  # White with some transparency
+    stroke_color: QColor = field(default_factory=lambda: QColor(0, 0, 0))  # Black
     stroke_width: float = 1.0
     stroke_style: Qt.PenStyle = Qt.SolidLine
     corner_radius: float = 0.0  # For rectangles
     opacity: float = 1.0
     shadow_enabled: bool = False
-    shadow_color: QColor = QColor(100, 100, 100, 100)
+    shadow_color: QColor = field(default_factory=lambda: QColor(100, 100, 100, 100))
     shadow_offset: QPointF = field(default_factory=lambda: QPointF(3, 3))
     shadow_blur: float = 5.0
     
@@ -93,7 +93,7 @@ class TextStyle(ShapeStyle):
     font_bold: bool = False
     font_italic: bool = False
     font_underline: bool = False
-    text_color: QColor = QColor(0, 0, 0)  # Black
+    text_color: QColor = field(default_factory=lambda: QColor(0, 0, 0))  # Black
     text_align: Qt.Alignment = Qt.AlignLeft | Qt.AlignTop
     line_spacing: float = 1.0
     
