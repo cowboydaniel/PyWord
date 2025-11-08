@@ -611,6 +611,84 @@ class MainWindow(QMainWindow):
         # Add spacer
         self.status_bar.addWidget(QLabel(""), 1)  # Stretch
 
+        # View mode buttons (Read Mode, Print Layout, Web Layout)
+        view_mode_widget = QWidget()
+        view_mode_layout = QHBoxLayout(view_mode_widget)
+        view_mode_layout.setContentsMargins(0, 0, 8, 0)
+        view_mode_layout.setSpacing(2)
+
+        # Read Mode button
+        read_mode_btn = QPushButton("📖")
+        read_mode_btn.setFixedSize(24, 20)
+        read_mode_btn.setToolTip("Read Mode")
+        read_mode_btn.setStyleSheet("""
+            QPushButton {
+                border: 1px solid transparent;
+                border-radius: 2px;
+                background: transparent;
+                color: #605E5C;
+            }
+            QPushButton:hover {
+                background-color: #F3F2F1;
+                border: 1px solid #D2D0CE;
+            }
+            QPushButton:checked {
+                background-color: #EDEBE9;
+                border: 1px solid #C8C6C4;
+            }
+        """)
+        read_mode_btn.setCheckable(True)
+        view_mode_layout.addWidget(read_mode_btn)
+
+        # Print Layout button
+        print_layout_btn = QPushButton("📄")
+        print_layout_btn.setFixedSize(24, 20)
+        print_layout_btn.setToolTip("Print Layout")
+        print_layout_btn.setStyleSheet("""
+            QPushButton {
+                border: 1px solid transparent;
+                border-radius: 2px;
+                background: transparent;
+                color: #605E5C;
+            }
+            QPushButton:hover {
+                background-color: #F3F2F1;
+                border: 1px solid #D2D0CE;
+            }
+            QPushButton:checked {
+                background-color: #EDEBE9;
+                border: 1px solid #C8C6C4;
+            }
+        """)
+        print_layout_btn.setCheckable(True)
+        print_layout_btn.setChecked(True)  # Default view
+        view_mode_layout.addWidget(print_layout_btn)
+
+        # Web Layout button
+        web_layout_btn = QPushButton("🌐")
+        web_layout_btn.setFixedSize(24, 20)
+        web_layout_btn.setToolTip("Web Layout")
+        web_layout_btn.setStyleSheet("""
+            QPushButton {
+                border: 1px solid transparent;
+                border-radius: 2px;
+                background: transparent;
+                color: #605E5C;
+            }
+            QPushButton:hover {
+                background-color: #F3F2F1;
+                border: 1px solid #D2D0CE;
+            }
+            QPushButton:checked {
+                background-color: #EDEBE9;
+                border: 1px solid #C8C6C4;
+            }
+        """)
+        web_layout_btn.setCheckable(True)
+        view_mode_layout.addWidget(web_layout_btn)
+
+        self.status_bar.addPermanentWidget(view_mode_widget)
+
         # Right side: Zoom controls (Word style)
         zoom_widget = QWidget()
         zoom_layout = QHBoxLayout(zoom_widget)

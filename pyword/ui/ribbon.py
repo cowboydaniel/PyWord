@@ -343,14 +343,84 @@ class RibbonBar(QWidget):
         self.tab_bar_widget = QWidget()
         self.tab_bar_widget.setStyleSheet("""
             QWidget {
-                background-color: #FFFFFF;
+                background-color: #F3F2F1;
                 border-bottom: 1px solid #D2D0CE;
             }
         """)
         self.tab_bar_layout = QHBoxLayout(self.tab_bar_widget)
         self.tab_bar_layout.setContentsMargins(8, 0, 8, 0)
         self.tab_bar_layout.setSpacing(2)
+
+        # Add spacer before right-side controls
         self.tab_bar_layout.addStretch()
+
+        # Add search box (Tell me what you want to do...)
+        from PySide6.QtWidgets import QLineEdit
+        self.search_box = QLineEdit()
+        self.search_box.setPlaceholderText("Tell me what you want to do...")
+        self.search_box.setFixedWidth(250)
+        self.search_box.setFixedHeight(24)
+        self.search_box.setStyleSheet("""
+            QLineEdit {
+                background-color: #FFFFFF;
+                color: #323130;
+                border: 1px solid #D2D0CE;
+                border-radius: 2px;
+                padding: 4px 8px;
+                font-size: 12px;
+            }
+            QLineEdit:hover {
+                border: 1px solid #8A8886;
+            }
+            QLineEdit:focus {
+                border: 2px solid #0078D4;
+                padding: 3px 7px;
+            }
+        """)
+        self.tab_bar_layout.addWidget(self.search_box)
+
+        # Add Share button
+        self.share_button = QPushButton("Share")
+        self.share_button.setFixedHeight(24)
+        self.share_button.setStyleSheet("""
+            QPushButton {
+                background-color: #0078D4;
+                color: #FFFFFF;
+                border: 1px solid #0078D4;
+                border-radius: 2px;
+                padding: 4px 12px;
+                font-size: 12px;
+            }
+            QPushButton:hover {
+                background-color: #106EBE;
+                border: 1px solid #106EBE;
+            }
+            QPushButton:pressed {
+                background-color: #005A9E;
+                border: 1px solid #005A9E;
+            }
+        """)
+        self.tab_bar_layout.addWidget(self.share_button)
+
+        # Add User icon/button
+        self.user_button = QPushButton("👤")
+        self.user_button.setFixedSize(32, 24)
+        self.user_button.setToolTip("Account")
+        self.user_button.setStyleSheet("""
+            QPushButton {
+                background-color: transparent;
+                color: #605E5C;
+                border: 1px solid transparent;
+                border-radius: 2px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background-color: #E1DFDD;
+                border: 1px solid #D2D0CE;
+            }
+        """)
+        self.tab_bar_layout.addWidget(self.user_button)
+
         main_layout.addWidget(self.tab_bar_widget)
 
         # Content area with stacked widget for tabs
@@ -395,13 +465,13 @@ class RibbonBar(QWidget):
                 padding: 6px 18px;
                 border: none;
                 border-bottom: 3px solid transparent;
-                background: transparent;
+                background-color: #F3F2F1;
                 font-weight: normal;
                 font-size: 13px;
                 color: #323130;
             }
             QPushButton:hover {
-                background-color: #F3F2F1;
+                background-color: #E1DFDD;
             }
             QPushButton:checked {
                 border-bottom: 3px solid #0078D4;
@@ -650,11 +720,57 @@ class RibbonBar(QWidget):
         # Text Effects button
         self.buttons['text_effects'] = font_group.add_small_button(QIcon(), "A✦", "Text Effects")
 
-        # Text Highlight Color button with dropdown
-        self.buttons['highlight_color'] = font_group.add_small_button(QIcon(), "🖍▾", "Text Highlight Color")
+        # Text Highlight Color button with dropdown (yellow highlight)
+        self.buttons['highlight_color'] = font_group.add_small_button(QIcon(), "ab", "Text Highlight Color")
+        self.buttons['highlight_color'].setStyleSheet("""
+            QToolButton {
+                border: 1px solid transparent;
+                border-radius: 2px;
+                padding: 3px 8px;
+                background: transparent;
+                color: #323130;
+                font-size: 12px;
+                text-align: left;
+                font-weight: bold;
+                background-image: linear-gradient(transparent 60%, #FFFF00 60%);
+            }
+            QToolButton:hover {
+                background-color: #F3F2F1;
+                background-image: linear-gradient(transparent 60%, #FFFF00 60%);
+                border: 1px solid #EDEBE9;
+            }
+            QToolButton:pressed {
+                background-color: #EDEBE9;
+                background-image: linear-gradient(transparent 60%, #FFFF00 60%);
+                border: 1px solid #E1DFDD;
+            }
+        """)
 
-        # Font Color button with dropdown
-        self.buttons['font_color'] = font_group.add_small_button(QIcon(), "A▾", "Font Color")
+        # Font Color button with dropdown (red underline)
+        self.buttons['font_color'] = font_group.add_small_button(QIcon(), "A", "Font Color")
+        self.buttons['font_color'].setStyleSheet("""
+            QToolButton {
+                border: 1px solid transparent;
+                border-radius: 2px;
+                padding: 3px 8px;
+                background: transparent;
+                color: #323130;
+                font-size: 14px;
+                text-align: left;
+                font-weight: bold;
+                border-bottom: 3px solid #FF0000;
+            }
+            QToolButton:hover {
+                background-color: #F3F2F1;
+                border: 1px solid #EDEBE9;
+                border-bottom: 3px solid #FF0000;
+            }
+            QToolButton:pressed {
+                background-color: #EDEBE9;
+                border: 1px solid #E1DFDD;
+                border-bottom: 3px solid #FF0000;
+            }
+        """)
 
         tab.add_group(font_group)
 
@@ -698,14 +814,14 @@ class RibbonBar(QWidget):
 
         # Add Microsoft Word default styles (only 3 visible by default)
         styles = [
-            ("Normal", "Calibri", 11, False, False),
-            ("No Spacing", "Calibri", 11, False, False),
-            ("Heading 1", "Calibri", 16, True, False),
+            ("Normal", "Calibri", 11, False, False, False),
+            ("No Spacing", "Calibri", 11, False, False, False),
+            ("Heading 1 ▾", "Calibri", 13, True, False, True),  # Added dropdown arrow
         ]
 
-        for style_name, font_name, font_size, bold, italic in styles:
+        for style_name, font_name, font_size, bold, italic, is_last in styles:
             style_btn = QPushButton(style_name)
-            style_btn.setMinimumWidth(85)
+            style_btn.setMinimumWidth(90)  # Slightly wider for dropdown arrow
             style_btn.setMaximumHeight(60)
             font = QFont(font_name, min(font_size, 11))  # Scale down for preview
             font.setBold(bold)
@@ -715,9 +831,9 @@ class RibbonBar(QWidget):
                 QPushButton {
                     border: 1px solid #D2D0CE;
                     border-radius: 2px;
-                    padding: 8px 4px;
+                    padding: 8px 6px;
                     background: white;
-                    text-align: center;
+                    text-align: left;
                 }
                 QPushButton:hover {
                     background-color: #F3F2F1;
