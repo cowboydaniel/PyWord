@@ -698,7 +698,6 @@ class RibbonBar(QWidget):
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #FAFAFA, stop:1 #F0F0F0);
                 border: 1px solid #C6C6C6;
-                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
             }
             QToolButton:pressed {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -875,7 +874,6 @@ class RibbonBar(QWidget):
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                     stop:0 #FAFAFA, stop:1 #F0F0F0);
                 border: 1px solid #C6C6C6;
-                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
             }
             QToolButton:pressed {
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
