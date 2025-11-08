@@ -12,8 +12,8 @@ import os
 from typing import Optional, Dict, Any, List, Callable
 from enum import Enum, auto
 from PySide6.QtCore import QObject, Qt, Signal, QEvent, QTimer
-from PySide6.QtGui import QPalette, QColor, QKeySequence, QTextCursor, QAccessible
-from PySide6.QtWidgets import QWidget, QTextEdit, QShortcut, QApplication
+from PySide6.QtGui import QPalette, QColor, QKeySequence, QTextCursor, QAccessible, QShortcut
+from PySide6.QtWidgets import QWidget, QTextEdit, QApplication
 
 
 class AccessibilityLevel(Enum):
