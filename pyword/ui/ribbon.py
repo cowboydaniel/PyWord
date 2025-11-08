@@ -562,6 +562,11 @@ class RibbonBar(QWidget):
         # Font group (with selectors)
         font_group = RibbonGroup("Font")
 
+        # Increase spacing for better readability
+        font_group.content_layout.setSpacing(4)
+        font_group.content_layout.setHorizontalSpacing(6)
+        font_group.content_layout.setVerticalSpacing(3)
+
         # Row 0: Font selector (changed to Calibri (Body) as default - Word style)
         self.buttons['font_family'] = QFontComboBox()
         self.buttons['font_family'].setMaximumWidth(200)  # Wider to match Word
@@ -631,84 +636,105 @@ class RibbonBar(QWidget):
         """)
         font_group.content_layout.addWidget(self.buttons['font_size_down'], 0, 4, 1, 1)
 
-        # Row 1: Bold, Italic, Underline buttons
-        font_group.current_col = 0
-        font_group.current_row = 1
-        self.buttons['bold'] = font_group.add_small_button(QIcon(), "B", "Bold (Ctrl+B)")
+        # Create common style for formatting buttons
+        button_style = """
+            QToolButton {
+                border: 1px solid transparent;
+                border-radius: 2px;
+                padding: 3px 8px;
+                background: transparent;
+                color: #323130;
+                font-size: 12px;
+                text-align: center;
+                min-width: 30px;
+            }
+            QToolButton:hover {
+                background-color: #F3F2F1;
+                border: 1px solid #EDEBE9;
+            }
+            QToolButton:pressed, QToolButton:checked {
+                background-color: #EDEBE9;
+                border: 1px solid #E1DFDD;
+            }
+        """
+
+        # Row 1: Bold button
+        self.buttons['bold'] = QToolButton()
+        self.buttons['bold'].setText("B")
+        self.buttons['bold'].setToolTip("Bold (Ctrl+B)")
         self.buttons['bold'].setFont(QFont("Arial", 10, QFont.Bold))
         self.buttons['bold'].setCheckable(True)
+        self.buttons['bold'].setFixedHeight(24)
+        self.buttons['bold'].setStyleSheet(button_style)
+        font_group.content_layout.addWidget(self.buttons['bold'], 1, 0)
 
-        self.buttons['italic'] = font_group.add_small_button(QIcon(), "I", "Italic (Ctrl+I)")
-        self.buttons['italic'].setFont(QFont("Arial", 10, QFont.Normal, True))
+        # Row 1: Italic button
+        self.buttons['italic'] = QToolButton()
+        self.buttons['italic'].setText("I")
+        self.buttons['italic'].setToolTip("Italic (Ctrl+I)")
+        italic_font = QFont("Arial", 10)
+        italic_font.setItalic(True)
+        self.buttons['italic'].setFont(italic_font)
         self.buttons['italic'].setCheckable(True)
+        self.buttons['italic'].setFixedHeight(24)
+        self.buttons['italic'].setStyleSheet(button_style)
+        font_group.content_layout.addWidget(self.buttons['italic'], 1, 1)
 
-        # Underline button with dropdown
-        self.buttons['underline'] = font_group.add_small_button(QIcon(), "U▾", "Underline (Ctrl+U)")
+        # Row 1: Underline button with dropdown
+        self.buttons['underline'] = QToolButton()
+        self.buttons['underline'].setText("U▾")
+        self.buttons['underline'].setToolTip("Underline (Ctrl+U)")
         underline_font = QFont("Arial", 10)
         underline_font.setUnderline(True)
         self.buttons['underline'].setFont(underline_font)
         self.buttons['underline'].setCheckable(True)
+        self.buttons['underline'].setFixedHeight(24)
+        self.buttons['underline'].setStyleSheet(button_style)
+        font_group.content_layout.addWidget(self.buttons['underline'], 1, 2)
 
-        # Strikethrough button
-        self.buttons['strikethrough'] = font_group.add_small_button(QIcon(), "abc", "Strikethrough")
+        # Row 1: Strikethrough button
+        self.buttons['strikethrough'] = QToolButton()
+        self.buttons['strikethrough'].setText("abc")
+        self.buttons['strikethrough'].setToolTip("Strikethrough")
         strikethrough_font = QFont("Arial", 10)
         strikethrough_font.setStrikeOut(True)
         self.buttons['strikethrough'].setFont(strikethrough_font)
         self.buttons['strikethrough'].setCheckable(True)
+        self.buttons['strikethrough'].setFixedHeight(24)
+        self.buttons['strikethrough'].setStyleSheet(button_style)
+        font_group.content_layout.addWidget(self.buttons['strikethrough'], 1, 3)
 
-        # Subscript button
-        self.buttons['subscript'] = font_group.add_small_button(QIcon(), "X₂", "Subscript")
+        # Row 1: Subscript button
+        self.buttons['subscript'] = QToolButton()
+        self.buttons['subscript'].setText("X₂")
+        self.buttons['subscript'].setToolTip("Subscript")
         self.buttons['subscript'].setCheckable(True)
-        self.buttons['subscript'].setStyleSheet("""
-            QToolButton {
-                border: 1px solid transparent;
-                border-radius: 2px;
-                padding: 3px 8px;
-                background: transparent;
-                color: #323130;
-                font-size: 11px;
-                text-align: left;
-            }
-            QToolButton:hover {
-                background-color: #F3F2F1;
-                border: 1px solid #EDEBE9;
-            }
-            QToolButton:pressed {
-                background-color: #EDEBE9;
-                border: 1px solid #E1DFDD;
-            }
-        """)
+        self.buttons['subscript'].setFixedHeight(24)
+        self.buttons['subscript'].setStyleSheet(button_style)
+        font_group.content_layout.addWidget(self.buttons['subscript'], 1, 4)
 
-        # Superscript button
-        font_group.current_col = 0
-        font_group.current_row = 2
-        self.buttons['superscript'] = font_group.add_small_button(QIcon(), "X²", "Superscript")
+        # Row 2: Superscript button
+        self.buttons['superscript'] = QToolButton()
+        self.buttons['superscript'].setText("X²")
+        self.buttons['superscript'].setToolTip("Superscript")
         self.buttons['superscript'].setCheckable(True)
-        self.buttons['superscript'].setStyleSheet("""
-            QToolButton {
-                border: 1px solid transparent;
-                border-radius: 2px;
-                padding: 3px 8px;
-                background: transparent;
-                color: #323130;
-                font-size: 11px;
-                text-align: left;
-            }
-            QToolButton:hover {
-                background-color: #F3F2F1;
-                border: 1px solid #EDEBE9;
-            }
-            QToolButton:pressed {
-                background-color: #EDEBE9;
-                border: 1px solid #E1DFDD;
-            }
-        """)
+        self.buttons['superscript'].setFixedHeight(24)
+        self.buttons['superscript'].setStyleSheet(button_style)
+        font_group.content_layout.addWidget(self.buttons['superscript'], 2, 0)
 
-        # Text Effects button
-        self.buttons['text_effects'] = font_group.add_small_button(QIcon(), "A✦", "Text Effects")
+        # Row 2: Text Effects button
+        self.buttons['text_effects'] = QToolButton()
+        self.buttons['text_effects'].setText("A✦")
+        self.buttons['text_effects'].setToolTip("Text Effects")
+        self.buttons['text_effects'].setFixedHeight(24)
+        self.buttons['text_effects'].setStyleSheet(button_style)
+        font_group.content_layout.addWidget(self.buttons['text_effects'], 2, 1)
 
-        # Text Highlight Color button with dropdown (yellow highlight)
-        self.buttons['highlight_color'] = font_group.add_small_button(QIcon(), "ab", "Text Highlight Color")
+        # Row 2: Text Highlight Color button with dropdown (yellow highlight)
+        self.buttons['highlight_color'] = QToolButton()
+        self.buttons['highlight_color'].setText("ab")
+        self.buttons['highlight_color'].setToolTip("Text Highlight Color")
+        self.buttons['highlight_color'].setFixedHeight(24)
         self.buttons['highlight_color'].setStyleSheet("""
             QToolButton {
                 border: 1px solid transparent;
@@ -717,8 +743,9 @@ class RibbonBar(QWidget):
                 background: transparent;
                 color: #323130;
                 font-size: 12px;
-                text-align: left;
+                text-align: center;
                 font-weight: bold;
+                min-width: 30px;
                 background-image: linear-gradient(transparent 60%, #FFFF00 60%);
             }
             QToolButton:hover {
@@ -732,9 +759,13 @@ class RibbonBar(QWidget):
                 border: 1px solid #E1DFDD;
             }
         """)
+        font_group.content_layout.addWidget(self.buttons['highlight_color'], 2, 2)
 
-        # Font Color button with dropdown (red underline)
-        self.buttons['font_color'] = font_group.add_small_button(QIcon(), "A", "Font Color")
+        # Row 2: Font Color button with dropdown (red underline)
+        self.buttons['font_color'] = QToolButton()
+        self.buttons['font_color'].setText("A")
+        self.buttons['font_color'].setToolTip("Font Color")
+        self.buttons['font_color'].setFixedHeight(24)
         self.buttons['font_color'].setStyleSheet("""
             QToolButton {
                 border: 1px solid transparent;
@@ -743,8 +774,9 @@ class RibbonBar(QWidget):
                 background: transparent;
                 color: #323130;
                 font-size: 14px;
-                text-align: left;
+                text-align: center;
                 font-weight: bold;
+                min-width: 30px;
                 border-bottom: 3px solid #FF0000;
             }
             QToolButton:hover {
@@ -758,6 +790,7 @@ class RibbonBar(QWidget):
                 border-bottom: 3px solid #FF0000;
             }
         """)
+        font_group.content_layout.addWidget(self.buttons['font_color'], 2, 3)
 
         tab.add_group(font_group)
 
