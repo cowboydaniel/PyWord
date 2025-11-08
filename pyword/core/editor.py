@@ -426,15 +426,15 @@ class TextEditor(QTextEdit):
     # Clipboard operations
     def cut(self):
         """Cut selected text to clipboard."""
-        self.textCursor().cut()
-    
+        super().cut()
+
     def copy(self):
         """Copy selected text to clipboard."""
-        self.textCursor().copy()
-    
+        super().copy()
+
     def paste(self):
         """Paste text from clipboard."""
-        self.textCursor().paste()
+        super().paste()
     
     def select_all(self):
         """Select all text in the document."""

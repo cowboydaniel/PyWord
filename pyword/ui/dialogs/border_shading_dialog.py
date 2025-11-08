@@ -13,8 +13,7 @@ class BorderAndShadingDialog(BaseDialog):
     """Dialog for configuring borders and shading."""
 
     def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Borders and Shading")
+        super().__init__("Borders and Shading", parent)
         self.border_color = QColor(Qt.black)
         self.shading_color = QColor(Qt.white)
         self.setup_ui()

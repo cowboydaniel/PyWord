@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
                              QCheckBox, QPushButton, QGroupBox, QDialog, QTabWidget,
-                             QListWidget, QListWidgetItem, QMessageBox, QComboBox)
+                             QListWidget, QListWidgetItem, QMessageBox, QComboBox, QDialogButtonBox)
 from PySide6.QtCore import Qt, Signal, QRegularExpression
 from PySide6.QtGui import QTextCursor, QTextDocument, QTextCharFormat, QColor, QFont
 
@@ -11,35 +11,37 @@ class FindReplaceDialog(QDialog):
     find_next = Signal(str, bool, bool, bool, bool)  # text, case_sensitive, whole_word, regex, wrap
     replace = Signal(str, str, bool, bool, bool, bool)  # find_text, replace_text, case_sensitive, whole_word, regex, replace_all
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, find_only=False):
         super().__init__(parent)
-        self.setWindowTitle("Find and Replace")
+        self.find_only = find_only
+        self.setWindowTitle("Find" if find_only else "Find and Replace")
         self.setMinimumSize(500, 400)
-        
+
         self.find_history = []
         self.replace_history = []
         self.current_find_index = -1
         self.current_replace_index = -1
-        
+
         self.setup_ui()
     
     def setup_ui(self):
         """Setup the find/replace dialog UI."""
         layout = QVBoxLayout(self)
-        
+
         # Create tabs
         self.tabs = QTabWidget()
-        
+
         # Find tab
         find_tab = QWidget()
         self.setup_find_tab(find_tab)
         self.tabs.addTab(find_tab, "Find")
-        
-        # Replace tab
-        replace_tab = QWidget()
-        self.setup_replace_tab(replace_tab)
-        self.tabs.addTab(replace_tab, "Replace")
-        
+
+        # Replace tab (only if not find_only)
+        if not self.find_only:
+            replace_tab = QWidget()
+            self.setup_replace_tab(replace_tab)
+            self.tabs.addTab(replace_tab, "Replace")
+
         layout.addWidget(self.tabs)
         
         # Button box
