@@ -218,14 +218,11 @@ class MainWindow(QMainWindow):
         # Create main splitter for editor and side panels
         self.main_splitter = QSplitter(Qt.Horizontal)
         self.main_layout.addWidget(self.main_splitter)
-        
-        # Add document manager UI to the main layout
-        self.main_splitter.addWidget(self.document_ui)
-        
+
         # Create left panel (navigation, styles, etc.)
         self.setup_left_panel()
-        
-        # Create editor area
+
+        # Create editor area (will contain document_ui's tab widget)
         self.setup_editor_area()
         
         # Create right panel (document map, comments, etc.)
@@ -354,15 +351,8 @@ class MainWindow(QMainWindow):
         # Add left stretch to center the page
         page_container_layout.addStretch()
 
-        # Tab widget for multiple documents (hide tabs for Word-like SDI)
-        self.tab_widget = QTabWidget()
-        self.tab_widget.setTabsClosable(True)
-        self.tab_widget.setMovable(True)
-        self.tab_widget.tabCloseRequested.connect(self.close_tab)
-        self.tab_widget.currentChanged.connect(self.tab_changed)
-
-        # Hide tab bar for single-document interface (Microsoft Word style)
-        self.tab_widget.tabBar().setVisible(False)
+        # Use document_ui's tab widget (contains the actual text editors)
+        self.tab_widget = self.document_ui.tab_widget
 
         # Style the tab widget to have gray background with white page (Microsoft Word style)
         # Set maximum width to A4 size at 100% zoom (8.5 inches * 96 DPI = 816px)
