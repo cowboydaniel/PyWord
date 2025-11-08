@@ -18,22 +18,23 @@ class QuickAccessToolbar(QToolBar):
         self.setIconSize(QSize(16, 16))
         self.settings = QSettings("PyWord", "QuickAccessToolbar")
 
-        # Default commands
+        # Default commands with text-based icons
         self.available_commands = {
-            'save': {'name': 'Save', 'icon': QIcon(), 'tooltip': 'Save document'},
-            'undo': {'name': 'Undo', 'icon': QIcon(), 'tooltip': 'Undo last action'},
-            'redo': {'name': 'Redo', 'icon': QIcon(), 'tooltip': 'Redo last action'},
-            'print': {'name': 'Print', 'icon': QIcon(), 'tooltip': 'Print document'},
-            'print_preview': {'name': 'Print Preview', 'icon': QIcon(), 'tooltip': 'Preview before printing'},
-            'new': {'name': 'New', 'icon': QIcon(), 'tooltip': 'New document'},
-            'open': {'name': 'Open', 'icon': QIcon(), 'tooltip': 'Open document'},
-            'save_as': {'name': 'Save As', 'icon': QIcon(), 'tooltip': 'Save document as'},
-            'cut': {'name': 'Cut', 'icon': QIcon(), 'tooltip': 'Cut to clipboard'},
-            'copy': {'name': 'Copy', 'icon': QIcon(), 'tooltip': 'Copy to clipboard'},
-            'paste': {'name': 'Paste', 'icon': QIcon(), 'tooltip': 'Paste from clipboard'},
-            'bold': {'name': 'Bold', 'icon': QIcon(), 'tooltip': 'Bold text'},
-            'italic': {'name': 'Italic', 'icon': QIcon(), 'tooltip': 'Italic text'},
-            'underline': {'name': 'Underline', 'icon': QIcon(), 'tooltip': 'Underline text'},
+            'menu': {'name': '☰', 'icon': QIcon(), 'tooltip': 'Menu', 'text': '☰'},
+            'save': {'name': '💾', 'icon': QIcon(), 'tooltip': 'Save document', 'text': '💾'},
+            'undo': {'name': '↶', 'icon': QIcon(), 'tooltip': 'Undo last action', 'text': '↶'},
+            'redo': {'name': '↷', 'icon': QIcon(), 'tooltip': 'Redo last action', 'text': '↷'},
+            'print': {'name': '🖨', 'icon': QIcon(), 'tooltip': 'Print document', 'text': '🖨'},
+            'print_preview': {'name': 'Print Preview', 'icon': QIcon(), 'tooltip': 'Preview before printing', 'text': ''},
+            'new': {'name': '📄', 'icon': QIcon(), 'tooltip': 'New document', 'text': '📄'},
+            'open': {'name': '📁', 'icon': QIcon(), 'tooltip': 'Open document', 'text': '📁'},
+            'save_as': {'name': 'Save As', 'icon': QIcon(), 'tooltip': 'Save document as', 'text': ''},
+            'cut': {'name': '✂', 'icon': QIcon(), 'tooltip': 'Cut to clipboard', 'text': '✂'},
+            'copy': {'name': '📋', 'icon': QIcon(), 'tooltip': 'Copy to clipboard', 'text': '📋'},
+            'paste': {'name': 'Paste', 'icon': QIcon(), 'tooltip': 'Paste from clipboard', 'text': ''},
+            'bold': {'name': 'B', 'icon': QIcon(), 'tooltip': 'Bold text', 'text': 'B'},
+            'italic': {'name': 'I', 'icon': QIcon(), 'tooltip': 'Italic text', 'text': 'I'},
+            'underline': {'name': 'U', 'icon': QIcon(), 'tooltip': 'Underline text', 'text': 'U'},
         }
 
         self.command_actions = {}
@@ -44,32 +45,38 @@ class QuickAccessToolbar(QToolBar):
         """Initialize the toolbar UI (Microsoft Word style)."""
         self.setStyleSheet("""
             QToolBar {
-                background: #FFFFFF;
+                background: #F3F2F1;
                 border: none;
-                border-bottom: 1px solid #D2D0CE;
                 spacing: 2px;
                 padding: 2px 8px;
             }
             QToolButton {
                 border: 1px solid transparent;
                 border-radius: 2px;
-                padding: 4px;
+                padding: 2px 4px;
                 background: transparent;
-                color: #323130;
+                color: #605E5C;
+                font-size: 14px;
             }
             QToolButton:hover {
-                background-color: #F3F2F1;
-                border: 1px solid #EDEBE9;
+                background-color: #E1DFDD;
+                border: 1px solid #D2D0CE;
             }
             QToolButton:pressed {
-                background-color: #EDEBE9;
-                border: 1px solid #E1DFDD;
+                background-color: #D2D0CE;
+                border: 1px solid #C8C6C4;
             }
         """)
 
+        # Add hamburger menu button
+        self.menu_button = QToolButton()
+        self.menu_button.setText("☰")
+        self.menu_button.setToolTip("Menu")
+        self.addWidget(self.menu_button)
+
         # Add customize button
         self.customize_button = QToolButton()
-        self.customize_button.setText("...")
+        self.customize_button.setText("▾")
         self.customize_button.setToolTip("Customize Quick Access Toolbar")
         self.customize_button.clicked.connect(self.show_customize_dialog)
         self.addWidget(self.customize_button)
@@ -84,19 +91,21 @@ class QuickAccessToolbar(QToolBar):
         cmd = self.available_commands[command_id]
 
         if action:
-            # Use existing action
+            # Use existing action with text icon
             button = QToolButton()
             button.setDefaultAction(action)
-            button.setToolButtonStyle(Qt.ToolButtonIconOnly)
+            button.setText(cmd.get('text', cmd['name']))
+            button.setToolButtonStyle(Qt.ToolButtonTextOnly)
             self.addWidget(button)
             self.command_actions[command_id] = action
         else:
-            # Create new action
-            new_action = QAction(cmd['icon'], cmd['name'], self)
+            # Create new action with text icon
+            new_action = QAction(cmd['icon'], cmd.get('text', cmd['name']), self)
             new_action.setToolTip(cmd['tooltip'])
             button = QToolButton()
             button.setDefaultAction(new_action)
-            button.setToolButtonStyle(Qt.ToolButtonIconOnly)
+            button.setText(cmd.get('text', cmd['name']))
+            button.setToolButtonStyle(Qt.ToolButtonTextOnly)
             self.addWidget(button)
             self.command_actions[command_id] = new_action
 
