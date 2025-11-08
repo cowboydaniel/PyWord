@@ -48,10 +48,14 @@ class HeaderFooterManager(QObject):
             HeaderFooterType.EVEN_PAGE_HEADER: HeaderFooter("", False, 12.7),
             HeaderFooterType.EVEN_PAGE_FOOTER: HeaderFooter("", False, 12.7)
         }
-        self._init_document()
-        
+        # Only initialize document if it's not None
+        if self.document is not None:
+            self._init_document()
+
     def _init_document(self):
         """Initialize document with header and footer frames."""
+        if self.document is None:
+            return
         root_frame = self.document.rootFrame()
         root_format = root_frame.frameFormat()
         
