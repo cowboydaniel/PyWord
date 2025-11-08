@@ -98,7 +98,7 @@ class Document:
             self.sections = [DocumentSection(name="Main")]
             
         # Initialize header/footer manager
-        from ..features.headers_footers import HeaderFooterManager
+        from ..features.headers_footers import HeaderFooterManager, HeaderFooterType
         self._header_footer_manager = HeaderFooterManager(None)  # Document will be set when loaded in UI
         
         # Set default header/footer content
