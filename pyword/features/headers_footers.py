@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional, Dict, Any, List
-from PySide6.QtCore import QObject, Signal, QRectF, QSizeF, QPointF
+from PySide6.QtCore import QObject, Signal, QRectF, QSizeF, QPointF, Qt
 from PySide6.QtGui import QTextDocument, QTextFrame, QTextFrameFormat, QTextCharFormat, QTextCursor, QTextBlockFormat, QTextFormat
 from PySide6.QtWidgets import QTextEdit, QWidget, QVBoxLayout, QLineEdit, QComboBox, QLabel, QDialog, QDialogButtonBox, QFormLayout, QCheckBox, QDoubleSpinBox
 

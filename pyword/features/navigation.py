@@ -63,13 +63,17 @@ class FindReplaceDialog(QDialog):
         text = self.find_edit.text()
         if not text:
             return
-            
+
+        if not self.parent or not hasattr(self.parent, 'find'):
+            self.status_label.setText("Error: Editor not available")
+            return
+
         flags = QTextDocument.FindFlag(0)
         if self.match_case.isChecked():
             flags |= QTextDocument.FindCaseSensitively
         if self.whole_words.isChecked():
             flags |= QTextDocument.FindWholeWords
-            
+
         if self.parent.find(text, flags):
             self.status_label.setText("")
         else:
@@ -79,39 +83,60 @@ class FindReplaceDialog(QDialog):
         text = self.find_edit.text()
         if not text:
             return
-            
+
+        if not self.parent or not hasattr(self.parent, 'find'):
+            self.status_label.setText("Error: Editor not available")
+            return
+
         flags = QTextDocument.FindFlag(QTextDocument.FindBackward)
         if self.match_case.isChecked():
             flags |= QTextDocument.FindCaseSensitively
         if self.whole_words.isChecked():
             flags |= QTextDocument.FindWholeWords
-            
+
         if self.parent.find(text, flags):
             self.status_label.setText("")
         else:
             self.status_label.setText("Reached start of document")
     
     def replace(self):
+        if not self.parent or not hasattr(self.parent, 'textCursor'):
+            self.status_label.setText("Error: Editor not available")
+            return
+
         cursor = self.parent.textCursor()
-        if cursor.hasSelection() and cursor.selectedText() == self.find_edit.text():
-            cursor.insertText(self.replace_edit.text())
+        if cursor.hasSelection():
+            # Compare with case sensitivity based on checkbox
+            selected = cursor.selectedText()
+            find_text = self.find_edit.text()
+            if self.match_case.isChecked():
+                match = selected == find_text
+            else:
+                match = selected.lower() == find_text.lower()
+
+            if match:
+                cursor.insertText(self.replace_edit.text())
         self.find_next()
     
     def replace_all(self):
+        if not self.parent or not hasattr(self.parent, 'moveCursor') or not hasattr(self.parent, 'find') or not hasattr(self.parent, 'textCursor'):
+            self.status_label.setText("Error: Editor not available")
+            return
+
         self.parent.moveCursor(QTextCursor.MoveOperation.Start)
         count = 0
-        
+
         flags = QTextDocument.FindFlag(0)
         if self.match_case.isChecked():
             flags |= QTextDocument.FindCaseSensitively
         if self.whole_words.isChecked():
             flags |= QTextDocument.FindWholeWords
-        
+
         while self.parent.find(self.find_edit.text(), flags):
             cursor = self.parent.textCursor()
             cursor.insertText(self.replace_edit.text())
             count += 1
-            
+
         self.status_label.setText(f"Replaced {count} occurrences")
 
 
