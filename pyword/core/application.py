@@ -314,7 +314,7 @@ class WordProcessor(QMainWindow):
             return
 
         # Column manager
-        self.column_manager = ColumnManager(self.text_edit)
+        self.column_manager = ColumnManager(self.text_edit.document())
 
         # List manager
         self.list_manager = ListManager(self.text_edit)
