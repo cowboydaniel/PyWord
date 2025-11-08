@@ -41,7 +41,7 @@ class DocumentStyles:
     def _create_heading_style(self, size, bold=False, italic=False):
         fmt = QTextCharFormat()
         fmt.setFontPointSize(size)
-        fmt.setFontWeight(QFont.Bold if bold else QFont.Normal)
+        fmt.setFontWeight(QFont.Weight.Bold if bold else QFont.Weight.Normal)
         fmt.setFontItalic(italic)
         return fmt
 

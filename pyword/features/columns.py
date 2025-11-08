@@ -3,7 +3,7 @@ from typing import List, Optional, Dict, Any, Tuple
 from dataclasses import dataclass, field
 from PySide6.QtCore import Qt, QObject, Signal
 from PySide6.QtGui import QTextDocument, QTextFrame, QTextFrameFormat, QTextCursor, QTextBlockFormat, QTextCharFormat, QTextFormat
-from PySide6.QtWidgets import QTextEdit, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QSpinBox, QComboBox, QDialogButtonBox, QFormLayout, QDoubleSpinBox
+from PySide6.QtWidgets import QTextEdit, QDialog, QVBoxLayout, QHBoxLayout, QLabel, QSpinBox, QComboBox, QDialogButtonBox, QFormLayout, QDoubleSpinBox, QPushButton, QCheckBox
 
 class ColumnLayout(Enum):
     ONE_COLUMN = 1

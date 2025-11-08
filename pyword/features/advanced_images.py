@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, QCombo
                                QFileDialog, QMessageBox)
 from PySide6.QtCore import Qt, QSize, QRectF
 from PySide6.QtGui import (QImage, QPixmap, QTransform, QTextImageFormat, QTextCursor,
-                          QImageReader, QImageWriter, QPainter, QColor)
+                          QImageReader, QImageWriter, QPainter, QColor, QTextDocument)
 import os
 
 

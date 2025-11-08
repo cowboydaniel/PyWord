@@ -3,6 +3,7 @@ from PySide6.QtCore import QMarginsF, QSizeF, Qt
 from PySide6.QtGui import QPainter, QPageSize, QPageLayout, QTextDocument
 from typing import Optional
 import os
+from .page_setup import PageOrientation
 
 class PrintManager:
     """Handles printing and print preview functionality."""
