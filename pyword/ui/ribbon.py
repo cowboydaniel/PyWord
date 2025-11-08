@@ -339,12 +339,13 @@ class RibbonBar(QWidget):
         # Constrain the ribbon height (Microsoft Word style - compact)
         self.setMaximumHeight(140)
 
-        # Tab bar
+        # Tab bar (Word-like theme with subtle gradient)
         self.tab_bar_widget = QWidget()
         self.tab_bar_widget.setStyleSheet("""
             QWidget {
-                background-color: #F3F2F1;
-                border-bottom: 1px solid #D2D0CE;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FAFAFA, stop:1 #F3F2F1);
+                border-bottom: 1px solid #C6C6C6;
             }
         """)
         self.tab_bar_layout = QHBoxLayout(self.tab_bar_widget)
@@ -354,7 +355,7 @@ class RibbonBar(QWidget):
         # Add spacer before right-side controls
         self.tab_bar_layout.addStretch()
 
-        # Add search box (Tell me what you want to do...)
+        # Add search box (Tell me what you want to do...) - Word-like theme
         from PySide6.QtWidgets import QLineEdit
         self.search_box = QLineEdit()
         self.search_box.setPlaceholderText("Tell me what you want to do...")
@@ -362,19 +363,21 @@ class RibbonBar(QWidget):
         self.search_box.setFixedHeight(24)
         self.search_box.setStyleSheet("""
             QLineEdit {
-                background-color: #FFFFFF;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FFFFFF, stop:1 #F7F7F7);
                 color: #323130;
-                border: 1px solid #D2D0CE;
+                border: 1px solid #ABABAB;
                 border-radius: 2px;
                 padding: 4px 8px;
                 font-size: 12px;
             }
             QLineEdit:hover {
-                border: 1px solid #8A8886;
+                border: 1px solid #7A7A7A;
+                background: white;
             }
             QLineEdit:focus {
-                border: 2px solid #0078D4;
-                padding: 3px 7px;
+                border: 1px solid #0078D4;
+                background: white;
             }
         """)
         self.tab_bar_layout.addWidget(self.search_box)
@@ -423,12 +426,13 @@ class RibbonBar(QWidget):
 
         main_layout.addWidget(self.tab_bar_widget)
 
-        # Content area with stacked widget for tabs
+        # Content area with stacked widget for tabs (Word-like theme)
         self.content_widget = QWidget()
         self.content_widget.setStyleSheet("""
             QWidget {
-                background-color: #FFFFFF;
-                border-bottom: 1px solid #D2D0CE;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FFFFFF, stop:1 #FAFAFA);
+                border-bottom: 1px solid #C6C6C6;
             }
         """)
         self.content_layout = QVBoxLayout(self.content_widget)
@@ -456,7 +460,7 @@ class RibbonBar(QWidget):
         # Add tab to stacked widget
         self.stacked_widget.addWidget(tab)
 
-        # Create tab button
+        # Create tab button (Word-like theme with subtle gradients)
         button = QPushButton(tab.title)
         button.setCheckable(True)
         button.setFlat(True)
@@ -465,17 +469,20 @@ class RibbonBar(QWidget):
                 padding: 6px 18px;
                 border: none;
                 border-bottom: 3px solid transparent;
-                background-color: #F3F2F1;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FAFAFA, stop:1 #F3F2F1);
                 font-weight: normal;
                 font-size: 13px;
                 color: #323130;
             }
             QPushButton:hover {
-                background-color: #E1DFDD;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #F0F0F0, stop:1 #E5E5E5);
             }
             QPushButton:checked {
                 border-bottom: 3px solid #0078D4;
-                background-color: #FFFFFF;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FFFFFF, stop:1 #FAFAFA);
                 color: #0078D4;
                 font-weight: 500;
             }
@@ -562,10 +569,9 @@ class RibbonBar(QWidget):
         # Font group (with selectors)
         font_group = RibbonGroup("Font")
 
-        # Increase spacing for better readability
-        font_group.content_layout.setSpacing(4)
-        font_group.content_layout.setHorizontalSpacing(6)
-        font_group.content_layout.setVerticalSpacing(3)
+        # Compact spacing (Word-like)
+        font_group.content_layout.setHorizontalSpacing(4)
+        font_group.content_layout.setVerticalSpacing(2)
 
         # Row 0: Font selector (changed to Calibri (Body) as default - Word style)
         self.buttons['font_family'] = QFontComboBox()
@@ -578,43 +584,74 @@ class RibbonBar(QWidget):
         self.buttons['font_family'].setEditable(False)
         self.buttons['font_family'].setStyleSheet("""
             QFontComboBox {
-                border: 1px solid #D2D0CE;
+                border: 1px solid #ABABAB;
                 border-radius: 2px;
                 padding: 3px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FFFFFF, stop:1 #F7F7F7);
+                color: #323130;
+            }
+            QFontComboBox:hover {
+                border: 1px solid #C6C6C6;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FFFFFF, stop:1 #FAFAFA);
+            }
+            QFontComboBox:focus {
+                border: 1px solid #0078D4;
                 background: white;
             }
         """)
         font_group.content_layout.addWidget(self.buttons['font_family'], 0, 0, 1, 2)
 
-        # Row 0: Font size
+        # Row 0: Font size (Word-like theme)
         self.buttons['font_size'] = QSpinBox()
         self.buttons['font_size'].setRange(8, 72)
         self.buttons['font_size'].setValue(11)
         self.buttons['font_size'].setMaximumWidth(50)
         self.buttons['font_size'].setStyleSheet("""
             QSpinBox {
-                border: 1px solid #D2D0CE;
+                border: 1px solid #ABABAB;
                 border-radius: 2px;
                 padding: 3px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FFFFFF, stop:1 #F7F7F7);
+                color: #323130;
+            }
+            QSpinBox:hover {
+                border: 1px solid #C6C6C6;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FFFFFF, stop:1 #FAFAFA);
+            }
+            QSpinBox:focus {
+                border: 1px solid #0078D4;
                 background: white;
             }
         """)
         font_group.content_layout.addWidget(self.buttons['font_size'], 0, 2, 1, 1)
 
-        # Row 0: Font size increase/decrease buttons
+        # Row 0: Font size increase/decrease buttons (Word-like theme)
         self.buttons['font_size_up'] = QToolButton()
         self.buttons['font_size_up'].setText("A↑")
         self.buttons['font_size_up'].setToolTip("Increase Font Size")
         self.buttons['font_size_up'].setFixedSize(24, 24)
         self.buttons['font_size_up'].setStyleSheet("""
             QToolButton {
-                border: 1px solid #D2D0CE;
+                border: 1px solid #ABABAB;
                 border-radius: 2px;
-                background: white;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FFFFFF, stop:1 #F7F7F7);
                 font-size: 10px;
+                color: #323130;
             }
             QToolButton:hover {
-                background-color: #F3F2F1;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FAFAFA, stop:1 #ECECEC);
+                border: 1px solid #C6C6C6;
+            }
+            QToolButton:pressed {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #E5E5E5, stop:1 #F0F0F0);
+                border: 1px solid #ADADAD;
             }
         """)
         font_group.content_layout.addWidget(self.buttons['font_size_up'], 0, 3, 1, 1)
@@ -625,36 +662,53 @@ class RibbonBar(QWidget):
         self.buttons['font_size_down'].setFixedSize(24, 24)
         self.buttons['font_size_down'].setStyleSheet("""
             QToolButton {
-                border: 1px solid #D2D0CE;
+                border: 1px solid #ABABAB;
                 border-radius: 2px;
-                background: white;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FFFFFF, stop:1 #F7F7F7);
                 font-size: 10px;
+                color: #323130;
             }
             QToolButton:hover {
-                background-color: #F3F2F1;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FAFAFA, stop:1 #ECECEC);
+                border: 1px solid #C6C6C6;
+            }
+            QToolButton:pressed {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #E5E5E5, stop:1 #F0F0F0);
+                border: 1px solid #ADADAD;
             }
         """)
         font_group.content_layout.addWidget(self.buttons['font_size_down'], 0, 4, 1, 1)
 
-        # Create common style for formatting buttons
+        # Create common style for formatting buttons (Word-like theme)
         button_style = """
             QToolButton {
                 border: 1px solid transparent;
                 border-radius: 2px;
-                padding: 3px 8px;
+                padding: 2px 6px;
                 background: transparent;
                 color: #323130;
                 font-size: 12px;
                 text-align: center;
-                min-width: 30px;
+                min-width: 28px;
             }
             QToolButton:hover {
-                background-color: #F3F2F1;
-                border: 1px solid #EDEBE9;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FAFAFA, stop:1 #F0F0F0);
+                border: 1px solid #C6C6C6;
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
             }
-            QToolButton:pressed, QToolButton:checked {
-                background-color: #EDEBE9;
-                border: 1px solid #E1DFDD;
+            QToolButton:pressed {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #E5E5E5, stop:1 #F0F0F0);
+                border: 1px solid #ADADAD;
+            }
+            QToolButton:checked {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #E5F3FB, stop:1 #D0E9F7);
+                border: 1px solid #92C0E0;
             }
         """
 
@@ -730,7 +784,7 @@ class RibbonBar(QWidget):
         self.buttons['text_effects'].setStyleSheet(button_style)
         font_group.content_layout.addWidget(self.buttons['text_effects'], 2, 1)
 
-        # Row 2: Text Highlight Color button with dropdown (yellow highlight)
+        # Row 2: Text Highlight Color button with dropdown (yellow highlight) - Word-like theme
         self.buttons['highlight_color'] = QToolButton()
         self.buttons['highlight_color'].setText("ab")
         self.buttons['highlight_color'].setToolTip("Text Highlight Color")
@@ -739,29 +793,31 @@ class RibbonBar(QWidget):
             QToolButton {
                 border: 1px solid transparent;
                 border-radius: 2px;
-                padding: 3px 8px;
+                padding: 2px 6px;
                 background: transparent;
                 color: #323130;
                 font-size: 12px;
                 text-align: center;
                 font-weight: bold;
-                min-width: 30px;
-                background-image: linear-gradient(transparent 60%, #FFFF00 60%);
+                min-width: 28px;
+                background-image: linear-gradient(transparent 65%, #FFED4E 65%);
             }
             QToolButton:hover {
-                background-color: #F3F2F1;
-                background-image: linear-gradient(transparent 60%, #FFFF00 60%);
-                border: 1px solid #EDEBE9;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FAFAFA, stop:0.65 #F0F0F0,
+                    stop:0.65 #FFED4E, stop:1 #FFED4E);
+                border: 1px solid #C6C6C6;
             }
             QToolButton:pressed {
-                background-color: #EDEBE9;
-                background-image: linear-gradient(transparent 60%, #FFFF00 60%);
-                border: 1px solid #E1DFDD;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #E5E5E5, stop:0.65 #F0F0F0,
+                    stop:0.65 #FFE838, stop:1 #FFE838);
+                border: 1px solid #ADADAD;
             }
         """)
         font_group.content_layout.addWidget(self.buttons['highlight_color'], 2, 2)
 
-        # Row 2: Font Color button with dropdown (red underline)
+        # Row 2: Font Color button with dropdown (red underline) - Word-like theme
         self.buttons['font_color'] = QToolButton()
         self.buttons['font_color'].setText("A")
         self.buttons['font_color'].setToolTip("Font Color")
@@ -770,24 +826,26 @@ class RibbonBar(QWidget):
             QToolButton {
                 border: 1px solid transparent;
                 border-radius: 2px;
-                padding: 3px 8px;
+                padding: 2px 6px;
                 background: transparent;
                 color: #323130;
                 font-size: 14px;
                 text-align: center;
                 font-weight: bold;
-                min-width: 30px;
-                border-bottom: 3px solid #FF0000;
+                min-width: 28px;
+                border-bottom: 3px solid #D13438;
             }
             QToolButton:hover {
-                background-color: #F3F2F1;
-                border: 1px solid #EDEBE9;
-                border-bottom: 3px solid #FF0000;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FAFAFA, stop:1 #F0F0F0);
+                border: 1px solid #C6C6C6;
+                border-bottom: 3px solid #D13438;
             }
             QToolButton:pressed {
-                background-color: #EDEBE9;
-                border: 1px solid #E1DFDD;
-                border-bottom: 3px solid #FF0000;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #E5E5E5, stop:1 #F0F0F0);
+                border: 1px solid #ADADAD;
+                border-bottom: 3px solid #D13438;
             }
         """)
         font_group.content_layout.addWidget(self.buttons['font_color'], 2, 3)
@@ -797,29 +855,37 @@ class RibbonBar(QWidget):
         # Paragraph group
         paragraph_group = RibbonGroup("Paragraph")
 
-        # Increase spacing for better readability
-        paragraph_group.content_layout.setHorizontalSpacing(6)
-        paragraph_group.content_layout.setVerticalSpacing(3)
+        # Compact spacing (Word-like)
+        paragraph_group.content_layout.setHorizontalSpacing(4)
+        paragraph_group.content_layout.setVerticalSpacing(2)
 
-        # Create common style for paragraph buttons
+        # Create common style for paragraph buttons (Word-like theme)
         para_button_style = """
             QToolButton {
                 border: 1px solid transparent;
                 border-radius: 2px;
-                padding: 3px 8px;
+                padding: 2px 6px;
                 background: transparent;
                 color: #323130;
                 font-size: 12px;
                 text-align: center;
-                min-width: 30px;
+                min-width: 28px;
             }
             QToolButton:hover {
-                background-color: #F3F2F1;
-                border: 1px solid #EDEBE9;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #FAFAFA, stop:1 #F0F0F0);
+                border: 1px solid #C6C6C6;
+                box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
             }
-            QToolButton:pressed, QToolButton:checked {
-                background-color: #EDEBE9;
-                border: 1px solid #E1DFDD;
+            QToolButton:pressed {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #E5E5E5, stop:1 #F0F0F0);
+                border: 1px solid #ADADAD;
+            }
+            QToolButton:checked {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #E5F3FB, stop:1 #D0E9F7);
+                border: 1px solid #92C0E0;
             }
         """
 
