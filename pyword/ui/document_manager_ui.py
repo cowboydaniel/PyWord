@@ -313,10 +313,10 @@ class DocumentManagerUI(QWidget):
         self.tab_widget.add_editor(editor, title, tooltip)
         
         # Store document reference in editor
-        editor.document = document
+        editor.pyword_document = document
         if document.file_path:
             editor.document_path = document.file_path
-        
+
         # Connect editor signals
         editor.document().contentsChanged.connect(
             lambda: self.on_document_modified(editor, document)
@@ -368,7 +368,7 @@ class DocumentManagerUI(QWidget):
             return
         
         # Check for unsaved changes
-        document = getattr(editor, 'document', None)
+        document = getattr(editor, 'pyword_document', None)
         if document and document.modified:
             reply = QMessageBox.question(
                 self,
@@ -403,8 +403,8 @@ class DocumentManagerUI(QWidget):
             self.current_document = None
             self.update_ui_state()
             return
-        
-        document = getattr(editor, 'document', None)
+
+        document = getattr(editor, 'pyword_document', None)
         if document != self.current_document:
             self.current_document = document
             self.document_activated.emit(document)
@@ -412,7 +412,7 @@ class DocumentManagerUI(QWidget):
     
     def on_document_modified(self, editor: QWidget, document: Document):
         """Handle document modification."""
-        if not document or not hasattr(editor, 'document'):
+        if not document or not hasattr(editor, 'pyword_document'):
             return
         
         # Update document content
