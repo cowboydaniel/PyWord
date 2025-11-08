@@ -324,6 +324,9 @@ class RibbonBar(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
+        # Constrain the ribbon height (Microsoft Word style)
+        self.setMaximumHeight(150)
+
         # Tab bar
         self.tab_bar_widget = QWidget()
         self.tab_bar_widget.setStyleSheet("""
