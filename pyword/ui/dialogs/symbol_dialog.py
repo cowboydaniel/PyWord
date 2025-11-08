@@ -5,7 +5,6 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel,
                              QComboBox, QGroupBox, QFormLayout, QHeaderView)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
-from shiboken6 import isValid
 from .base_dialog import BaseDialog
 
 
@@ -118,60 +117,60 @@ class SymbolDialog(BaseDialog):
 
     def populate_symbols(self):
         """Populate the symbol table with characters."""
-        # Check if widgets are still valid before accessing them
-        if not isValid(self.subset_combo) or not isValid(self.font_combo) or not isValid(self.symbol_table):
-            return
+        try:
+            # Clear existing symbols from the table
+            self.symbol_table.clearContents()
 
-        # Clear existing symbols from the table
-        self.symbol_table.clearContents()
+            subset = self.subset_combo.currentText()
 
-        subset = self.subset_combo.currentText()
+            # Define character ranges for different subsets
+            ranges = {
+                "Basic Latin": (0x0020, 0x007F),
+                "Latin-1 Supplement": (0x00A0, 0x00FF),
+                "Greek": (0x0370, 0x03FF),
+                "Arrows": (0x2190, 0x21FF),
+                "Mathematical Operators": (0x2200, 0x22FF),
+                "Geometric Shapes": (0x25A0, 0x25FF),
+                "Miscellaneous Symbols": (0x2600, 0x26FF),
+            }
 
-        # Define character ranges for different subsets
-        ranges = {
-            "Basic Latin": (0x0020, 0x007F),
-            "Latin-1 Supplement": (0x00A0, 0x00FF),
-            "Greek": (0x0370, 0x03FF),
-            "Arrows": (0x2190, 0x21FF),
-            "Mathematical Operators": (0x2200, 0x22FF),
-            "Geometric Shapes": (0x25A0, 0x25FF),
-            "Miscellaneous Symbols": (0x2600, 0x26FF),
-        }
+            start, end = ranges.get(subset, (0x0020, 0x007F))
 
-        start, end = ranges.get(subset, (0x0020, 0x007F))
+            # Fill the table
+            char_index = start
+            font = QFont(self.font_combo.currentText(), 12)
 
-        # Fill the table
-        char_index = start
-        font = QFont(self.font_combo.currentText(), 12)
-
-        for row in range(16):
-            for col in range(16):
-                if char_index <= end:
-                    try:
-                        char = chr(char_index)
-                        item = QTableWidgetItem(char)
-                        item.setFont(font)
-                        item.setTextAlignment(Qt.AlignCenter)
-                        item.setData(Qt.UserRole, char_index)
-                        self.symbol_table.setItem(row, col, item)
-                        char_index += 1
-                    except ValueError:
-                        char_index += 1
-                else:
-                    break
+            for row in range(16):
+                for col in range(16):
+                    if char_index <= end:
+                        try:
+                            char = chr(char_index)
+                            item = QTableWidgetItem(char)
+                            item.setFont(font)
+                            item.setTextAlignment(Qt.AlignCenter)
+                            item.setData(Qt.UserRole, char_index)
+                            self.symbol_table.setItem(row, col, item)
+                            char_index += 1
+                        except ValueError:
+                            char_index += 1
+                    else:
+                        break
+        except RuntimeError:
+            # Widget has been deleted, ignore
+            pass
 
     def on_font_changed(self, font_name):
         """Handle font selection change."""
-        # Check if the symbol table is still valid before accessing it
-        if not isValid(self.symbol_table):
-            return
-
-        font = QFont(font_name, 12)
-        for row in range(self.symbol_table.rowCount()):
-            for col in range(self.symbol_table.columnCount()):
-                item = self.symbol_table.item(row, col)
-                if item:
-                    item.setFont(font)
+        try:
+            font = QFont(font_name, 12)
+            for row in range(self.symbol_table.rowCount()):
+                for col in range(self.symbol_table.columnCount()):
+                    item = self.symbol_table.item(row, col)
+                    if item:
+                        item.setFont(font)
+        except RuntimeError:
+            # Widget has been deleted, ignore
+            pass
 
     def on_subset_changed(self, subset):
         """Handle character subset change."""
