@@ -1,10 +1,11 @@
+from datetime import datetime
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QSplitter, QTabWidget,
                              QStatusBar, QMenuBar, QMenu, QToolBar, QFileDialog, QMessageBox,
                              QDockWidget, QLabel, QSizePolicy, QApplication, QDialog, QVBoxLayout,
                              QHBoxLayout, QPushButton, QTextEdit, QLineEdit, QListWidget, QTreeView,
                              QTableWidget, QTableWidgetItem, QHeaderView, QComboBox, QSpinBox,
                              QDoubleSpinBox, QCheckBox, QGroupBox, QFormLayout, QScrollArea,
-                             QFrame, QToolButton, QStyle, QColorDialog, QFontDialog, QInputDialog, 
+                             QFrame, QToolButton, QStyle, QColorDialog, QFontDialog, QInputDialog,
                              QSplitterHandle, QPrintDialog, QPrintPreviewDialog)
 from PySide6.QtPrintSupport import QPrinter, QPageSetupDialog
 from PySide6.QtCore import Qt, QSize, QSettings, QTimer, QUrl, QMimeData, Signal
@@ -22,6 +23,8 @@ from ...core.print_manager import PrintManager
 from .document_manager_ui import DocumentManagerUI
 from .toolbars import MainToolBar, FormatToolBar, TableToolBar, ReviewToolBar, ViewToolBar
 from .panels import NavigationPanel, StylesPanel, DocumentMapPanel, CommentsPanel
+from .ribbon import RibbonBar
+from .theme_manager import ThemeManager, Theme
 from .dialogs import (NewDocumentDialog, PageSetupDialog, PrintPreviewDialog, InsertTableDialog,
                      InsertImageDialog, InsertLinkDialog, FindReplaceDialog, WordCountDialog,
                      GoToDialog, OptionsDialog, AboutDialog, StyleDialog, TablePropertiesDialog,
@@ -34,15 +37,19 @@ class MainWindow(QMainWindow):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("PyWord")
+        self.setWindowTitle("Document1 - PyWord")
         self.setGeometry(100, 100, 1200, 800)
         self.current_zoom = 100  # Store current zoom level
-        
+
         # Initialize core components
         self.document_manager = DocumentManager()
         self.settings = QSettings("PyWord", "Editor")
         self.print_manager = PrintManager(self)
-        
+
+        # Initialize and apply theme (Microsoft Word style)
+        self.theme_manager = ThemeManager(self)
+        self.theme_manager.apply_theme()
+
         # Setup UI
         self.setup_ui()
         
@@ -174,6 +181,7 @@ class MainWindow(QMainWindow):
         """Initialize the main window UI."""
         # Create central widget and layout
         self.central_widget = QWidget()
+        self.central_widget.setObjectName("centralWidget")
         self.setCentralWidget(self.central_widget)
         self.main_layout = QVBoxLayout(self.central_widget)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
@@ -208,28 +216,34 @@ class MainWindow(QMainWindow):
         self.update_ui()
     
     def setup_toolbars(self):
-        """Create and setup all toolbars."""
-        # Main toolbar (File, Edit, etc.)
-        self.main_toolbar = MainToolBar(self)
-        self.addToolBar(Qt.TopToolBarArea, self.main_toolbar)
-        
-        # Format toolbar (Bold, Italic, etc.)
-        self.format_toolbar = FormatToolBar(self)
-        self.addToolBar(Qt.TopToolBarArea, self.format_toolbar)
-        
-        # Table toolbar (shown when editing tables)
-        self.table_toolbar = TableToolBar(self)
-        self.addToolBar(Qt.TopToolBarArea, self.table_toolbar)
-        self.table_toolbar.setVisible(False)
-        
-        # Review toolbar (comments, track changes, etc.)
-        self.review_toolbar = ReviewToolBar(self)
-        self.addToolBar(Qt.TopToolBarArea, self.review_toolbar)
-        
-        # View toolbar (zoom, document views, etc.)
-        self.view_toolbar = ViewToolBar(self)
-        self.addToolBar(Qt.TopToolBarArea, self.view_toolbar)
-    
+        """Create and setup the ribbon interface."""
+        # Create ribbon interface (Microsoft Word style)
+        self.ribbon = RibbonBar(self)
+        self.main_layout.addWidget(self.ribbon)
+
+        # Create and add ribbon tabs
+        home_tab = self.ribbon.create_home_tab()
+        insert_tab = self.ribbon.create_insert_tab()
+        design_tab = self.ribbon.create_design_tab()
+        layout_tab = self.ribbon.create_layout_tab()
+        view_tab = self.ribbon.create_view_tab()
+
+        self.ribbon.add_tab(home_tab)
+        self.ribbon.add_tab(insert_tab)
+        self.ribbon.add_tab(design_tab)
+        self.ribbon.add_tab(layout_tab)
+        self.ribbon.add_tab(view_tab)
+
+        # Connect ribbon actions to methods
+        self.connect_ribbon_actions()
+
+    def connect_ribbon_actions(self):
+        """Connect ribbon button actions to their respective methods."""
+        # This method will connect ribbon buttons to the application methods
+        # For now, we'll let the ribbon display without connections
+        # Full connections can be added incrementally
+        pass
+
     def setup_left_panel(self):
         """Setup the left panel with navigation and styles."""
         self.left_panel = QDockWidget("Navigation", self)
@@ -1147,3 +1161,14 @@ class MainWindow(QMainWindow):
             self.current_document.modified_at = datetime.now()
             self.update_window_title()
             self.update_word_count()
+
+    def update_window_title(self):
+        """Update window title to match Microsoft Word style."""
+        if hasattr(self, 'current_document') and self.current_document:
+            doc_name = self.current_document.title or "Document1"
+            if self.current_document.modified:
+                self.setWindowTitle(f"{doc_name}* - PyWord")
+            else:
+                self.setWindowTitle(f"{doc_name} - PyWord")
+        else:
+            self.setWindowTitle("Document1 - PyWord")
