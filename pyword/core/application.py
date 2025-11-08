@@ -23,7 +23,8 @@ from ..features.performance import (LargeDocumentOptimizer, MemoryManager,
 from ..features.accessibility import AccessibilityManager, AccessibilityLevel
 
 # Import UI components
-from ..ui.toolbars.header_footer_toolbar import HeaderFooterToolBar
+from ..ui.ribbon import RibbonBar
+from ..ui.theme_manager import ThemeManager, Theme
 
 class WordProcessor(QMainWindow):
     def __init__(self):
@@ -31,11 +32,15 @@ class WordProcessor(QMainWindow):
         self.documents = []
         self.current_document = None
         self.current_file = None
-        self.setWindowTitle("PyWord")
+        self.setWindowTitle("Document1 - PyWord")
         self.setGeometry(100, 100, 1200, 800)
-        
+
         # Initialize settings
         self.settings = QSettings("PyWord", "Editor")
+
+        # Initialize and apply theme (Microsoft Word style)
+        self.theme_manager = ThemeManager(self)
+        self.theme_manager.apply_theme()
         
         # Initialize features
         self.styles = DocumentStyles()
@@ -66,12 +71,6 @@ class WordProcessor(QMainWindow):
 
         # Initialize document map
         self.init_document_map()
-
-        # Initialize header/footer toolbar
-        self.header_footer_toolbar = HeaderFooterToolBar(self)
-        self.header_footer_toolbar.setObjectName("headerFooterToolbar")
-        self.addToolBar(Qt.TopToolBarArea, self.header_footer_toolbar)
-        self.header_footer_toolbar.hide()  # Hide by default, show when document is loaded
 
         # Initialize all feature managers now that text_edit is available
         self.init_feature_managers()
@@ -132,37 +131,48 @@ class WordProcessor(QMainWindow):
     
     def setup_ui(self):
         """Initialize the main UI components."""
-        # Central widget and splitter
-        self.splitter = QSplitter(Qt.Horizontal)
-        
-        # Create document area
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.splitter)
-        
+        # Create main container widget
+        container = QWidget()
+        container.setObjectName("centralWidget")
+        self.setCentralWidget(container)
+
         # Main layout
-        self.layout = QVBoxLayout(self.central_widget)
-        self.layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Create a basic text editor for demonstration
-        self.text_edit = QTextEdit()
-        self.splitter.addWidget(self.text_edit)
-        
-        # Set initial window title
-        self.setWindowTitle("Untitled - PyWord")
-        self.layout.setSpacing(0)
-        
+        main_layout = QVBoxLayout(container)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+
+        # Create ribbon interface (Microsoft Word style)
+        self.ribbon = RibbonBar(self)
+        main_layout.addWidget(self.ribbon)
+
+        # Create and add ribbon tabs
+        home_tab = self.ribbon.create_home_tab()
+        insert_tab = self.ribbon.create_insert_tab()
+        design_tab = self.ribbon.create_design_tab()
+        layout_tab = self.ribbon.create_layout_tab()
+        view_tab = self.ribbon.create_view_tab()
+
+        self.ribbon.add_tab(home_tab)
+        self.ribbon.add_tab(insert_tab)
+        self.ribbon.add_tab(design_tab)
+        self.ribbon.add_tab(layout_tab)
+        self.ribbon.add_tab(view_tab)
+
         # Create menu bar
         self.create_menus()
-        
-        # Create toolbars
-        self.create_toolbars()
-        
+
+        # Create document area with splitter
+        self.splitter = QSplitter(Qt.Horizontal)
+        main_layout.addWidget(self.splitter)
+
+        # Create a basic text editor for demonstration
+        self.text_edit = QTextEdit()
+        self.text_edit.setStyleSheet("QTextEdit { background-color: #F3F2F1; }")
+        self.splitter.addWidget(self.text_edit)
+
         # Status bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
-        
-        # Add widgets to splitter
-        self.splitter.addWidget(self.central_widget)
     
     def load_settings(self):
         """Load application settings."""
@@ -286,19 +296,8 @@ class WordProcessor(QMainWindow):
         self.setup_format_actions(format_menu)
         self.setup_table_actions(table_menu)
     
-    def create_toolbars(self):
-        """Create application toolbars."""
-        # Formatting toolbar
-        self.format_toolbar = self.addToolBar("Format")
-        self.format_toolbar.setObjectName("formatToolbar")
-        self.format_toolbar.setIconSize(QSize(16, 16))
-        
-        # Add formatting actions
-        bold_action = QAction(QIcon.fromTheme("format-text-bold"), "Bold", self)
-        bold_action.triggered.connect(self.text_bold)
-        self.format_toolbar.addAction(bold_action)
-        
-        # Add more formatting actions as needed...
+    # Ribbon interface replaces traditional toolbars
+    # Old toolbar code removed - using Microsoft Word-style ribbon instead
     
     def text_bold(self):
         """Toggle bold formatting for the selected text."""
