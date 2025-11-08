@@ -287,13 +287,13 @@ class Document:
                     if 'created_at' in data:
                         try:
                             self.created_at = datetime.fromisoformat(data['created_at'])
-                        except:
-                            pass
+                        except (ValueError, TypeError) as e:
+                            print(f"Warning: Failed to parse created_at timestamp: {e}")
                     if 'modified_at' in data:
                         try:
                             self.modified_at = datetime.fromisoformat(data['modified_at'])
-                        except:
-                            pass
+                        except (ValueError, TypeError) as e:
+                            print(f"Warning: Failed to parse modified_at timestamp: {e}")
 
                     # Create a default section with the content
                     self.sections = [DocumentSection(name="Main Content", content=self.content)]
@@ -393,17 +393,33 @@ class DocumentManager:
         self._listeners = []
     
     def add_listener(self, callback):
-        """Add a callback to be notified of document changes."""
+        """
+        Add a callback to be notified of document changes.
+
+        Args:
+            callback: A callable that will be invoked with (event_type, **kwargs) when document events occur.
+        """
         if callback not in self._listeners:
             self._listeners.append(callback)
     
     def remove_listener(self, callback):
-        """Remove a document change listener."""
+        """
+        Remove a document change listener.
+
+        Args:
+            callback: The callback function to remove from the listeners list.
+        """
         if callback in self._listeners:
             self._listeners.remove(callback)
     
     def _notify_listeners(self, event_type: str, **kwargs):
-        """Notify all listeners of a document event."""
+        """
+        Notify all listeners of a document event.
+
+        Args:
+            event_type: String identifying the type of event (e.g., 'document_created', 'document_saved').
+            **kwargs: Additional event-specific data to pass to listeners.
+        """
         for callback in self._listeners:
             try:
                 callback(event_type, **kwargs)
@@ -498,21 +514,29 @@ class DocumentManager:
         return None
     
     def _add_to_recent(self, doc: Document):
-        """Add a document to the recent documents list."""
+        """
+        Add a document to the recent documents list.
+
+        Maintains a list of recently opened documents, with the most recent at the beginning.
+        Automatically removes duplicates and trims the list to max_recent_docs size.
+
+        Args:
+            doc: The Document instance to add to the recent list.
+        """
         if not doc.file_path:
             return
-            
+
         # Remove if already in the list
-        self.recent_documents = [d for d in self.recent_documents 
+        self.recent_documents = [d for d in self.recent_documents
                                if d.get('path') != doc.file_path]
-        
+
         # Add to the beginning of the list
         self.recent_documents.insert(0, {
             'path': doc.file_path,
             'title': doc.title,
             'timestamp': datetime.now().isoformat()
         })
-        
+
         # Trim the list if it's too long
         if len(self.recent_documents) > self.max_recent_docs:
             self.recent_documents = self.recent_documents[:self.max_recent_docs]
@@ -664,6 +688,10 @@ class DocumentManager:
         return self.recent_documents
     
     def clear_recent_documents(self):
-        """Clear the list of recently opened documents."""
+        """
+        Clear the list of recently opened documents.
+
+        Removes all entries from the recent documents list and notifies listeners.
+        """
         self.recent_documents = []
         self._notify_listeners('recent_documents_cleared')

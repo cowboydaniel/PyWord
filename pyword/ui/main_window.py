@@ -1185,7 +1185,10 @@ class MainWindow(QMainWindow):
         editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
-            cursor.insertHtml("<hr style='page-break-before:always; margin:0;' />")
+            # Use proper page break formatting instead of HTML <hr>
+            block_format = QTextBlockFormat()
+            block_format.setPageBreakPolicy(QTextFormat.PageBreak_AlwaysBefore)
+            cursor.insertBlock(block_format)
     
     def insert_table(self):
         """Insert a table at the current cursor position."""
@@ -1785,25 +1788,69 @@ class MainWindow(QMainWindow):
             if cursor.hasSelection():
                 # Store the format from selected text
                 self.stored_format = cursor.charFormat()
-                QMessageBox.information(self, "Format Painter", "Format copied! Select text to apply the formatting.")
+                result = QMessageBox.information(
+                    self,
+                    "Format Painter",
+                    "Format copied! Select text to apply the formatting.\n\nCall Format Painter again without selection to cancel.",
+                    QMessageBox.Ok | QMessageBox.Cancel
+                )
+                # Clean up if user cancelled
+                if result == QMessageBox.Cancel and hasattr(self, 'stored_format'):
+                    delattr(self, 'stored_format')
             elif hasattr(self, 'stored_format'):
-                # Apply stored format
+                # If no selection and format is stored, ask user what to do
                 if not cursor.hasSelection():
-                    cursor.select(QTextCursor.WordUnderCursor)
-                cursor.mergeCharFormat(self.stored_format)
-                delattr(self, 'stored_format')
+                    # Check if user wants to apply to word or cancel
+                    result = QMessageBox.question(
+                        self,
+                        "Format Painter",
+                        "No text selected. Apply format to word under cursor?",
+                        QMessageBox.Yes | QMessageBox.No
+                    )
+                    if result == QMessageBox.Yes:
+                        cursor.select(QTextCursor.WordUnderCursor)
+                        cursor.mergeCharFormat(self.stored_format)
+                    # Clean up stored format either way
+                    delattr(self, 'stored_format')
+                else:
+                    # Apply stored format to selection
+                    cursor.mergeCharFormat(self.stored_format)
+                    delattr(self, 'stored_format')
             else:
                 QMessageBox.information(self, "Format Painter", "Please select text to copy formatting from.")
 
     def text_effects(self):
-        """Apply text effects (shadow, outline, etc.)."""
+        """Apply text effects using available Qt formatting options."""
         editor = self.current_editor()
         if editor:
-            # Simple implementation: show available effects
-            items = ["Shadow", "Outline", "Glow", "Reflection"]
+            cursor = editor.textCursor()
+            if not cursor.hasSelection():
+                QMessageBox.information(self, "Text Effects", "Please select text to apply effects.")
+                return
+
+            # Offer available text formatting effects
+            items = ["Remove Effects", "Bold + Larger", "Colored + Bold", "Background Highlight"]
             item, ok = QInputDialog.getItem(self, "Text Effects", "Select effect:", items, 0, False)
+
             if ok and item:
-                QMessageBox.information(self, "Text Effects", f"Text effect '{item}' would be applied here.\nThis is a placeholder implementation.")
+                char_format = QTextCharFormat()
+
+                if item == "Remove Effects":
+                    # Reset to default formatting
+                    char_format.setFontWeight(QFont.Normal)
+                    char_format.setFontPointSize(11)
+                    char_format.setForeground(QColor(Qt.black))
+                    char_format.setBackground(QColor(Qt.transparent))
+                elif item == "Bold + Larger":
+                    char_format.setFontWeight(QFont.Bold)
+                    char_format.setFontPointSize(cursor.charFormat().fontPointSize() * 1.2)
+                elif item == "Colored + Bold":
+                    char_format.setFontWeight(QFont.Bold)
+                    char_format.setForeground(QColor(0, 102, 204))  # Blue color
+                elif item == "Background Highlight":
+                    char_format.setBackground(QColor(255, 255, 0))  # Yellow highlight
+
+                cursor.mergeCharFormat(char_format)
 
     def multilevel_list(self):
         """Insert a multilevel list."""
