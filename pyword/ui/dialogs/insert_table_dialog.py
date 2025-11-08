@@ -10,8 +10,7 @@ class InsertTableDialog(BaseDialog):
     """Dialog for inserting a table."""
 
     def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Insert Table")
+        super().__init__("Insert Table", parent)
         self.setup_ui()
 
     def setup_ui(self):
