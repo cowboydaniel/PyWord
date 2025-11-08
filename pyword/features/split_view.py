@@ -1,9 +1,9 @@
-from PySide6.QtCore import Qt, Signal, QPoint, QObject
+from PySide6.QtCore import Qt, Signal, QPoint, QObject, QSize
 from PySide6.QtWidgets import (
     QSplitter, QTextEdit, QWidget, QVBoxLayout, QHBoxLayout,
-    QToolBar, QAction, QLabel, QScrollBar, QApplication
+    QToolBar, QLabel, QScrollBar, QApplication, QFrame
 )
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QAction, QActionGroup, QFont, QColor
 
 class SplitViewManager(QObject):
     """Manages split view functionality for the document editor."""
