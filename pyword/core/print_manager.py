@@ -15,10 +15,10 @@ class PrintManager:
         
         # Set default page size to A4
         self.page_layout = QPageLayout(
-            QPageSize(QPageSize.A4),
-            QPageLayout.Portrait,
+            QPageSize(QPageSize.PageSizeId.A4),
+            QPageLayout.Orientation.Portrait,
             QMarginsF(72, 72, 72, 72),  # 1 inch margins
-            QPageLayout.Point
+            QPageLayout.Unit.Point
         )
         self.printer.setPageLayout(self.page_layout)
     
@@ -53,7 +53,7 @@ class PrintManager:
             
         # Use a temporary printer for PDF export
         pdf_printer = QPrinter(QPrinter.HighResolution)
-        pdf_printer.setOutputFormat(QPrinter.PdfFormat)
+        pdf_printer.setOutputFormat(QPrinter.OutputFormat.PdfFormat)
         pdf_printer.setOutputFileName(file_path)
         pdf_printer.setPageLayout(self.page_layout)
         
@@ -66,7 +66,7 @@ class PrintManager:
         try:
             # Save current page size and margins
             page_size = target_printer.pageLayout().pageSize()
-            margins = target_printer.pageLayout().margins(QPageLayout.Point)
+            margins = target_printer.pageLayout().margins(QPageLayout.Unit.Point)
             
             # Set document page size
             document.setPageSize(QSizeF(page_size.sizePoints()))
@@ -87,7 +87,7 @@ class PrintManager:
         # Create page size
         page_size = QPageSize(
             QSizeF(page_setup.page_width, page_setup.page_height),
-            QPageSize.Point
+            QPageSize.Unit.Point
         )
         
         # Create margins
@@ -99,16 +99,16 @@ class PrintManager:
         )
         
         # Set page orientation
-        orientation = QPageLayout.Portrait
+        orientation = QPageLayout.Orientation.Portrait
         if page_setup.orientation == PageOrientation.LANDSCAPE:
-            orientation = QPageLayout.Landscape
-        
+            orientation = QPageLayout.Orientation.Landscape
+
         # Update page layout
         self.page_layout = QPageLayout(
             page_size,
             orientation,
             margins,
-            QPageLayout.Point
+            QPageLayout.Unit.Point
         )
         
         # Apply to printer
