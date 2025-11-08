@@ -1619,15 +1619,21 @@ class MainWindow(QMainWindow):
 
     def export_document(self):
         """Export document to a different format."""
-        if not self.current_document:
+        # Get current document from document_ui
+        current_doc = self.document_ui.current_document if hasattr(self, 'document_ui') else None
+
+        if not current_doc and not self.current_editor():
             QMessageBox.warning(self, "No Document", "Please open a document first.")
             return
+
+        # Use current_doc if available, otherwise fall back to self.current_document
+        doc = current_doc or self.current_document
 
         # Show save dialog with various export formats
         file_path, selected_filter = QFileDialog.getSaveFileName(
             self,
             "Export Document",
-            self.current_document.file_path or "",
+            doc.file_path if doc and hasattr(doc, 'file_path') else "",
             "PDF Files (*.pdf);;"
             "Word Documents (*.docx);;"
             "OpenDocument Text (*.odt);;"
@@ -1639,7 +1645,7 @@ class MainWindow(QMainWindow):
 
         if file_path:
             try:
-                if self.current_document.save(file_path):
+                if doc and doc.save(file_path):
                     QMessageBox.information(self, "Export Successful", f"Document exported to {file_path}")
                 else:
                     QMessageBox.warning(self, "Export Failed", "Failed to export document.")
@@ -1648,16 +1654,24 @@ class MainWindow(QMainWindow):
 
     def export_to_pdf(self):
         """Export document directly to PDF format."""
-        if not self.current_document:
+        # Get current document from document_ui
+        current_doc = self.document_ui.current_document if hasattr(self, 'document_ui') else None
+
+        if not current_doc and not self.current_editor():
             QMessageBox.warning(self, "No Document", "Please open a document first.")
             return
 
+        # Use current_doc if available, otherwise fall back to self.current_document
+        doc = current_doc or self.current_document
+
         # Suggest PDF filename based on current document
         suggested_name = ""
-        if self.current_document.file_path:
-            suggested_name = str(Path(self.current_document.file_path).with_suffix('.pdf'))
+        if doc and hasattr(doc, 'file_path') and doc.file_path:
+            suggested_name = str(Path(doc.file_path).with_suffix('.pdf'))
+        elif doc and hasattr(doc, 'title'):
+            suggested_name = f"{doc.title}.pdf"
         else:
-            suggested_name = f"{self.current_document.title}.pdf"
+            suggested_name = "document.pdf"
 
         file_path, _ = QFileDialog.getSaveFileName(
             self,
@@ -1668,7 +1682,7 @@ class MainWindow(QMainWindow):
 
         if file_path:
             try:
-                if self.current_document.save(file_path):
+                if doc and doc.save(file_path):
                     QMessageBox.information(self, "Export Successful", f"Document exported to PDF: {file_path}")
                 else:
                     QMessageBox.warning(self, "Export Failed", "Failed to export document to PDF.")
