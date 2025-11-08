@@ -702,6 +702,8 @@ class MainWindow(QMainWindow):
             self.current_editor().zoom_factor = value / 100.0
             self.current_editor().update_zoom()
             self.current_zoom = value
+            # Emit signal to update UI components
+            self.zoom_changed.emit(value)
     
     def setup_menus(self):
         """Setup all menus."""
@@ -1871,12 +1873,18 @@ class MainWindow(QMainWindow):
             if cursor.hasSelection():
                 # Get selected text
                 text = cursor.selectedText()
+                # Qt uses \u2029 for paragraph separator, but handle both \u2029 and \n
+                # for cross-platform compatibility
+                if '\u2029' in text:
+                    separator = '\u2029'
+                else:
+                    separator = '\n'
                 # Split by paragraph separator
-                lines = text.split('\u2029')
+                lines = text.split(separator)
                 # Sort lines
                 lines.sort()
                 # Replace selection with sorted text
-                cursor.insertText('\u2029'.join(lines))
+                cursor.insertText(separator.join(lines))
             else:
                 QMessageBox.information(self, "Sort", "Please select text to sort.")
 
@@ -1889,10 +1897,19 @@ class MainWindow(QMainWindow):
                 editor.show_formatting_marks = False
             editor.show_formatting_marks = not editor.show_formatting_marks
 
+            # Apply the formatting marks visibility using Qt's text options
+            from PySide6.QtGui import QTextOption
+            options = editor.document().defaultTextOption()
             if editor.show_formatting_marks:
-                QMessageBox.information(self, "Show/Hide", "Formatting marks are now visible.")
+                # Show formatting characters (spaces, tabs, line breaks)
+                options.setFlags(options.flags() | QTextOption.ShowTabsAndSpaces |
+                               QTextOption.ShowLineAndParagraphSeparators)
             else:
-                QMessageBox.information(self, "Show/Hide", "Formatting marks are now hidden.")
+                # Hide formatting characters
+                options.setFlags(options.flags() & ~QTextOption.ShowTabsAndSpaces &
+                               ~QTextOption.ShowLineAndParagraphSeparators)
+            editor.document().setDefaultTextOption(options)
+            editor.viewport().update()
 
     def line_spacing(self):
         """Set line spacing for selected paragraphs."""
@@ -1908,7 +1925,12 @@ class MainWindow(QMainWindow):
                 spacing_map = {"Single": 100, "1.15": 115, "1.5": 150, "Double": 200, "2.5": 250, "3.0": 300}
                 spacing = spacing_map.get(item, 100)
 
-                block_format.setLineHeight(spacing, QTextBlockFormat.ProportionalHeight)
+                # Use LineHeightTypes enum for better compatibility
+                try:
+                    block_format.setLineHeight(spacing, QTextBlockFormat.LineHeightTypes.ProportionalHeight)
+                except (AttributeError, TypeError):
+                    # Fallback for older Qt versions - use integer value directly
+                    block_format.setLineHeight(spacing, 0)  # 0 = ProportionalHeight
                 cursor.setBlockFormat(block_format)
 
     def paragraph_shading(self):
@@ -1971,13 +1993,28 @@ class MainWindow(QMainWindow):
                 QMessageBox.information(self, "Page Number", f"Page number would be inserted at: {item}")
 
     def insert_equation(self):
-        """Insert mathematical equation."""
+        """Insert mathematical equation.
+
+        Note: This is a placeholder implementation. Full LaTeX rendering would require
+        additional dependencies like matplotlib or sympy with LaTeX support.
+        """
         editor = self.current_editor()
         if editor:
-            equation, ok = QInputDialog.getText(self, "Insert Equation", "Enter equation (LaTeX format):")
+            equation, ok = QInputDialog.getText(
+                self,
+                "Insert Equation",
+                "Enter equation (LaTeX format):\n\nNote: Full rendering requires LaTeX support.\nEquation will be shown as formatted text."
+            )
             if ok and equation:
                 cursor = editor.textCursor()
-                cursor.insertText(f"[Equation: {equation}]")
+                # Format the equation text distinctively
+                char_format = QTextCharFormat()
+                char_format.setFontFamily("Courier New")  # Monospace for equations
+                char_format.setFontItalic(True)
+                char_format.setForeground(QColor(0, 0, 128))  # Dark blue
+
+                # Insert with formatting
+                cursor.insertText(f"$ {equation} $", char_format)
 
     # Design tab methods
     def design_themes(self):

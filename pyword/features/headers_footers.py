@@ -72,19 +72,30 @@ class HeaderFooterManager(QObject):
     def _create_header_footer_frames(self):
         """Create frames for headers and footers if they don't exist."""
         root_frame = self.document.rootFrame()
-        
+
         # Create header frame
         header_frame = self._find_or_create_frame(root_frame, "header")
         header_format = header_frame.frameFormat()
-        header_format.setPosition(QTextFrameFormat.Position.FloatLeft)
-        header_format.setPageBreakPolicy(QTextFormat.PageBreak_AlwaysBefore)
+        # Use InFlow positioning as Qt doesn't support FloatTop/FloatBottom for frames
+        # Headers and footers positioning is managed through margins and custom rendering
+        header_format.setPosition(QTextFrameFormat.Position.InFlow)
+        # PageBreakPolicy uses PageBreakFlags enum
+        try:
+            header_format.setPageBreakPolicy(QTextFormat.PageBreakFlag.PageBreak_AlwaysBefore)
+        except AttributeError:
+            # Fallback for different Qt versions
+            pass
         header_frame.setFrameFormat(header_format)
-        
+
         # Create footer frame
         footer_frame = self._find_or_create_frame(root_frame, "footer")
         footer_format = footer_frame.frameFormat()
-        footer_format.setPosition(QTextFrameFormat.Position.FloatBottom)
-        footer_format.setPageBreakPolicy(QTextFormat.PageBreak_AlwaysAfter)
+        footer_format.setPosition(QTextFrameFormat.Position.InFlow)
+        try:
+            footer_format.setPageBreakPolicy(QTextFormat.PageBreakFlag.PageBreak_AlwaysAfter)
+        except AttributeError:
+            # Fallback for different Qt versions
+            pass
         footer_frame.setFrameFormat(footer_format)
     
     def _find_or_create_frame(self, parent: QTextFrame, frame_name: str) -> QTextFrame:
