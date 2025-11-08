@@ -34,9 +34,9 @@ class TextEditor(QTextEdit):
         self.setAcceptRichText(True)
         self.setLineWrapMode(QTextEdit.WidgetWidth)
         self.setTabStopDistance(40)  # 8 spaces at 12pt font
-        
-        # Set default font and style
-        font = QFont("Arial", 12)
+
+        # Set default font and style (changed to Calibri for Word compatibility)
+        font = QFont("Calibri", 11)
         self.setFont(font)
         
         # Enable undo/redo
@@ -194,7 +194,7 @@ class TextEditor(QTextEdit):
         """Update the zoom level of the editor."""
         # Scale the font size
         font = self.font()
-        base_size = 12  # Default font size at 100%
+        base_size = 11  # Default font size at 100% (Calibri 11pt)
         font.setPointSizeF(base_size * self.zoom_factor)
         self.setFont(font)
         
