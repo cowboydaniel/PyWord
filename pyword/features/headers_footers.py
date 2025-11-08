@@ -137,6 +137,10 @@ class HeaderFooterManager(QObject):
 
     def _update_header_footer(self, header_footer_type: HeaderFooterType):
         """Update the content of a header or footer frame."""
+        # Skip update if document is not set yet
+        if self.document is None:
+            return
+
         frame_name = "header" if "header" in header_footer_type.name.lower() else "footer"
         root_frame = self.document.rootFrame()
         frame = self._find_or_create_frame(root_frame, frame_name)
@@ -168,6 +172,10 @@ class HeaderFooterManager(QObject):
     
     def _update_header_footer_position(self, header_footer_type: HeaderFooterType):
         """Update the position of a header or footer frame."""
+        # Skip update if document is not set yet
+        if self.document is None:
+            return
+
         frame_name = "header" if "header" in header_footer_type.name.lower() else "footer"
         frame = self._find_or_create_frame(self.document.rootFrame(), frame_name)
         
