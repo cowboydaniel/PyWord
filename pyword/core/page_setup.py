@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Optional, Dict, Any
 from PySide6.QtCore import QMarginsF
@@ -52,7 +52,7 @@ class PageSetup:
     """Represents page setup settings for a document."""
     paper_size: str = 'A4'  # Standard paper size (A4, Letter, etc.)
     orientation: PageOrientation = PageOrientation.PORTRAIT
-    margins: PageMargins = PageMargins()
+    margins: PageMargins = field(default_factory=PageMargins)
     page_width: float = 595.0  # A4 width in points (210mm)
     page_height: float = 842.0  # A4 height in points (297mm)
     
