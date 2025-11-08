@@ -18,10 +18,10 @@ class RibbonTab(QWidget):
         self.setup_ui()
 
     def setup_ui(self):
-        """Initialize the tab UI."""
+        """Initialize the tab UI (compact)."""
         self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(5, 5, 5, 5)
-        self.layout.setSpacing(10)
+        self.layout.setContentsMargins(4, 4, 4, 4)
+        self.layout.setSpacing(8)  # Tighter spacing between groups
         self.layout.addStretch()
 
     def add_group(self, group: 'RibbonGroup'):
@@ -29,11 +29,18 @@ class RibbonTab(QWidget):
         self.groups.append(group)
         self.layout.insertWidget(len(self.groups) - 1, group)
 
-        # Add separator after group (except for last group)
+        # Add separator after group (except for last group) - subtle Word-style divider
         separator = QFrame()
         separator.setFrameShape(QFrame.VLine)
-        separator.setFrameShadow(QFrame.Sunken)
+        separator.setFrameShadow(QFrame.Plain)
         separator.setFixedWidth(1)
+        separator.setStyleSheet("""
+            QFrame {
+                background-color: #EDEBE9;
+                border: none;
+                margin: 4px 0px;
+            }
+        """)
         self.layout.insertWidget(len(self.groups) * 2 - 1, separator)
 
 
@@ -47,24 +54,24 @@ class RibbonGroup(QWidget):
         self.setup_ui()
 
     def setup_ui(self):
-        """Initialize the group UI."""
+        """Initialize the group UI (compact Microsoft Word style)."""
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(8, 3, 8, 3)
-        main_layout.setSpacing(2)
+        main_layout.setContentsMargins(6, 2, 6, 2)
+        main_layout.setSpacing(1)
 
         # Content area
         self.content_layout = QGridLayout()
-        self.content_layout.setSpacing(4)
+        self.content_layout.setSpacing(3)  # Tighter spacing for compact design
         main_layout.addLayout(self.content_layout)
 
-        # Group title
+        # Group title (Microsoft Word style - small, centered, subtle)
         title_label = QLabel(self.title)
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet("""
-            font-size: 11px;
+            font-size: 10px;
             color: #605E5C;
             font-weight: normal;
-            padding-top: 2px;
+            padding-top: 1px;
         """)
         main_layout.addWidget(title_label)
 
@@ -326,8 +333,8 @@ class RibbonBar(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # Constrain the ribbon height (Microsoft Word style)
-        self.setMaximumHeight(150)
+        # Constrain the ribbon height (Microsoft Word style - compact)
+        self.setMaximumHeight(140)
 
         # Tab bar
         self.tab_bar_widget = QWidget()
@@ -366,7 +373,7 @@ class RibbonBar(QWidget):
         self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scroll_area.setWidget(self.stacked_widget)
-        self.scroll_area.setMaximumHeight(120)  # Limit ribbon height
+        self.scroll_area.setMaximumHeight(110)  # Limit ribbon height (compact)
         self.content_layout.addWidget(self.scroll_area)
 
     def add_tab(self, tab: RibbonTab) -> int:
@@ -382,9 +389,9 @@ class RibbonBar(QWidget):
         button.setFlat(True)
         button.setStyleSheet("""
             QPushButton {
-                padding: 8px 16px;
+                padding: 6px 18px;
                 border: none;
-                border-bottom: 2px solid transparent;
+                border-bottom: 3px solid transparent;
                 background: transparent;
                 font-weight: normal;
                 font-size: 13px;
@@ -394,9 +401,10 @@ class RibbonBar(QWidget):
                 background-color: #F3F2F1;
             }
             QPushButton:checked {
-                border-bottom: 2px solid #0078D4;
+                border-bottom: 3px solid #0078D4;
                 background-color: #FFFFFF;
                 color: #0078D4;
+                font-weight: 500;
             }
         """)
 
@@ -498,10 +506,10 @@ class RibbonBar(QWidget):
         # Font group (with selectors)
         font_group = RibbonGroup("Font")
 
-        # Row 0: Font selector (changed to Calibri (Body) as default)
+        # Row 0: Font selector (changed to Calibri (Body) as default - Word style)
         self.buttons['font_family'] = QFontComboBox()
-        self.buttons['font_family'].setMaximumWidth(150)
-        self.buttons['font_family'].setMinimumWidth(120)
+        self.buttons['font_family'].setMaximumWidth(200)  # Wider to match Word
+        self.buttons['font_family'].setMinimumWidth(180)
         self.buttons['font_family'].setCurrentFont(QFont("Calibri"))
         self.buttons['font_family'].setStyleSheet("""
             QFontComboBox {
@@ -678,24 +686,23 @@ class RibbonBar(QWidget):
 
         tab.add_group(paragraph_group)
 
-        # Styles group
+        # Styles group (Microsoft Word style - horizontal with dropdown)
         styles_group = RibbonGroup("Styles")
 
-        # Create style preview boxes
+        # Create style preview boxes - showing only 3 main styles like Word
         style_layout = QHBoxLayout()
         style_layout.setSpacing(2)
 
-        # Add some common styles
+        # Add Microsoft Word default styles (only 3 visible by default)
         styles = [
-            ("Normal", "Arial", 11, False, False),
-            ("Heading 1", "Arial", 16, True, False),
-            ("Heading 2", "Arial", 13, True, False),
-            ("Title", "Arial", 26, True, False),
+            ("Normal", "Calibri", 11, False, False),
+            ("No Spacing", "Calibri", 11, False, False),
+            ("Heading 1", "Calibri", 16, True, False),
         ]
 
         for style_name, font_name, font_size, bold, italic in styles:
             style_btn = QPushButton(style_name)
-            style_btn.setMinimumWidth(70)
+            style_btn.setMinimumWidth(85)
             style_btn.setMaximumHeight(60)
             font = QFont(font_name, min(font_size, 11))  # Scale down for preview
             font.setBold(bold)
@@ -715,6 +722,25 @@ class RibbonBar(QWidget):
                 }
             """)
             style_layout.addWidget(style_btn)
+
+        # Add "More" dropdown button
+        more_styles_btn = QPushButton("⌄")
+        more_styles_btn.setToolTip("More Styles")
+        more_styles_btn.setMaximumWidth(20)
+        more_styles_btn.setMaximumHeight(60)
+        more_styles_btn.setStyleSheet("""
+            QPushButton {
+                border: 1px solid #D2D0CE;
+                border-radius: 2px;
+                padding: 4px;
+                background: white;
+            }
+            QPushButton:hover {
+                background-color: #F3F2F1;
+                border: 1px solid #0078D4;
+            }
+        """)
+        style_layout.addWidget(more_styles_btn)
 
         # Add the style layout to the group
         style_container = QWidget()
@@ -808,6 +834,75 @@ class RibbonBar(QWidget):
         self.buttons['layout_wrap_text'] = arrange_group.add_small_button(QIcon(), "Wrap Text", "Text wrapping")
         self.buttons['layout_align'] = arrange_group.add_small_button(QIcon(), "Align", "Align objects")
         tab.add_group(arrange_group)
+
+        return tab
+
+    def create_references_tab(self) -> RibbonTab:
+        """Create the References tab."""
+        tab = RibbonTab("References")
+
+        # Table of Contents group
+        toc_group = RibbonGroup("Table of Contents")
+        self.buttons['insert_toc'] = toc_group.add_large_button(QIcon(), "Table of\nContents", "Insert table of contents")
+        self.buttons['update_toc'] = toc_group.add_small_button(QIcon(), "Update Table", "Update table of contents")
+        self.buttons['add_text'] = toc_group.add_small_button(QIcon(), "Add Text", "Add text to table of contents")
+        tab.add_group(toc_group)
+
+        # Footnotes group
+        footnotes_group = RibbonGroup("Footnotes")
+        self.buttons['insert_footnote'] = footnotes_group.add_large_button(QIcon(), "Insert\nFootnote", "Insert footnote")
+        self.buttons['insert_endnote'] = footnotes_group.add_large_button(QIcon(), "Insert\nEndnote", "Insert endnote")
+        tab.add_group(footnotes_group)
+
+        # Citations & Bibliography group
+        citations_group = RibbonGroup("Citations & Bibliography")
+        self.buttons['insert_citation'] = citations_group.add_small_button(QIcon(), "Insert Citation", "Insert citation")
+        self.buttons['manage_sources'] = citations_group.add_small_button(QIcon(), "Manage Sources", "Manage sources")
+        self.buttons['bibliography'] = citations_group.add_small_button(QIcon(), "Bibliography", "Insert bibliography")
+        tab.add_group(citations_group)
+
+        # Captions group
+        captions_group = RibbonGroup("Captions")
+        self.buttons['insert_caption'] = captions_group.add_small_button(QIcon(), "Insert Caption", "Insert caption")
+        self.buttons['insert_table_figures'] = captions_group.add_small_button(QIcon(), "Table of Figures", "Insert table of figures")
+        self.buttons['cross_reference'] = captions_group.add_small_button(QIcon(), "Cross-reference", "Insert cross-reference")
+        tab.add_group(captions_group)
+
+        return tab
+
+    def create_mailings_tab(self) -> RibbonTab:
+        """Create the Mailings tab."""
+        tab = RibbonTab("Mailings")
+
+        # Create group
+        create_group = RibbonGroup("Create")
+        self.buttons['envelopes'] = create_group.add_large_button(QIcon(), "Envelopes", "Create envelopes")
+        self.buttons['labels'] = create_group.add_large_button(QIcon(), "Labels", "Create labels")
+        tab.add_group(create_group)
+
+        # Start Mail Merge group
+        mail_merge_group = RibbonGroup("Start Mail Merge")
+        self.buttons['start_mail_merge'] = mail_merge_group.add_large_button(QIcon(), "Start Mail\nMerge", "Start mail merge")
+        self.buttons['select_recipients'] = mail_merge_group.add_small_button(QIcon(), "Select Recipients", "Select recipients")
+        self.buttons['edit_recipient_list'] = mail_merge_group.add_small_button(QIcon(), "Edit Recipients", "Edit recipient list")
+        tab.add_group(mail_merge_group)
+
+        # Write & Insert Fields group
+        fields_group = RibbonGroup("Write & Insert Fields")
+        self.buttons['insert_merge_field'] = fields_group.add_small_button(QIcon(), "Insert Merge Field", "Insert merge field")
+        self.buttons['rules'] = fields_group.add_small_button(QIcon(), "Rules", "Mail merge rules")
+        self.buttons['match_fields'] = fields_group.add_small_button(QIcon(), "Match Fields", "Match fields")
+        tab.add_group(fields_group)
+
+        # Preview Results group
+        preview_group = RibbonGroup("Preview Results")
+        self.buttons['preview_results'] = preview_group.add_large_button(QIcon(), "Preview\nResults", "Preview merge results")
+        tab.add_group(preview_group)
+
+        # Finish group
+        finish_group = RibbonGroup("Finish")
+        self.buttons['finish_merge'] = finish_group.add_large_button(QIcon(), "Finish &\nMerge", "Finish and merge")
+        tab.add_group(finish_group)
 
         return tab
 

@@ -263,6 +263,8 @@ class MainWindow(QMainWindow):
         insert_tab = self.ribbon.create_insert_tab()
         design_tab = self.ribbon.create_design_tab()
         layout_tab = self.ribbon.create_layout_tab()
+        references_tab = self.ribbon.create_references_tab()  # New tab
+        mailings_tab = self.ribbon.create_mailings_tab()  # New tab
         view_tab = self.ribbon.create_view_tab()
 
         self.ribbon.add_tab(file_tab)
@@ -270,6 +272,8 @@ class MainWindow(QMainWindow):
         self.ribbon.add_tab(insert_tab)
         self.ribbon.add_tab(design_tab)
         self.ribbon.add_tab(layout_tab)
+        self.ribbon.add_tab(references_tab)  # Add between Layout and View
+        self.ribbon.add_tab(mailings_tab)  # Add between References and View
         self.ribbon.add_tab(view_tab)
 
         # Connect ribbon actions to methods
@@ -588,7 +592,7 @@ class MainWindow(QMainWindow):
         self.status_bar = QStatusBar()
         self.status_bar.setStyleSheet("""
             QStatusBar {
-                background-color: #F3F2F1;
+                background-color: #FFFFFF;
                 border-top: 1px solid #D2D0CE;
                 padding: 2px 8px;
             }
