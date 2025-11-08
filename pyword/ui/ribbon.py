@@ -584,6 +584,10 @@ class RibbonBar(QWidget):
         self.buttons['font_family'].setMaximumWidth(200)  # Wider to match Word
         self.buttons['font_family'].setMinimumWidth(180)
         self.buttons['font_family'].setCurrentFont(QFont("Calibri"))
+        # Set custom display text to show "Calibri (Body)" like Word
+        self.buttons['font_family'].setEditable(True)
+        self.buttons['font_family'].lineEdit().setText("Calibri (Body)")
+        self.buttons['font_family'].setEditable(False)
         self.buttons['font_family'].setStyleSheet("""
             QFontComboBox {
                 border: 1px solid #D2D0CE;
@@ -813,32 +817,41 @@ class RibbonBar(QWidget):
         style_layout.setSpacing(2)
 
         # Add Microsoft Word default styles (only 3 visible by default)
+        # Style format: (name, font_name, font_size, bold, color)
         styles = [
-            ("Normal", "Calibri", 11, False, False, False),
-            ("No Spacing", "Calibri", 11, False, False, False),
-            ("Heading 1 ▾", "Calibri", 13, True, False, True),  # Added dropdown arrow
+            ("Normal", "Calibri", 11, False, "#000000"),
+            ("No Spacing", "Calibri", 11, False, "#000000"),
+            ("Heading 1 ▾", "Calibri Light", 16, False, "#2E75B5"),  # Light blue, larger
         ]
 
-        for style_name, font_name, font_size, bold, italic, is_last in styles:
+        for style_name, font_name, font_size, bold, color in styles:
             style_btn = QPushButton(style_name)
             style_btn.setMinimumWidth(90)  # Slightly wider for dropdown arrow
             style_btn.setMaximumHeight(60)
-            font = QFont(font_name, min(font_size, 11))  # Scale down for preview
+
+            # Create font with specific styling
+            font = QFont(font_name if font_name == "Calibri Light" else "Calibri", 11)  # Consistent button size
             font.setBold(bold)
-            font.setItalic(italic)
+            if font_name == "Calibri Light":
+                font.setWeight(QFont.Light)
+
             style_btn.setFont(font)
-            style_btn.setStyleSheet("""
-                QPushButton {
+
+            # Add color styling for text
+            text_color = color
+            style_btn.setStyleSheet(f"""
+                QPushButton {{
                     border: 1px solid #D2D0CE;
                     border-radius: 2px;
                     padding: 8px 6px;
                     background: white;
                     text-align: left;
-                }
-                QPushButton:hover {
+                    color: {text_color};
+                }}
+                QPushButton:hover {{
                     background-color: #F3F2F1;
                     border: 1px solid #0078D4;
-                }
+                }}
             """)
             style_layout.addWidget(style_btn)
 
