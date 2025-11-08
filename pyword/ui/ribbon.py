@@ -1,11 +1,29 @@
 """Ribbon interface for PyWord - modern Microsoft Office-style UI."""
 
+import os
+from pathlib import Path
+
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QToolButton,
                                QLabel, QFrame, QScrollArea, QSizePolicy, QPushButton,
                                QButtonGroup, QGridLayout, QSpacerItem, QMenu, QStackedWidget,
                                QComboBox, QFontComboBox, QSpinBox, QListWidget, QTextEdit)
 from PySide6.QtCore import Qt, Signal, QSize
 from PySide6.QtGui import QIcon, QAction, QFont, QColor
+
+
+def load_icon(icon_name: str) -> QIcon:
+    """Load an icon from the icons directory.
+
+    Args:
+        icon_name: Name of the icon file (without extension)
+
+    Returns:
+        QIcon loaded from SVG file, or empty QIcon if file not found
+    """
+    icon_path = Path(__file__).parent / "icons" / f"{icon_name}.svg"
+    if icon_path.exists():
+        return QIcon(str(icon_path))
+    return QIcon()  # Return empty icon as fallback
 
 
 class RibbonTab(QWidget):
@@ -558,11 +576,11 @@ class RibbonBar(QWidget):
         # Clipboard group
         clipboard_group = RibbonGroup("Clipboard")
         # Make Paste button more prominent with larger size
-        self.buttons['paste'] = clipboard_group.add_large_button(QIcon(), "Paste", "Paste from clipboard")
+        self.buttons['paste'] = clipboard_group.add_large_button(load_icon("paste"), "Paste", "Paste from clipboard")
         self.buttons['paste'].setIconSize(QSize(36, 36))  # Larger icon
         self.buttons['paste'].setFixedSize(75, 70)  # Slightly larger button
-        self.buttons['cut'] = clipboard_group.add_small_button(QIcon(), "Cut", "Cut to clipboard")
-        self.buttons['copy'] = clipboard_group.add_small_button(QIcon(), "Copy", "Copy to clipboard")
+        self.buttons['cut'] = clipboard_group.add_small_button(load_icon("cut"), "Cut", "Cut to clipboard")
+        self.buttons['copy'] = clipboard_group.add_small_button(load_icon("copy"), "Copy", "Copy to clipboard")
         self.buttons['format_painter'] = clipboard_group.add_small_button(QIcon(), "Format\nPainter", "Format painter")
         tab.add_group(clipboard_group)
 
@@ -713,9 +731,8 @@ class RibbonBar(QWidget):
 
         # Row 1: Bold button
         self.buttons['bold'] = QToolButton()
-        self.buttons['bold'].setText("B")
+        self.buttons['bold'].setIcon(load_icon("bold"))
         self.buttons['bold'].setToolTip("Bold (Ctrl+B)")
-        self.buttons['bold'].setFont(QFont("Arial", 10, QFont.Bold))
         self.buttons['bold'].setCheckable(True)
         self.buttons['bold'].setFixedHeight(24)
         self.buttons['bold'].setStyleSheet(button_style)
@@ -723,11 +740,8 @@ class RibbonBar(QWidget):
 
         # Row 1: Italic button
         self.buttons['italic'] = QToolButton()
-        self.buttons['italic'].setText("I")
+        self.buttons['italic'].setIcon(load_icon("italic"))
         self.buttons['italic'].setToolTip("Italic (Ctrl+I)")
-        italic_font = QFont("Arial", 10)
-        italic_font.setItalic(True)
-        self.buttons['italic'].setFont(italic_font)
         self.buttons['italic'].setCheckable(True)
         self.buttons['italic'].setFixedHeight(24)
         self.buttons['italic'].setStyleSheet(button_style)
@@ -735,11 +749,8 @@ class RibbonBar(QWidget):
 
         # Row 1: Underline button with dropdown
         self.buttons['underline'] = QToolButton()
-        self.buttons['underline'].setText("U▾")
+        self.buttons['underline'].setIcon(load_icon("underline"))
         self.buttons['underline'].setToolTip("Underline (Ctrl+U)")
-        underline_font = QFont("Arial", 10)
-        underline_font.setUnderline(True)
-        self.buttons['underline'].setFont(underline_font)
         self.buttons['underline'].setCheckable(True)
         self.buttons['underline'].setFixedHeight(24)
         self.buttons['underline'].setStyleSheet(button_style)
@@ -747,11 +758,8 @@ class RibbonBar(QWidget):
 
         # Row 1: Strikethrough button
         self.buttons['strikethrough'] = QToolButton()
-        self.buttons['strikethrough'].setText("abc")
+        self.buttons['strikethrough'].setIcon(load_icon("strikethrough"))
         self.buttons['strikethrough'].setToolTip("Strikethrough")
-        strikethrough_font = QFont("Arial", 10)
-        strikethrough_font.setStrikeOut(True)
-        self.buttons['strikethrough'].setFont(strikethrough_font)
         self.buttons['strikethrough'].setCheckable(True)
         self.buttons['strikethrough'].setFixedHeight(24)
         self.buttons['strikethrough'].setStyleSheet(button_style)
@@ -785,68 +793,18 @@ class RibbonBar(QWidget):
 
         # Row 2: Text Highlight Color button with dropdown (yellow highlight) - Word-like theme
         self.buttons['highlight_color'] = QToolButton()
-        self.buttons['highlight_color'].setText("ab")
+        self.buttons['highlight_color'].setIcon(load_icon("highlight-color"))
         self.buttons['highlight_color'].setToolTip("Text Highlight Color")
         self.buttons['highlight_color'].setFixedHeight(24)
-        self.buttons['highlight_color'].setStyleSheet("""
-            QToolButton {
-                border: 1px solid transparent;
-                border-radius: 2px;
-                padding: 2px 6px;
-                background: transparent;
-                color: #323130;
-                font-size: 12px;
-                text-align: center;
-                font-weight: bold;
-                min-width: 28px;
-                background-image: linear-gradient(transparent 65%, #FFED4E 65%);
-            }
-            QToolButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #FAFAFA, stop:0.65 #F0F0F0,
-                    stop:0.65 #FFED4E, stop:1 #FFED4E);
-                border: 1px solid #C6C6C6;
-            }
-            QToolButton:pressed {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #E5E5E5, stop:0.65 #F0F0F0,
-                    stop:0.65 #FFE838, stop:1 #FFE838);
-                border: 1px solid #ADADAD;
-            }
-        """)
+        self.buttons['highlight_color'].setStyleSheet(button_style)
         font_group.content_layout.addWidget(self.buttons['highlight_color'], 2, 2)
 
         # Row 2: Font Color button with dropdown (red underline) - Word-like theme
         self.buttons['font_color'] = QToolButton()
-        self.buttons['font_color'].setText("A")
+        self.buttons['font_color'].setIcon(load_icon("font-color"))
         self.buttons['font_color'].setToolTip("Font Color")
         self.buttons['font_color'].setFixedHeight(24)
-        self.buttons['font_color'].setStyleSheet("""
-            QToolButton {
-                border: 1px solid transparent;
-                border-radius: 2px;
-                padding: 2px 6px;
-                background: transparent;
-                color: #323130;
-                font-size: 14px;
-                text-align: center;
-                font-weight: bold;
-                min-width: 28px;
-                border-bottom: 3px solid #D13438;
-            }
-            QToolButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #FAFAFA, stop:1 #F0F0F0);
-                border: 1px solid #C6C6C6;
-                border-bottom: 3px solid #D13438;
-            }
-            QToolButton:pressed {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #E5E5E5, stop:1 #F0F0F0);
-                border: 1px solid #ADADAD;
-                border-bottom: 3px solid #D13438;
-            }
-        """)
+        self.buttons['font_color'].setStyleSheet(button_style)
         font_group.content_layout.addWidget(self.buttons['font_color'], 2, 3)
 
         tab.add_group(font_group)
@@ -889,14 +847,14 @@ class RibbonBar(QWidget):
 
         # Row 0: Lists and indents
         self.buttons['bullets'] = QToolButton()
-        self.buttons['bullets'].setText("• ▾")
+        self.buttons['bullets'].setIcon(load_icon("bullets"))
         self.buttons['bullets'].setToolTip("Bullets")
         self.buttons['bullets'].setFixedHeight(24)
         self.buttons['bullets'].setStyleSheet(para_button_style)
         paragraph_group.content_layout.addWidget(self.buttons['bullets'], 0, 0)
 
         self.buttons['numbering'] = QToolButton()
-        self.buttons['numbering'].setText("1. ▾")
+        self.buttons['numbering'].setIcon(load_icon("numbering"))
         self.buttons['numbering'].setToolTip("Numbering")
         self.buttons['numbering'].setFixedHeight(24)
         self.buttons['numbering'].setStyleSheet(para_button_style)
@@ -910,14 +868,14 @@ class RibbonBar(QWidget):
         paragraph_group.content_layout.addWidget(self.buttons['multilevel_list'], 0, 2)
 
         self.buttons['decrease_indent'] = QToolButton()
-        self.buttons['decrease_indent'].setText("⬅")
+        self.buttons['decrease_indent'].setIcon(load_icon("decrease-indent"))
         self.buttons['decrease_indent'].setToolTip("Decrease Indent")
         self.buttons['decrease_indent'].setFixedHeight(24)
         self.buttons['decrease_indent'].setStyleSheet(para_button_style)
         paragraph_group.content_layout.addWidget(self.buttons['decrease_indent'], 0, 3)
 
         self.buttons['increase_indent'] = QToolButton()
-        self.buttons['increase_indent'].setText("➡")
+        self.buttons['increase_indent'].setIcon(load_icon("increase-indent"))
         self.buttons['increase_indent'].setToolTip("Increase Indent")
         self.buttons['increase_indent'].setFixedHeight(24)
         self.buttons['increase_indent'].setStyleSheet(para_button_style)
@@ -939,21 +897,21 @@ class RibbonBar(QWidget):
         paragraph_group.content_layout.addWidget(self.buttons['show_hide'], 1, 1)
 
         self.buttons['align_left'] = QToolButton()
-        self.buttons['align_left'].setText("≡")
+        self.buttons['align_left'].setIcon(load_icon("align-left"))
         self.buttons['align_left'].setToolTip("Align Left")
         self.buttons['align_left'].setFixedHeight(24)
         self.buttons['align_left'].setStyleSheet(para_button_style)
         paragraph_group.content_layout.addWidget(self.buttons['align_left'], 1, 2)
 
         self.buttons['align_center'] = QToolButton()
-        self.buttons['align_center'].setText("▬")
+        self.buttons['align_center'].setIcon(load_icon("align-center"))
         self.buttons['align_center'].setToolTip("Center")
         self.buttons['align_center'].setFixedHeight(24)
         self.buttons['align_center'].setStyleSheet(para_button_style)
         paragraph_group.content_layout.addWidget(self.buttons['align_center'], 1, 3)
 
         self.buttons['align_right'] = QToolButton()
-        self.buttons['align_right'].setText("≡")
+        self.buttons['align_right'].setIcon(load_icon("align-right"))
         self.buttons['align_right'].setToolTip("Align Right")
         self.buttons['align_right'].setFixedHeight(24)
         self.buttons['align_right'].setStyleSheet(para_button_style)
@@ -961,7 +919,7 @@ class RibbonBar(QWidget):
 
         # Row 2: More paragraph options
         self.buttons['align_justify'] = QToolButton()
-        self.buttons['align_justify'].setText("≣")
+        self.buttons['align_justify'].setIcon(load_icon("align-justify"))
         self.buttons['align_justify'].setToolTip("Justify")
         self.buttons['align_justify'].setFixedHeight(24)
         self.buttons['align_justify'].setStyleSheet(para_button_style)
