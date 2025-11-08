@@ -776,16 +776,16 @@ class RibbonBar(QWidget):
 
         # Themes group
         themes_group = RibbonGroup("Themes")
-        themes_group.add_large_button(QIcon(), "Themes", "Document themes")
-        themes_group.add_small_button(QIcon(), "Colors", "Theme colors")
-        themes_group.add_small_button(QIcon(), "Fonts", "Theme fonts")
+        self.buttons['design_themes'] = themes_group.add_large_button(QIcon(), "Themes", "Document themes")
+        self.buttons['design_colors'] = themes_group.add_small_button(QIcon(), "Colors", "Theme colors")
+        self.buttons['design_fonts'] = themes_group.add_small_button(QIcon(), "Fonts", "Theme fonts")
         tab.add_group(themes_group)
 
         # Page Background group
         background_group = RibbonGroup("Page Background")
-        background_group.add_large_button(QIcon(), "Watermark", "Add watermark")
-        background_group.add_large_button(QIcon(), "Page Color", "Page color")
-        background_group.add_large_button(QIcon(), "Borders", "Page borders")
+        self.buttons['design_watermark'] = background_group.add_large_button(QIcon(), "Watermark", "Add watermark")
+        self.buttons['design_page_color'] = background_group.add_large_button(QIcon(), "Page Color", "Page color")
+        self.buttons['design_page_borders'] = background_group.add_large_button(QIcon(), "Borders", "Page borders")
         tab.add_group(background_group)
 
         return tab
@@ -796,17 +796,17 @@ class RibbonBar(QWidget):
 
         # Page Setup group
         page_setup_group = RibbonGroup("Page Setup")
-        page_setup_group.add_small_button(QIcon(), "Margins", "Page margins")
-        page_setup_group.add_small_button(QIcon(), "Orientation", "Page orientation")
-        page_setup_group.add_small_button(QIcon(), "Size", "Page size")
-        page_setup_group.add_small_button(QIcon(), "Columns", "Columns")
+        self.buttons['layout_margins'] = page_setup_group.add_small_button(QIcon(), "Margins", "Page margins")
+        self.buttons['layout_orientation'] = page_setup_group.add_small_button(QIcon(), "Orientation", "Page orientation")
+        self.buttons['layout_size'] = page_setup_group.add_small_button(QIcon(), "Size", "Page size")
+        self.buttons['layout_columns'] = page_setup_group.add_small_button(QIcon(), "Columns", "Columns")
         tab.add_group(page_setup_group)
 
         # Arrange group
         arrange_group = RibbonGroup("Arrange")
-        arrange_group.add_small_button(QIcon(), "Position", "Position")
-        arrange_group.add_small_button(QIcon(), "Wrap Text", "Text wrapping")
-        arrange_group.add_small_button(QIcon(), "Align", "Align objects")
+        self.buttons['layout_position'] = arrange_group.add_small_button(QIcon(), "Position", "Position")
+        self.buttons['layout_wrap_text'] = arrange_group.add_small_button(QIcon(), "Wrap Text", "Text wrapping")
+        self.buttons['layout_align'] = arrange_group.add_small_button(QIcon(), "Align", "Align objects")
         tab.add_group(arrange_group)
 
         return tab
@@ -817,23 +817,23 @@ class RibbonBar(QWidget):
 
         # Views group
         views_group = RibbonGroup("Views")
-        views_group.add_small_button(QIcon(), "Print Layout", "Print layout")
-        views_group.add_small_button(QIcon(), "Web Layout", "Web layout")
-        views_group.add_small_button(QIcon(), "Draft", "Draft view")
+        self.buttons['view_print_layout'] = views_group.add_small_button(QIcon(), "Print Layout", "Print layout")
+        self.buttons['view_web_layout'] = views_group.add_small_button(QIcon(), "Web Layout", "Web layout")
+        self.buttons['view_draft'] = views_group.add_small_button(QIcon(), "Draft", "Draft view")
         tab.add_group(views_group)
 
         # Zoom group
         zoom_group = RibbonGroup("Zoom")
-        zoom_group.add_large_button(QIcon(), "Zoom", "Zoom level")
-        zoom_group.add_small_button(QIcon(), "100%", "Zoom to 100%")
-        zoom_group.add_small_button(QIcon(), "Page Width", "Fit to page width")
+        self.buttons['view_zoom'] = zoom_group.add_large_button(QIcon(), "Zoom", "Zoom level")
+        self.buttons['view_zoom_100'] = zoom_group.add_small_button(QIcon(), "100%", "Zoom to 100%")
+        self.buttons['view_page_width'] = zoom_group.add_small_button(QIcon(), "Page Width", "Fit to page width")
         tab.add_group(zoom_group)
 
         # Window group
         window_group = RibbonGroup("Window")
-        window_group.add_small_button(QIcon(), "New Window", "New window")
-        window_group.add_small_button(QIcon(), "Split", "Split view")
-        window_group.add_small_button(QIcon(), "Side by Side", "View side by side")
+        self.buttons['view_new_window'] = window_group.add_small_button(QIcon(), "New Window", "New window")
+        self.buttons['view_split'] = window_group.add_small_button(QIcon(), "Split", "Split view")
+        self.buttons['view_side_by_side'] = window_group.add_small_button(QIcon(), "Side by Side", "View side by side")
         tab.add_group(window_group)
 
         return tab

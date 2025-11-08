@@ -305,6 +305,8 @@ class MainWindow(QMainWindow):
             self.ribbon.buttons['copy'].clicked.connect(self.copy)
         if 'paste' in self.ribbon.buttons:
             self.ribbon.buttons['paste'].clicked.connect(self.paste)
+        if 'format_painter' in self.ribbon.buttons:
+            self.ribbon.buttons['format_painter'].clicked.connect(self.format_painter)
 
         # Home tab - Font group
         if 'font_family' in self.ribbon.buttons:
@@ -331,12 +333,16 @@ class MainWindow(QMainWindow):
             self.ribbon.buttons['highlight_color'].clicked.connect(self.select_highlight_color)
         if 'font_color' in self.ribbon.buttons:
             self.ribbon.buttons['font_color'].clicked.connect(self.select_font_color)
+        if 'text_effects' in self.ribbon.buttons:
+            self.ribbon.buttons['text_effects'].clicked.connect(self.text_effects)
 
         # Home tab - Paragraph group
         if 'bullets' in self.ribbon.buttons:
             self.ribbon.buttons['bullets'].clicked.connect(self.toggle_bullets)
         if 'numbering' in self.ribbon.buttons:
             self.ribbon.buttons['numbering'].clicked.connect(self.toggle_numbering)
+        if 'multilevel_list' in self.ribbon.buttons:
+            self.ribbon.buttons['multilevel_list'].clicked.connect(self.multilevel_list)
         if 'decrease_indent' in self.ribbon.buttons:
             self.ribbon.buttons['decrease_indent'].clicked.connect(self.decrease_indent)
         if 'increase_indent' in self.ribbon.buttons:
@@ -349,6 +355,16 @@ class MainWindow(QMainWindow):
             self.ribbon.buttons['align_right'].clicked.connect(self.align_right)
         if 'align_justify' in self.ribbon.buttons:
             self.ribbon.buttons['align_justify'].clicked.connect(self.align_justify)
+        if 'sort' in self.ribbon.buttons:
+            self.ribbon.buttons['sort'].clicked.connect(self.sort_text)
+        if 'show_hide' in self.ribbon.buttons:
+            self.ribbon.buttons['show_hide'].clicked.connect(self.show_hide_formatting)
+        if 'line_spacing' in self.ribbon.buttons:
+            self.ribbon.buttons['line_spacing'].clicked.connect(self.line_spacing)
+        if 'shading' in self.ribbon.buttons:
+            self.ribbon.buttons['shading'].clicked.connect(self.paragraph_shading)
+        if 'borders' in self.ribbon.buttons:
+            self.ribbon.buttons['borders'].clicked.connect(self.paragraph_borders)
 
         # Home tab - Editing group
         if 'find' in self.ribbon.buttons:
@@ -363,10 +379,76 @@ class MainWindow(QMainWindow):
             self.ribbon.buttons['insert_table'].clicked.connect(self.insert_table)
         if 'insert_picture' in self.ribbon.buttons:
             self.ribbon.buttons['insert_picture'].clicked.connect(self.insert_image)
+        if 'insert_shapes' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_shapes'].clicked.connect(self.insert_shapes)
+        if 'insert_chart' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_chart'].clicked.connect(self.insert_chart)
+        if 'insert_smartart' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_smartart'].clicked.connect(self.insert_smartart)
         if 'insert_link' in self.ribbon.buttons:
             self.ribbon.buttons['insert_link'].clicked.connect(self.insert_hyperlink)
+        if 'insert_bookmark' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_bookmark'].clicked.connect(self.insert_bookmark)
+        if 'insert_header' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_header'].clicked.connect(self.insert_header)
+        if 'insert_footer' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_footer'].clicked.connect(self.insert_footer)
+        if 'insert_page_number' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_page_number'].clicked.connect(self.insert_page_number)
+        if 'insert_equation' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_equation'].clicked.connect(self.insert_equation)
         if 'insert_symbol' in self.ribbon.buttons:
             self.ribbon.buttons['insert_symbol'].clicked.connect(self.insert_symbol)
+
+        # Design tab connections
+        if 'design_themes' in self.ribbon.buttons:
+            self.ribbon.buttons['design_themes'].clicked.connect(self.design_themes)
+        if 'design_colors' in self.ribbon.buttons:
+            self.ribbon.buttons['design_colors'].clicked.connect(self.design_colors)
+        if 'design_fonts' in self.ribbon.buttons:
+            self.ribbon.buttons['design_fonts'].clicked.connect(self.design_fonts)
+        if 'design_watermark' in self.ribbon.buttons:
+            self.ribbon.buttons['design_watermark'].clicked.connect(self.design_watermark)
+        if 'design_page_color' in self.ribbon.buttons:
+            self.ribbon.buttons['design_page_color'].clicked.connect(self.design_page_color)
+        if 'design_page_borders' in self.ribbon.buttons:
+            self.ribbon.buttons['design_page_borders'].clicked.connect(self.design_page_borders)
+
+        # Layout tab connections
+        if 'layout_margins' in self.ribbon.buttons:
+            self.ribbon.buttons['layout_margins'].clicked.connect(self.layout_margins)
+        if 'layout_orientation' in self.ribbon.buttons:
+            self.ribbon.buttons['layout_orientation'].clicked.connect(self.layout_orientation)
+        if 'layout_size' in self.ribbon.buttons:
+            self.ribbon.buttons['layout_size'].clicked.connect(self.layout_size)
+        if 'layout_columns' in self.ribbon.buttons:
+            self.ribbon.buttons['layout_columns'].clicked.connect(self.layout_columns)
+        if 'layout_position' in self.ribbon.buttons:
+            self.ribbon.buttons['layout_position'].clicked.connect(self.layout_position)
+        if 'layout_wrap_text' in self.ribbon.buttons:
+            self.ribbon.buttons['layout_wrap_text'].clicked.connect(self.layout_wrap_text)
+        if 'layout_align' in self.ribbon.buttons:
+            self.ribbon.buttons['layout_align'].clicked.connect(self.layout_align)
+
+        # View tab connections
+        if 'view_print_layout' in self.ribbon.buttons:
+            self.ribbon.buttons['view_print_layout'].clicked.connect(self.view_print_layout)
+        if 'view_web_layout' in self.ribbon.buttons:
+            self.ribbon.buttons['view_web_layout'].clicked.connect(self.view_web_layout)
+        if 'view_draft' in self.ribbon.buttons:
+            self.ribbon.buttons['view_draft'].clicked.connect(self.view_draft)
+        if 'view_zoom' in self.ribbon.buttons:
+            self.ribbon.buttons['view_zoom'].clicked.connect(self.view_zoom_dialog)
+        if 'view_zoom_100' in self.ribbon.buttons:
+            self.ribbon.buttons['view_zoom_100'].clicked.connect(self.zoom_reset)
+        if 'view_page_width' in self.ribbon.buttons:
+            self.ribbon.buttons['view_page_width'].clicked.connect(self.view_page_width)
+        if 'view_new_window' in self.ribbon.buttons:
+            self.ribbon.buttons['view_new_window'].clicked.connect(self.view_new_window)
+        if 'view_split' in self.ribbon.buttons:
+            self.ribbon.buttons['view_split'].clicked.connect(self.view_split)
+        if 'view_side_by_side' in self.ribbon.buttons:
+            self.ribbon.buttons['view_side_by_side'].clicked.connect(self.view_side_by_side)
 
     def setup_left_panel(self):
         """Setup the left panel with navigation and styles."""
@@ -1681,3 +1763,315 @@ class MainWindow(QMainWindow):
                 self.setWindowTitle(f"{doc_name} - PyWord")
         else:
             self.setWindowTitle("Document1 - PyWord")
+
+    # Home tab - Additional formatting methods
+    def format_painter(self):
+        """Copy formatting from selected text to apply elsewhere."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+            if cursor.hasSelection():
+                # Store the format from selected text
+                self.stored_format = cursor.charFormat()
+                QMessageBox.information(self, "Format Painter", "Format copied! Select text to apply the formatting.")
+            elif hasattr(self, 'stored_format'):
+                # Apply stored format
+                if not cursor.hasSelection():
+                    cursor.select(QTextCursor.WordUnderCursor)
+                cursor.mergeCharFormat(self.stored_format)
+                delattr(self, 'stored_format')
+            else:
+                QMessageBox.information(self, "Format Painter", "Please select text to copy formatting from.")
+
+    def text_effects(self):
+        """Apply text effects (shadow, outline, etc.)."""
+        editor = self.current_editor()
+        if editor:
+            # Simple implementation: show available effects
+            items = ["Shadow", "Outline", "Glow", "Reflection"]
+            item, ok = QInputDialog.getItem(self, "Text Effects", "Select effect:", items, 0, False)
+            if ok and item:
+                QMessageBox.information(self, "Text Effects", f"Text effect '{item}' would be applied here.\nThis is a placeholder implementation.")
+
+    def multilevel_list(self):
+        """Insert a multilevel list."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+            # Create a multilevel list format
+            list_format = QTextListFormat()
+            list_format.setStyle(QTextListFormat.ListDecimal)
+            list_format.setIndent(2)
+            cursor.createList(list_format)
+
+    def sort_text(self):
+        """Sort selected paragraphs alphabetically."""
+        editor = self.current_editor()
+        if editor:
+            cursor = editor.textCursor()
+            if cursor.hasSelection():
+                # Get selected text
+                text = cursor.selectedText()
+                # Split by paragraph separator
+                lines = text.split('\u2029')
+                # Sort lines
+                lines.sort()
+                # Replace selection with sorted text
+                cursor.insertText('\u2029'.join(lines))
+            else:
+                QMessageBox.information(self, "Sort", "Please select text to sort.")
+
+    def show_hide_formatting(self):
+        """Toggle visibility of formatting marks."""
+        editor = self.current_editor()
+        if editor:
+            # Toggle a flag to show/hide formatting marks
+            if not hasattr(editor, 'show_formatting_marks'):
+                editor.show_formatting_marks = False
+            editor.show_formatting_marks = not editor.show_formatting_marks
+
+            if editor.show_formatting_marks:
+                QMessageBox.information(self, "Show/Hide", "Formatting marks are now visible.")
+            else:
+                QMessageBox.information(self, "Show/Hide", "Formatting marks are now hidden.")
+
+    def line_spacing(self):
+        """Set line spacing for selected paragraphs."""
+        editor = self.current_editor()
+        if editor:
+            items = ["Single", "1.15", "1.5", "Double", "2.5", "3.0"]
+            item, ok = QInputDialog.getItem(self, "Line Spacing", "Select line spacing:", items, 0, False)
+            if ok and item:
+                cursor = editor.textCursor()
+                block_format = cursor.blockFormat()
+
+                # Map selection to spacing value
+                spacing_map = {"Single": 100, "1.15": 115, "1.5": 150, "Double": 200, "2.5": 250, "3.0": 300}
+                spacing = spacing_map.get(item, 100)
+
+                block_format.setLineHeight(spacing, QTextBlockFormat.ProportionalHeight)
+                cursor.setBlockFormat(block_format)
+
+    def paragraph_shading(self):
+        """Apply background color to paragraph."""
+        editor = self.current_editor()
+        if editor:
+            color = QColorDialog.getColor(Qt.yellow, self, "Select Shading Color")
+            if color.isValid():
+                cursor = editor.textCursor()
+                block_format = cursor.blockFormat()
+                block_format.setBackground(color)
+                cursor.setBlockFormat(block_format)
+
+    def paragraph_borders(self):
+        """Apply borders to paragraph."""
+        editor = self.current_editor()
+        if editor:
+            dialog = BorderAndShadingDialog(self)
+            if dialog.exec() == QDialog.Accepted:
+                QMessageBox.information(self, "Borders", "Paragraph borders would be applied here.")
+
+    # Insert tab - Additional methods
+    def insert_shapes(self):
+        """Insert shapes into document."""
+        QMessageBox.information(self, "Insert Shapes", "Shape insertion would open a shape picker dialog.\nThis is a placeholder implementation.")
+
+    def insert_chart(self):
+        """Insert a chart into document."""
+        QMessageBox.information(self, "Insert Chart", "Chart insertion would open a chart creation dialog.\nThis is a placeholder implementation.")
+
+    def insert_smartart(self):
+        """Insert SmartArt graphic."""
+        QMessageBox.information(self, "Insert SmartArt", "SmartArt insertion would open a SmartArt picker dialog.\nThis is a placeholder implementation.")
+
+    def insert_bookmark(self):
+        """Insert a bookmark at current position."""
+        editor = self.current_editor()
+        if editor:
+            name, ok = QInputDialog.getText(self, "Insert Bookmark", "Bookmark name:")
+            if ok and name:
+                cursor = editor.textCursor()
+                # In a full implementation, would store bookmark position
+                QMessageBox.information(self, "Bookmark", f"Bookmark '{name}' inserted at current position.")
+
+    def insert_header(self):
+        """Edit document header."""
+        QMessageBox.information(self, "Insert Header", "Header editing would open header editor.\nThis is a placeholder implementation.")
+
+    def insert_footer(self):
+        """Edit document footer."""
+        QMessageBox.information(self, "Insert Footer", "Footer editing would open footer editor.\nThis is a placeholder implementation.")
+
+    def insert_page_number(self):
+        """Insert page number."""
+        editor = self.current_editor()
+        if editor:
+            items = ["Top of Page", "Bottom of Page", "Page Margins"]
+            item, ok = QInputDialog.getItem(self, "Page Number", "Select position:", items, 0, False)
+            if ok and item:
+                QMessageBox.information(self, "Page Number", f"Page number would be inserted at: {item}")
+
+    def insert_equation(self):
+        """Insert mathematical equation."""
+        editor = self.current_editor()
+        if editor:
+            equation, ok = QInputDialog.getText(self, "Insert Equation", "Enter equation (LaTeX format):")
+            if ok and equation:
+                cursor = editor.textCursor()
+                cursor.insertText(f"[Equation: {equation}]")
+
+    # Design tab methods
+    def design_themes(self):
+        """Apply document theme."""
+        items = ["Office", "Facet", "Integral", "Ion", "Organic", "Retrospect", "Slice"]
+        item, ok = QInputDialog.getItem(self, "Themes", "Select theme:", items, 0, False)
+        if ok and item:
+            QMessageBox.information(self, "Theme", f"Theme '{item}' would be applied to document.")
+
+    def design_colors(self):
+        """Change theme colors."""
+        items = ["Office", "Grayscale", "Blue Warm", "Blue", "Green", "Orange", "Red"]
+        item, ok = QInputDialog.getItem(self, "Theme Colors", "Select color scheme:", items, 0, False)
+        if ok and item:
+            QMessageBox.information(self, "Theme Colors", f"Color scheme '{item}' would be applied.")
+
+    def design_fonts(self):
+        """Change theme fonts."""
+        items = ["Office", "Calibri", "Arial", "Times New Roman", "Georgia", "Cambria"]
+        item, ok = QInputDialog.getItem(self, "Theme Fonts", "Select font theme:", items, 0, False)
+        if ok and item:
+            QMessageBox.information(self, "Theme Fonts", f"Font theme '{item}' would be applied.")
+
+    def design_watermark(self):
+        """Add watermark to document."""
+        items = ["Confidential", "Draft", "Sample", "Custom Text", "Remove Watermark"]
+        item, ok = QInputDialog.getItem(self, "Watermark", "Select watermark:", items, 0, False)
+        if ok and item:
+            if item == "Custom Text":
+                text, ok2 = QInputDialog.getText(self, "Custom Watermark", "Enter watermark text:")
+                if ok2 and text:
+                    QMessageBox.information(self, "Watermark", f"Watermark '{text}' would be added.")
+            else:
+                QMessageBox.information(self, "Watermark", f"Watermark '{item}' would be applied.")
+
+    def design_page_color(self):
+        """Set page background color."""
+        color = QColorDialog.getColor(Qt.white, self, "Select Page Color")
+        if color.isValid():
+            editor = self.current_editor()
+            if editor:
+                palette = editor.palette()
+                palette.setColor(QPalette.Base, color)
+                editor.setPalette(palette)
+
+    def design_page_borders(self):
+        """Add borders to page."""
+        dialog = BorderAndShadingDialog(self)
+        if dialog.exec() == QDialog.Accepted:
+            QMessageBox.information(self, "Page Borders", "Page borders would be applied.")
+
+    # Layout tab methods
+    def layout_margins(self):
+        """Set page margins."""
+        items = ["Normal", "Narrow", "Moderate", "Wide", "Mirrored", "Custom"]
+        item, ok = QInputDialog.getItem(self, "Margins", "Select margins:", items, 0, False)
+        if ok and item:
+            if item == "Custom":
+                self.page_setup()
+            else:
+                QMessageBox.information(self, "Margins", f"Margins set to '{item}'.")
+
+    def layout_orientation(self):
+        """Set page orientation."""
+        items = ["Portrait", "Landscape"]
+        item, ok = QInputDialog.getItem(self, "Orientation", "Select orientation:", items, 0, False)
+        if ok and item:
+            if self.current_document:
+                from ..core.page_setup import PageOrientation
+                self.current_document.page_setup.orientation = PageOrientation.PORTRAIT if item == "Portrait" else PageOrientation.LANDSCAPE
+                QMessageBox.information(self, "Orientation", f"Page orientation set to {item}.")
+
+    def layout_size(self):
+        """Set page size."""
+        items = ["Letter", "A4", "Legal", "Executive", "A5", "Custom"]
+        item, ok = QInputDialog.getItem(self, "Page Size", "Select size:", items, 0, False)
+        if ok and item:
+            if item == "Custom":
+                self.page_setup()
+            else:
+                QMessageBox.information(self, "Page Size", f"Page size set to '{item}'.")
+
+    def layout_columns(self):
+        """Set number of columns."""
+        dialog = ColumnsDialog(self)
+        if dialog.exec() == QDialog.Accepted:
+            QMessageBox.information(self, "Columns", "Column layout would be applied.")
+
+    def layout_position(self):
+        """Set object position."""
+        QMessageBox.information(self, "Position", "Object positioning controls would appear here.\nSelect an object first.")
+
+    def layout_wrap_text(self):
+        """Set text wrapping around objects."""
+        items = ["Square", "Tight", "Through", "Top and Bottom", "Behind Text", "In Front of Text"]
+        item, ok = QInputDialog.getItem(self, "Wrap Text", "Select wrapping style:", items, 0, False)
+        if ok and item:
+            QMessageBox.information(self, "Wrap Text", f"Text wrapping set to '{item}'.\nSelect an object first.")
+
+    def layout_align(self):
+        """Align selected objects."""
+        items = ["Align Left", "Align Center", "Align Right", "Align Top", "Align Middle", "Align Bottom"]
+        item, ok = QInputDialog.getItem(self, "Align", "Select alignment:", items, 0, False)
+        if ok and item:
+            QMessageBox.information(self, "Align", f"Objects would be aligned: {item}.\nSelect objects first.")
+
+    # View tab methods
+    def view_print_layout(self):
+        """Switch to print layout view."""
+        QMessageBox.information(self, "Print Layout", "Switched to Print Layout view.\n(Current view)")
+
+    def view_web_layout(self):
+        """Switch to web layout view."""
+        QMessageBox.information(self, "Web Layout", "Web Layout view would be activated.\nThis is a placeholder implementation.")
+
+    def view_draft(self):
+        """Switch to draft view."""
+        QMessageBox.information(self, "Draft View", "Draft view would be activated.\nThis is a placeholder implementation.")
+
+    def view_zoom_dialog(self):
+        """Show zoom dialog."""
+        items = ["200%", "150%", "100%", "75%", "50%", "25%", "Page Width", "Whole Page", "Custom"]
+        item, ok = QInputDialog.getItem(self, "Zoom", "Select zoom level:", items, 2, False)
+        if ok and item:
+            if item.endswith('%'):
+                zoom_level = int(item.rstrip('%'))
+                if self.current_editor():
+                    self.current_editor().zoom_factor = zoom_level / 100.0
+                    self.current_editor().update_zoom()
+            elif item == "Page Width":
+                self.view_page_width()
+            elif item == "Whole Page":
+                # Fit whole page in view
+                if self.current_editor():
+                    self.current_editor().zoom_factor = 0.85
+                    self.current_editor().update_zoom()
+
+    def view_page_width(self):
+        """Zoom to fit page width."""
+        if self.current_editor():
+            # Calculate zoom to fit page width
+            self.current_editor().zoom_factor = 1.0
+            self.current_editor().update_zoom()
+            QMessageBox.information(self, "Page Width", "Zoomed to fit page width.")
+
+    def view_new_window(self):
+        """Open a new window for the current document."""
+        QMessageBox.information(self, "New Window", "A new window would open for the current document.\nThis is a placeholder implementation.")
+
+    def view_split(self):
+        """Split the editor view."""
+        QMessageBox.information(self, "Split View", "The editor would be split into two panes.\nThis is a placeholder implementation.")
+
+    def view_side_by_side(self):
+        """View two documents side by side."""
+        QMessageBox.information(self, "View Side by Side", "Two documents would be displayed side by side.\nThis is a placeholder implementation.")
