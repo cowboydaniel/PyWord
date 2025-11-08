@@ -439,16 +439,3 @@ class TextEditor(QTextEdit):
     def select_all(self):
         """Select all text in the document."""
         self.selectAll()
-    
-    # Zoom
-    def zoom_in(self):
-        """Zoom in the document."""
-        self.zoomIn(1)
-    
-    def zoom_out(self):
-        """Zoom out the document."""
-        self.zoomOut(1)
-    
-    def reset_zoom(self):
-        """Reset zoom level to 100%."""
-        self.zoomIn(0)

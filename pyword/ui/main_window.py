@@ -752,21 +752,11 @@ class MainWindow(QMainWindow):
         
         # Edit menu
         edit_menu = self.menuBar().addMenu("&Edit")
-        
-        # Undo action
-        self.actionUndo = QAction("&Undo", self)
-        self.actionUndo.setShortcut("Ctrl+Z")
-        self.actionUndo.triggered.connect(self.undo)
-        self.actionUndo.setEnabled(False)
+
+        # Add existing undo/redo actions (created in setup_edit_actions)
         edit_menu.addAction(self.actionUndo)
-        
-        # Redo action
-        self.actionRedo = QAction("&Redo", self)
-        self.actionRedo.setShortcut("Ctrl+Y")
-        self.actionRedo.triggered.connect(self.redo)
-        self.actionRedo.setEnabled(False)
         edit_menu.addAction(self.actionRedo)
-        
+
         edit_menu.addSeparator()
         
         # Connect document change signals
@@ -1304,11 +1294,17 @@ class MainWindow(QMainWindow):
         if editor:
             cursor = editor.textCursor()
             if cursor.currentTable():
-                dialog = QInputDialog(self)
-                rows, ok1 = dialog.getInt(self, "Split Cells", "Number of rows:", 1, 1, 100, 1)
-                cols, ok2 = dialog.getInt(self, "Split Cells", "Number of columns:", 1, 1, 100, 1)
-                
-                if ok1 and ok2 and (rows > 1 or cols > 1):
+                # Get number of rows
+                rows, ok1 = QInputDialog.getInt(self, "Split Cells", "Number of rows:", 1, 1, 100, 1)
+                if not ok1:
+                    return
+
+                # Get number of columns
+                cols, ok2 = QInputDialog.getInt(self, "Split Cells", "Number of columns:", 1, 1, 100, 1)
+                if not ok2:
+                    return
+
+                if rows > 1 or cols > 1:
                     cursor.currentTable().splitCell(rows, cols)
     
     def show_table_properties(self):

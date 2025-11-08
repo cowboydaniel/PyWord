@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QStatusBar,
                              QMenuBar, QMenu, QToolBar, QFileDialog, QMessageBox,
                              QSplitter, QDockWidget, QListWidget, QListWidgetItem,
-                             QTextEdit, QDockWidget, QTextBrowser)
+                             QTextEdit, QDockWidget, QTextBrowser, QDialog)
 from PySide6.QtGui import QFont
 from PySide6.QtCore import QSettings, Qt, QSize, QTimer
-from PySide6.QtGui import QAction, QKeySequence, QIcon, QTextDocument
+from PySide6.QtGui import QAction, QKeySequence, QIcon, QTextDocument, QTextCursor
 import os
 import sys
 
