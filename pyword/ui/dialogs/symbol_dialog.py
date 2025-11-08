@@ -5,6 +5,7 @@ from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel,
                              QComboBox, QGroupBox, QFormLayout, QHeaderView)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
+from shiboken6 import isValid
 from .base_dialog import BaseDialog
 
 
@@ -117,6 +118,10 @@ class SymbolDialog(BaseDialog):
 
     def populate_symbols(self):
         """Populate the symbol table with characters."""
+        # Check if widgets are still valid before accessing them
+        if not isValid(self.subset_combo) or not isValid(self.font_combo) or not isValid(self.symbol_table):
+            return
+
         subset = self.subset_combo.currentText()
 
         # Define character ranges for different subsets
@@ -154,6 +159,10 @@ class SymbolDialog(BaseDialog):
 
     def on_font_changed(self, font_name):
         """Handle font selection change."""
+        # Check if the symbol table is still valid before accessing it
+        if not isValid(self.symbol_table):
+            return
+
         font = QFont(font_name, 12)
         for row in range(self.symbol_table.rowCount()):
             for col in range(self.symbol_table.columnCount()):
