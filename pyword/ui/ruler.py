@@ -72,8 +72,11 @@ class HorizontalRuler(QWidget):
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
         # Calculate offset where page starts (ruler "0" aligns with page left edge)
-        # Page is centered, so offset = (total_width - page_width) / 2
-        page_offset = (self.width() - self.page_width_px) // 2
+        # Page is centered in the workspace AFTER the vertical ruler (25px)
+        # Also account for TextEdit left margin (20px from stylesheet)
+        vertical_ruler_width = 25
+        page_margin_left = 20
+        page_offset = vertical_ruler_width + ((self.width() - vertical_ruler_width - self.page_width_px) // 2) + page_margin_left
 
         # Calculate how many cm to show before and after 0
         cm_before_zero = int(page_offset / pixels_per_cm) + 2
@@ -107,7 +110,9 @@ class HorizontalRuler(QWidget):
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
         # Calculate page offset (where page starts)
-        page_offset = (self.width() - self.page_width_px) // 2
+        vertical_ruler_width = 25
+        page_margin_left = 20
+        page_offset = vertical_ruler_width + ((self.width() - vertical_ruler_width - self.page_width_px) // 2) + page_margin_left
 
         # Left margin (gray area from page start to left margin)
         left_margin_pixels = int(self.left_margin * pixels_per_cm)
@@ -127,7 +132,9 @@ class HorizontalRuler(QWidget):
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
         # Calculate page offset (where page starts)
-        page_offset = (self.width() - self.page_width_px) // 2
+        vertical_ruler_width = 25
+        page_margin_left = 20
+        page_offset = vertical_ruler_width + ((self.width() - vertical_ruler_width - self.page_width_px) // 2) + page_margin_left
 
         # Start from left margin
         left_margin_offset = page_offset + int(self.left_margin * pixels_per_cm)
@@ -147,7 +154,9 @@ class HorizontalRuler(QWidget):
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
         # Calculate page offset (where page starts)
-        page_offset = (self.width() - self.page_width_px) // 2
+        vertical_ruler_width = 25
+        page_margin_left = 20
+        page_offset = vertical_ruler_width + ((self.width() - vertical_ruler_width - self.page_width_px) // 2) + page_margin_left
 
         # Start from left margin
         left_margin_offset = page_offset + int(self.left_margin * pixels_per_cm)
@@ -252,8 +261,9 @@ class VerticalRuler(QWidget):
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
         # Calculate page offset (where page starts vertically)
-        # Page is at top of workspace (no vertical centering)
-        page_offset = 0
+        # Account for TextEdit margin (20px from stylesheet)
+        page_margin_top = 20
+        page_offset = page_margin_top
 
         # Top margin (gray area from page start to top margin)
         top_margin_pixels = int(self.top_margin * pixels_per_cm)
@@ -276,8 +286,9 @@ class VerticalRuler(QWidget):
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
         # Calculate offset where page starts (ruler "0" aligns with page top edge)
-        # Page is at top of workspace (no vertical centering for now)
-        page_offset = 0
+        # Account for TextEdit margin (20px from stylesheet)
+        page_margin_top = 20
+        page_offset = page_margin_top
 
         # Calculate how many cm to show before and after 0
         cm_before_zero = int(page_offset / pixels_per_cm) + 2
