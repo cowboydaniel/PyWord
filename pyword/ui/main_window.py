@@ -276,6 +276,9 @@ class MainWindow(QMainWindow):
         self.ribbon.add_tab(mailings_tab)  # Add between References and View
         self.ribbon.add_tab(view_tab)
 
+        # Set Home tab as the default active tab (index 1)
+        self.ribbon.set_current_tab(1)
+
         # Connect ribbon actions to methods
         self.connect_ribbon_actions()
 

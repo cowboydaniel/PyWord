@@ -536,28 +536,11 @@ class RibbonBar(QWidget):
             self.backstage_view.hide()
 
     def create_file_tab(self) -> RibbonTab:
-        """Create the File tab with document operations (backstage view)."""
+        """Create the File tab (shows backstage view, no ribbon content)."""
         tab = RibbonTab("File")
 
-        # Document operations group
-        file_group = RibbonGroup("Document")
-        self.buttons['new'] = file_group.add_large_button(QIcon(), "New", "Create new document")
-        self.buttons['open'] = file_group.add_large_button(QIcon(), "Open", "Open document")
-        self.buttons['save'] = file_group.add_large_button(QIcon(), "Save", "Save document")
-        self.buttons['save_as'] = file_group.add_large_button(QIcon(), "Save As", "Save document as")
-        tab.add_group(file_group)
-
-        # Print group
-        print_group = RibbonGroup("Print")
-        self.buttons['print'] = print_group.add_large_button(QIcon(), "Print", "Print document")
-        self.buttons['print_preview'] = print_group.add_large_button(QIcon(), "Preview", "Print preview")
-        tab.add_group(print_group)
-
-        # Share group
-        share_group = RibbonGroup("Share")
-        self.buttons['export'] = share_group.add_large_button(QIcon(), "Export", "Export document")
-        self.buttons['export_pdf'] = share_group.add_small_button(QIcon(), "PDF", "Export as PDF")
-        tab.add_group(share_group)
+        # Note: File tab has no content - clicking it shows the backstage view
+        # This matches Microsoft Word behavior where File tab only triggers backstage
 
         return tab
 
