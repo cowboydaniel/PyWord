@@ -68,16 +68,19 @@ class HorizontalRuler(QWidget):
         # Calculate pixels per inch
         pixels_per_inch = self.dpi * self.zoom
 
-        # Draw tick marks every 1/8 inch
-        for i in range(0, int(self.width() / (pixels_per_inch / 8))):
-            x = int(i * pixels_per_inch / 8)
+        # Offset to start ruler at left margin (ruler "0" at left margin)
+        left_margin_offset = int(self.left_margin * pixels_per_inch)
+
+        # Draw tick marks every 1/8 inch, starting from left margin
+        for i in range(0, int((self.width() - left_margin_offset) / (pixels_per_inch / 8)) + 8):
+            x = left_margin_offset + int(i * pixels_per_inch / 8)
             if x > self.width():
                 break
 
             # Every inch: long tick + number
             if i % 8 == 0:
                 painter.drawLine(x, self.height() - 10, x, self.height() - 1)
-                # Draw inch number
+                # Draw inch number (starting from 0 at left margin)
                 inch = i // 8
                 painter.drawText(x + 2, 12, str(inch))
             # Every 1/2 inch: medium tick
@@ -113,8 +116,11 @@ class HorizontalRuler(QWidget):
 
         pixels_per_inch = self.dpi * self.zoom
 
+        # Offset to align with ruler starting at left margin
+        left_margin_offset = int(self.left_margin * pixels_per_inch)
+
         for tab_position in self.tab_stops:
-            x = int(tab_position * pixels_per_inch)
+            x = left_margin_offset + int(tab_position * pixels_per_inch)
             # Draw L-shaped tab stop marker
             painter.drawLine(x, self.height() - 6, x, self.height() - 2)
             painter.drawLine(x, self.height() - 6, x + 3, self.height() - 6)
@@ -126,16 +132,19 @@ class HorizontalRuler(QWidget):
 
         pixels_per_inch = self.dpi * self.zoom
 
-        # Left indent marker (bottom triangle)
-        left_x = int(self.left_indent * pixels_per_inch)
+        # Offset to align with ruler starting at left margin
+        left_margin_offset = int(self.left_margin * pixels_per_inch)
+
+        # Left indent marker (bottom triangle) - positioned relative to left margin
+        left_x = left_margin_offset + int(self.left_indent * pixels_per_inch)
         painter.drawPolygon([
             QPoint(left_x - 4, self.height() - 2),
             QPoint(left_x + 4, self.height() - 2),
             QPoint(left_x, self.height() - 8)
         ])
 
-        # First line indent marker (top triangle)
-        first_line_x = int(self.first_line_indent * pixels_per_inch)
+        # First line indent marker (top triangle) - positioned relative to left margin
+        first_line_x = left_margin_offset + int(self.first_line_indent * pixels_per_inch)
         painter.drawPolygon([
             QPoint(first_line_x - 4, 2),
             QPoint(first_line_x + 4, 2),
@@ -185,10 +194,16 @@ class VerticalRuler(QWidget):
         self.dpi = 96  # dots per inch
         self.zoom = 1.0
 
+        # Page margins (in inches)
+        self.top_margin = 1.0  # 1 inch top margin
+        self.bottom_margin = 1.0  # 1 inch bottom margin
+        self.page_height = 11.0  # US Letter height in inches
+
         # Microsoft Word colors
         self.bg_color = QColor("#FFFFFF")
         self.border_color = QColor("#D2D0CE")
         self.text_color = QColor("#605E5C")
+        self.margin_color = QColor("#E6E6E6")
 
     def paintEvent(self, event):
         """Paint the vertical ruler."""
@@ -198,12 +213,31 @@ class VerticalRuler(QWidget):
         # Draw background
         painter.fillRect(self.rect(), self.bg_color)
 
+        # Draw margin indicators (gray areas)
+        self.draw_margin_indicators(painter)
+
         # Draw right border
         painter.setPen(QPen(self.border_color, 1))
         painter.drawLine(self.width() - 1, 0, self.width() - 1, self.height())
 
         # Draw ruler markings
         self.draw_ruler_markings(painter)
+
+    def draw_margin_indicators(self, painter):
+        """Draw gray areas showing page margins."""
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.margin_color)
+
+        pixels_per_inch = self.dpi * self.zoom
+
+        # Top margin (gray area from 0 to top margin)
+        top_margin_pixels = int(self.top_margin * pixels_per_inch)
+        painter.drawRect(0, 0, self.width(), top_margin_pixels)
+
+        # Bottom margin (gray area from page_height - bottom_margin to end)
+        bottom_margin_start = int((self.page_height - self.bottom_margin) * pixels_per_inch)
+        page_height_pixels = int(self.page_height * pixels_per_inch)
+        painter.drawRect(0, bottom_margin_start, self.width(), page_height_pixels - bottom_margin_start)
 
     def draw_ruler_markings(self, painter):
         """Draw the ruler tick marks and numbers."""
@@ -216,16 +250,19 @@ class VerticalRuler(QWidget):
         # Calculate pixels per inch
         pixels_per_inch = self.dpi * self.zoom
 
-        # Draw tick marks every 1/8 inch
-        for i in range(0, int(self.height() / (pixels_per_inch / 8))):
-            y = int(i * pixels_per_inch / 8)
+        # Offset to start ruler at top margin (ruler "0" at top margin)
+        top_margin_offset = int(self.top_margin * pixels_per_inch)
+
+        # Draw tick marks every 1/8 inch, starting from top margin
+        for i in range(0, int((self.height() - top_margin_offset) / (pixels_per_inch / 8)) + 8):
+            y = top_margin_offset + int(i * pixels_per_inch / 8)
             if y > self.height():
                 break
 
             # Every inch: long tick + number
             if i % 8 == 0:
                 painter.drawLine(self.width() - 10, y, self.width() - 1, y)
-                # Draw inch number (rotated)
+                # Draw inch number (rotated) - starting from 0 at top margin
                 inch = i // 8
                 painter.save()
                 painter.translate(8, y + 10)

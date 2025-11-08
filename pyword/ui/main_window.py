@@ -320,10 +320,10 @@ class MainWindow(QMainWindow):
         """Setup the main editor area."""
         self.editor_area = QWidget()
 
-        # Set gray background for the editor area (Microsoft Word style)
+        # Set white background for the editor area (Microsoft Word style)
         self.editor_area.setStyleSheet("""
             QWidget {
-                background-color: #C7C7C7;
+                background-color: #FFFFFF;
             }
         """)
 
@@ -354,11 +354,11 @@ class MainWindow(QMainWindow):
         # Hide tab bar for single-document interface (Microsoft Word style)
         self.tab_widget.tabBar().setVisible(False)
 
-        # Style the tab widget to have gray background and center the content
+        # Style the tab widget to have white background and center the content
         self.tab_widget.setStyleSheet("""
             QTabWidget::pane {
                 border: none;
-                background-color: #C7C7C7;
+                background-color: #FFFFFF;
             }
             QTextEdit {
                 background-color: white;

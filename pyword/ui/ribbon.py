@@ -170,12 +170,12 @@ class BackstageView(QWidget):
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        # Left sidebar (colored, like Word)
+        # Left sidebar (colored teal/blue, like Word)
         self.sidebar = QWidget()
-        self.sidebar.setFixedWidth(200)
+        self.sidebar.setFixedWidth(220)
         self.sidebar.setStyleSheet("""
             QWidget {
-                background-color: #2B579A;
+                background-color: #0078D4;
             }
         """)
         sidebar_layout = QVBoxLayout(self.sidebar)
@@ -187,15 +187,19 @@ class BackstageView(QWidget):
         back_btn.setFlat(True)
         back_btn.setStyleSheet("""
             QPushButton {
-                background-color: #2B579A;
+                background-color: #0078D4;
                 color: white;
                 border: none;
-                padding: 15px 20px;
+                padding: 18px 24px;
                 text-align: left;
-                font-size: 14px;
+                font-size: 15px;
+                font-weight: 500;
             }
             QPushButton:hover {
-                background-color: #1E4A7E;
+                background-color: #106EBE;
+            }
+            QPushButton:pressed {
+                background-color: #005A9E;
             }
         """)
         back_btn.clicked.connect(self.close_requested.emit)
@@ -224,15 +228,18 @@ class BackstageView(QWidget):
                     background-color: transparent;
                     color: white;
                     border: none;
-                    padding: 12px 20px;
+                    border-left: 3px solid transparent;
+                    padding: 14px 24px;
                     text-align: left;
-                    font-size: 13px;
+                    font-size: 14px;
                 }
                 QPushButton:hover {
-                    background-color: #1E4A7E;
+                    background-color: #106EBE;
+                    border-left: 3px solid white;
                 }
                 QPushButton:checked {
-                    background-color: #1E4A7E;
+                    background-color: #005A9E;
+                    border-left: 3px solid white;
                 }
             """)
             self.menu_buttons.append(btn)
@@ -245,20 +252,52 @@ class BackstageView(QWidget):
         self.content_area = QWidget()
         self.content_area.setStyleSheet("""
             QWidget {
-                background-color: white;
+                background-color: #F3F2F1;
             }
         """)
         content_layout = QVBoxLayout(self.content_area)
-        content_layout.setContentsMargins(40, 40, 40, 40)
+        content_layout.setContentsMargins(50, 50, 50, 50)
+        content_layout.setSpacing(20)
 
         # Placeholder content
         title = QLabel("Info")
-        title.setStyleSheet("font-size: 24px; font-weight: bold; color: #323130;")
+        title.setStyleSheet("""
+            font-size: 28px;
+            font-weight: bold;
+            color: #323130;
+            margin-bottom: 10px;
+        """)
         content_layout.addWidget(title)
 
-        desc = QLabel("Protect Document\nInspect Document\nManage Document")
-        desc.setStyleSheet("font-size: 14px; color: #605E5C; margin-top: 20px;")
-        content_layout.addWidget(desc)
+        # Info cards
+        info_sections = [
+            ("Protect Document", "Control what types of changes people can make to this document."),
+            ("Inspect Document", "Check the document for hidden properties or personal information."),
+            ("Manage Document", "Check in, check out, and manage document versions.")
+        ]
+
+        for section_title, section_desc in info_sections:
+            section_widget = QWidget()
+            section_widget.setStyleSheet("""
+                QWidget {
+                    background-color: white;
+                    border-radius: 4px;
+                    padding: 20px;
+                }
+            """)
+            section_layout = QVBoxLayout(section_widget)
+            section_layout.setContentsMargins(20, 20, 20, 20)
+
+            section_title_label = QLabel(section_title)
+            section_title_label.setStyleSheet("font-size: 16px; font-weight: 600; color: #323130;")
+            section_layout.addWidget(section_title_label)
+
+            section_desc_label = QLabel(section_desc)
+            section_desc_label.setStyleSheet("font-size: 13px; color: #605E5C; margin-top: 8px;")
+            section_desc_label.setWordWrap(True)
+            section_layout.addWidget(section_desc_label)
+
+            content_layout.addWidget(section_widget)
 
         content_layout.addStretch()
 
