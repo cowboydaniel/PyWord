@@ -122,6 +122,9 @@ class SymbolDialog(BaseDialog):
         if not isValid(self.subset_combo) or not isValid(self.font_combo) or not isValid(self.symbol_table):
             return
 
+        # Clear existing symbols from the table
+        self.symbol_table.clearContents()
+
         subset = self.subset_combo.currentText()
 
         # Define character ranges for different subsets
