@@ -797,31 +797,132 @@ class RibbonBar(QWidget):
         # Paragraph group
         paragraph_group = RibbonGroup("Paragraph")
 
+        # Increase spacing for better readability
+        paragraph_group.content_layout.setHorizontalSpacing(6)
+        paragraph_group.content_layout.setVerticalSpacing(3)
+
+        # Create common style for paragraph buttons
+        para_button_style = """
+            QToolButton {
+                border: 1px solid transparent;
+                border-radius: 2px;
+                padding: 3px 8px;
+                background: transparent;
+                color: #323130;
+                font-size: 12px;
+                text-align: center;
+                min-width: 30px;
+            }
+            QToolButton:hover {
+                background-color: #F3F2F1;
+                border: 1px solid #EDEBE9;
+            }
+            QToolButton:pressed, QToolButton:checked {
+                background-color: #EDEBE9;
+                border: 1px solid #E1DFDD;
+            }
+        """
+
         # Row 0: Lists and indents
-        self.buttons['bullets'] = paragraph_group.add_small_button(QIcon(), "• ▾", "Bullets")
-        self.buttons['numbering'] = paragraph_group.add_small_button(QIcon(), "1. ▾", "Numbering")
-        self.buttons['multilevel_list'] = paragraph_group.add_small_button(QIcon(), "≣▾", "Multilevel List")
-        self.buttons['decrease_indent'] = paragraph_group.add_small_button(QIcon(), "⬅", "Decrease Indent")
-        self.buttons['increase_indent'] = paragraph_group.add_small_button(QIcon(), "➡", "Increase Indent")
+        self.buttons['bullets'] = QToolButton()
+        self.buttons['bullets'].setText("• ▾")
+        self.buttons['bullets'].setToolTip("Bullets")
+        self.buttons['bullets'].setFixedHeight(24)
+        self.buttons['bullets'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['bullets'], 0, 0)
 
-        # Row 1: Sorting and show/hide
-        paragraph_group.current_col = 0
-        paragraph_group.current_row = 1
-        self.buttons['sort'] = paragraph_group.add_small_button(QIcon(), "AZ↓", "Sort")
-        self.buttons['show_hide'] = paragraph_group.add_small_button(QIcon(), "¶", "Show/Hide ¶")
+        self.buttons['numbering'] = QToolButton()
+        self.buttons['numbering'].setText("1. ▾")
+        self.buttons['numbering'].setToolTip("Numbering")
+        self.buttons['numbering'].setFixedHeight(24)
+        self.buttons['numbering'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['numbering'], 0, 1)
 
-        # Alignment buttons
-        self.buttons['align_left'] = paragraph_group.add_small_button(QIcon(), "≡", "Align Left")
-        self.buttons['align_center'] = paragraph_group.add_small_button(QIcon(), "▬", "Center")
-        self.buttons['align_right'] = paragraph_group.add_small_button(QIcon(), "≡", "Align Right")
+        self.buttons['multilevel_list'] = QToolButton()
+        self.buttons['multilevel_list'].setText("≣▾")
+        self.buttons['multilevel_list'].setToolTip("Multilevel List")
+        self.buttons['multilevel_list'].setFixedHeight(24)
+        self.buttons['multilevel_list'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['multilevel_list'], 0, 2)
+
+        self.buttons['decrease_indent'] = QToolButton()
+        self.buttons['decrease_indent'].setText("⬅")
+        self.buttons['decrease_indent'].setToolTip("Decrease Indent")
+        self.buttons['decrease_indent'].setFixedHeight(24)
+        self.buttons['decrease_indent'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['decrease_indent'], 0, 3)
+
+        self.buttons['increase_indent'] = QToolButton()
+        self.buttons['increase_indent'].setText("➡")
+        self.buttons['increase_indent'].setToolTip("Increase Indent")
+        self.buttons['increase_indent'].setFixedHeight(24)
+        self.buttons['increase_indent'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['increase_indent'], 0, 4)
+
+        # Row 1: Sorting, show/hide, and alignment buttons
+        self.buttons['sort'] = QToolButton()
+        self.buttons['sort'].setText("AZ↓")
+        self.buttons['sort'].setToolTip("Sort")
+        self.buttons['sort'].setFixedHeight(24)
+        self.buttons['sort'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['sort'], 1, 0)
+
+        self.buttons['show_hide'] = QToolButton()
+        self.buttons['show_hide'].setText("¶")
+        self.buttons['show_hide'].setToolTip("Show/Hide ¶")
+        self.buttons['show_hide'].setFixedHeight(24)
+        self.buttons['show_hide'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['show_hide'], 1, 1)
+
+        self.buttons['align_left'] = QToolButton()
+        self.buttons['align_left'].setText("≡")
+        self.buttons['align_left'].setToolTip("Align Left")
+        self.buttons['align_left'].setFixedHeight(24)
+        self.buttons['align_left'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['align_left'], 1, 2)
+
+        self.buttons['align_center'] = QToolButton()
+        self.buttons['align_center'].setText("▬")
+        self.buttons['align_center'].setToolTip("Center")
+        self.buttons['align_center'].setFixedHeight(24)
+        self.buttons['align_center'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['align_center'], 1, 3)
+
+        self.buttons['align_right'] = QToolButton()
+        self.buttons['align_right'].setText("≡")
+        self.buttons['align_right'].setToolTip("Align Right")
+        self.buttons['align_right'].setFixedHeight(24)
+        self.buttons['align_right'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['align_right'], 1, 4)
 
         # Row 2: More paragraph options
-        paragraph_group.current_col = 0
-        paragraph_group.current_row = 2
-        self.buttons['align_justify'] = paragraph_group.add_small_button(QIcon(), "≣", "Justify")
-        self.buttons['line_spacing'] = paragraph_group.add_small_button(QIcon(), "↕▾", "Line Spacing")
-        self.buttons['shading'] = paragraph_group.add_small_button(QIcon(), "⬜▾", "Shading")
-        self.buttons['borders'] = paragraph_group.add_small_button(QIcon(), "▦▾", "Borders")
+        self.buttons['align_justify'] = QToolButton()
+        self.buttons['align_justify'].setText("≣")
+        self.buttons['align_justify'].setToolTip("Justify")
+        self.buttons['align_justify'].setFixedHeight(24)
+        self.buttons['align_justify'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['align_justify'], 2, 0)
+
+        self.buttons['line_spacing'] = QToolButton()
+        self.buttons['line_spacing'].setText("↕▾")
+        self.buttons['line_spacing'].setToolTip("Line Spacing")
+        self.buttons['line_spacing'].setFixedHeight(24)
+        self.buttons['line_spacing'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['line_spacing'], 2, 1)
+
+        self.buttons['shading'] = QToolButton()
+        self.buttons['shading'].setText("⬜▾")
+        self.buttons['shading'].setToolTip("Shading")
+        self.buttons['shading'].setFixedHeight(24)
+        self.buttons['shading'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['shading'], 2, 2)
+
+        self.buttons['borders'] = QToolButton()
+        self.buttons['borders'].setText("▦▾")
+        self.buttons['borders'].setToolTip("Borders")
+        self.buttons['borders'].setFixedHeight(24)
+        self.buttons['borders'].setStyleSheet(para_button_style)
+        paragraph_group.content_layout.addWidget(self.buttons['borders'], 2, 3)
 
         tab.add_group(paragraph_group)
 
