@@ -11,7 +11,8 @@ from PySide6.QtWidgets import (
     QGraphicsItem, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsPathItem,
     QGraphicsTextItem, QStyleOptionGraphicsItem, QWidget, QDialog, QVBoxLayout,
     QHBoxLayout, QLabel, QComboBox, QSpinBox, QDoubleSpinBox, QColorDialog,
-    QPushButton, QDialogButtonBox, QFormLayout, QCheckBox, QGroupBox, QLineEdit
+    QPushButton, QDialogButtonBox, QFormLayout, QCheckBox, QGroupBox, QLineEdit,
+    QGraphicsView, QGraphicsScene
 )
 
 class ShapeType(Enum):
