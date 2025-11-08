@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+  <text x="2" y="13" font-family="Arial" font-size="10" font-weight="normal" fill="#323130">π</text>
+  <path d="M10 6 Q12 6 12 8 Q12 10 10 10 L8 10" fill="none" stroke="#0078D4" stroke-width="1.5"/>
+  <text x="14" y="13" font-family="Arial" font-size="8" fill="#323130">²</text>
+</svg>

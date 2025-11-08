@@ -581,7 +581,7 @@ class RibbonBar(QWidget):
         self.buttons['paste'].setFixedSize(75, 70)  # Slightly larger button
         self.buttons['cut'] = clipboard_group.add_small_button(load_icon("cut"), "Cut", "Cut to clipboard")
         self.buttons['copy'] = clipboard_group.add_small_button(load_icon("copy"), "Copy", "Copy to clipboard")
-        self.buttons['format_painter'] = clipboard_group.add_small_button(QIcon(), "Format\nPainter", "Format painter")
+        self.buttons['format_painter'] = clipboard_group.add_small_button(load_icon('format-painter'), "Format\nPainter", "Format painter")
         tab.add_group(clipboard_group)
 
         # Font group (with selectors)
@@ -767,6 +767,7 @@ class RibbonBar(QWidget):
 
         # Row 1: Subscript button
         self.buttons['subscript'] = QToolButton()
+        self.buttons['subscript'].setIcon(load_icon('subscript'))
         self.buttons['subscript'].setText("X₂")
         self.buttons['subscript'].setToolTip("Subscript")
         self.buttons['subscript'].setCheckable(True)
@@ -776,6 +777,7 @@ class RibbonBar(QWidget):
 
         # Row 2: Superscript button
         self.buttons['superscript'] = QToolButton()
+        self.buttons['superscript'].setIcon(load_icon('superscript'))
         self.buttons['superscript'].setText("X²")
         self.buttons['superscript'].setToolTip("Superscript")
         self.buttons['superscript'].setCheckable(True)
@@ -785,6 +787,7 @@ class RibbonBar(QWidget):
 
         # Row 2: Text Effects button
         self.buttons['text_effects'] = QToolButton()
+        self.buttons['text_effects'].setIcon(load_icon('text-effects'))
         self.buttons['text_effects'].setText("A✦")
         self.buttons['text_effects'].setToolTip("Text Effects")
         self.buttons['text_effects'].setFixedHeight(24)
@@ -861,6 +864,7 @@ class RibbonBar(QWidget):
         paragraph_group.content_layout.addWidget(self.buttons['numbering'], 0, 1)
 
         self.buttons['multilevel_list'] = QToolButton()
+        self.buttons['multilevel_list'].setIcon(load_icon('multilevel-list'))
         self.buttons['multilevel_list'].setText("≣▾")
         self.buttons['multilevel_list'].setToolTip("Multilevel List")
         self.buttons['multilevel_list'].setFixedHeight(24)
@@ -883,6 +887,7 @@ class RibbonBar(QWidget):
 
         # Row 1: Sorting, show/hide, and alignment buttons
         self.buttons['sort'] = QToolButton()
+        self.buttons['sort'].setIcon(load_icon('sort'))
         self.buttons['sort'].setText("AZ↓")
         self.buttons['sort'].setToolTip("Sort")
         self.buttons['sort'].setFixedHeight(24)
@@ -890,6 +895,7 @@ class RibbonBar(QWidget):
         paragraph_group.content_layout.addWidget(self.buttons['sort'], 1, 0)
 
         self.buttons['show_hide'] = QToolButton()
+        self.buttons['show_hide'].setIcon(load_icon('show-hide'))
         self.buttons['show_hide'].setText("¶")
         self.buttons['show_hide'].setToolTip("Show/Hide ¶")
         self.buttons['show_hide'].setFixedHeight(24)
@@ -926,6 +932,7 @@ class RibbonBar(QWidget):
         paragraph_group.content_layout.addWidget(self.buttons['align_justify'], 2, 0)
 
         self.buttons['line_spacing'] = QToolButton()
+        self.buttons['line_spacing'].setIcon(load_icon('line-spacing'))
         self.buttons['line_spacing'].setText("↕▾")
         self.buttons['line_spacing'].setToolTip("Line Spacing")
         self.buttons['line_spacing'].setFixedHeight(24)
@@ -933,6 +940,7 @@ class RibbonBar(QWidget):
         paragraph_group.content_layout.addWidget(self.buttons['line_spacing'], 2, 1)
 
         self.buttons['shading'] = QToolButton()
+        self.buttons['shading'].setIcon(load_icon('shading'))
         self.buttons['shading'].setText("⬜▾")
         self.buttons['shading'].setToolTip("Shading")
         self.buttons['shading'].setFixedHeight(24)
@@ -940,6 +948,7 @@ class RibbonBar(QWidget):
         paragraph_group.content_layout.addWidget(self.buttons['shading'], 2, 2)
 
         self.buttons['borders'] = QToolButton()
+        self.buttons['borders'].setIcon(load_icon('borders'))
         self.buttons['borders'].setText("▦▾")
         self.buttons['borders'].setToolTip("Borders")
         self.buttons['borders'].setFixedHeight(24)
@@ -1022,9 +1031,9 @@ class RibbonBar(QWidget):
 
         # Editing group
         editing_group = RibbonGroup("Editing")
-        self.buttons['find'] = editing_group.add_large_button(QIcon(), "Find", "Find text")
-        self.buttons['replace'] = editing_group.add_small_button(QIcon(), "Replace", "Find and replace")
-        self.buttons['select_all'] = editing_group.add_small_button(QIcon(), "Select", "Select text")
+        self.buttons['find'] = editing_group.add_large_button(load_icon('find'), "Find", "Find text")
+        self.buttons['replace'] = editing_group.add_small_button(load_icon('replace'), "Replace", "Find and replace")
+        self.buttons['select_all'] = editing_group.add_small_button(load_icon('select'), "Select", "Select text")
         tab.add_group(editing_group)
 
         return tab
@@ -1035,34 +1044,34 @@ class RibbonBar(QWidget):
 
         # Tables group
         tables_group = RibbonGroup("Tables")
-        self.buttons['insert_table'] = tables_group.add_large_button(QIcon(), "Table", "Insert table")
+        self.buttons['insert_table'] = tables_group.add_large_button(load_icon('table'), "Table", "Insert table")
         tab.add_group(tables_group)
 
         # Illustrations group
         illustrations_group = RibbonGroup("Illustrations")
-        self.buttons['insert_picture'] = illustrations_group.add_large_button(QIcon(), "Picture", "Insert picture")
-        self.buttons['insert_shapes'] = illustrations_group.add_large_button(QIcon(), "Shapes", "Insert shapes")
-        self.buttons['insert_chart'] = illustrations_group.add_large_button(QIcon(), "Chart", "Insert chart")
-        self.buttons['insert_smartart'] = illustrations_group.add_large_button(QIcon(), "SmartArt", "Insert SmartArt")
+        self.buttons['insert_picture'] = illustrations_group.add_large_button(load_icon('picture'), "Picture", "Insert picture")
+        self.buttons['insert_shapes'] = illustrations_group.add_large_button(load_icon('shapes'), "Shapes", "Insert shapes")
+        self.buttons['insert_chart'] = illustrations_group.add_large_button(load_icon('chart'), "Chart", "Insert chart")
+        self.buttons['insert_smartart'] = illustrations_group.add_large_button(load_icon('smartart'), "SmartArt", "Insert SmartArt")
         tab.add_group(illustrations_group)
 
         # Links group
         links_group = RibbonGroup("Links")
-        self.buttons['insert_link'] = links_group.add_large_button(QIcon(), "Link", "Insert hyperlink")
-        self.buttons['insert_bookmark'] = links_group.add_large_button(QIcon(), "Bookmark", "Insert bookmark")
+        self.buttons['insert_link'] = links_group.add_large_button(load_icon('link'), "Link", "Insert hyperlink")
+        self.buttons['insert_bookmark'] = links_group.add_large_button(load_icon('bookmark'), "Bookmark", "Insert bookmark")
         tab.add_group(links_group)
 
         # Header & Footer group
         header_group = RibbonGroup("Header & Footer")
-        self.buttons['insert_header'] = header_group.add_small_button(QIcon(), "Header", "Edit header")
-        self.buttons['insert_footer'] = header_group.add_small_button(QIcon(), "Footer", "Edit footer")
-        self.buttons['insert_page_number'] = header_group.add_small_button(QIcon(), "Page Number", "Insert page number")
+        self.buttons['insert_header'] = header_group.add_small_button(load_icon('header'), "Header", "Edit header")
+        self.buttons['insert_footer'] = header_group.add_small_button(load_icon('footer'), "Footer", "Edit footer")
+        self.buttons['insert_page_number'] = header_group.add_small_button(load_icon('page-number'), "Page Number", "Insert page number")
         tab.add_group(header_group)
 
         # Symbols group
         symbols_group = RibbonGroup("Symbols")
-        self.buttons['insert_equation'] = symbols_group.add_large_button(QIcon(), "Equation", "Insert equation")
-        self.buttons['insert_symbol'] = symbols_group.add_large_button(QIcon(), "Symbol", "Insert symbol")
+        self.buttons['insert_equation'] = symbols_group.add_large_button(load_icon('equation'), "Equation", "Insert equation")
+        self.buttons['insert_symbol'] = symbols_group.add_large_button(load_icon('symbol'), "Symbol", "Insert symbol")
         tab.add_group(symbols_group)
 
         return tab
@@ -1073,16 +1082,16 @@ class RibbonBar(QWidget):
 
         # Themes group
         themes_group = RibbonGroup("Themes")
-        self.buttons['design_themes'] = themes_group.add_large_button(QIcon(), "Themes", "Document themes")
-        self.buttons['design_colors'] = themes_group.add_small_button(QIcon(), "Colors", "Theme colors")
-        self.buttons['design_fonts'] = themes_group.add_small_button(QIcon(), "Fonts", "Theme fonts")
+        self.buttons['design_themes'] = themes_group.add_large_button(load_icon('themes'), "Themes", "Document themes")
+        self.buttons['design_colors'] = themes_group.add_small_button(load_icon('colors'), "Colors", "Theme colors")
+        self.buttons['design_fonts'] = themes_group.add_small_button(load_icon('fonts'), "Fonts", "Theme fonts")
         tab.add_group(themes_group)
 
         # Page Background group
         background_group = RibbonGroup("Page Background")
-        self.buttons['design_watermark'] = background_group.add_large_button(QIcon(), "Watermark", "Add watermark")
-        self.buttons['design_page_color'] = background_group.add_large_button(QIcon(), "Page Color", "Page color")
-        self.buttons['design_page_borders'] = background_group.add_large_button(QIcon(), "Borders", "Page borders")
+        self.buttons['design_watermark'] = background_group.add_large_button(load_icon('watermark'), "Watermark", "Add watermark")
+        self.buttons['design_page_color'] = background_group.add_large_button(load_icon('page-color'), "Page Color", "Page color")
+        self.buttons['design_page_borders'] = background_group.add_large_button(load_icon('page-borders'), "Borders", "Page borders")
         tab.add_group(background_group)
 
         return tab
@@ -1093,10 +1102,10 @@ class RibbonBar(QWidget):
 
         # Page Setup group
         page_setup_group = RibbonGroup("Page Setup")
-        self.buttons['layout_margins'] = page_setup_group.add_small_button(QIcon(), "Margins", "Page margins")
-        self.buttons['layout_orientation'] = page_setup_group.add_small_button(QIcon(), "Orientation", "Page orientation")
-        self.buttons['layout_size'] = page_setup_group.add_small_button(QIcon(), "Size", "Page size")
-        self.buttons['layout_columns'] = page_setup_group.add_small_button(QIcon(), "Columns", "Columns")
+        self.buttons['layout_margins'] = page_setup_group.add_small_button(load_icon('margins'), "Margins", "Page margins")
+        self.buttons['layout_orientation'] = page_setup_group.add_small_button(load_icon('orientation'), "Orientation", "Page orientation")
+        self.buttons['layout_size'] = page_setup_group.add_small_button(load_icon('size'), "Size", "Page size")
+        self.buttons['layout_columns'] = page_setup_group.add_small_button(load_icon('columns'), "Columns", "Columns")
         tab.add_group(page_setup_group)
 
         # Arrange group
@@ -1114,20 +1123,20 @@ class RibbonBar(QWidget):
 
         # Table of Contents group
         toc_group = RibbonGroup("Table of Contents")
-        self.buttons['insert_toc'] = toc_group.add_large_button(QIcon(), "Table of\nContents", "Insert table of contents")
+        self.buttons['insert_toc'] = toc_group.add_large_button(load_icon('toc'), "Table of\nContents", "Insert table of contents")
         self.buttons['update_toc'] = toc_group.add_small_button(QIcon(), "Update Table", "Update table of contents")
         self.buttons['add_text'] = toc_group.add_small_button(QIcon(), "Add Text", "Add text to table of contents")
         tab.add_group(toc_group)
 
         # Footnotes group
         footnotes_group = RibbonGroup("Footnotes")
-        self.buttons['insert_footnote'] = footnotes_group.add_large_button(QIcon(), "Insert\nFootnote", "Insert footnote")
-        self.buttons['insert_endnote'] = footnotes_group.add_large_button(QIcon(), "Insert\nEndnote", "Insert endnote")
+        self.buttons['insert_footnote'] = footnotes_group.add_large_button(load_icon('footnote'), "Insert\nFootnote", "Insert footnote")
+        self.buttons['insert_endnote'] = footnotes_group.add_large_button(load_icon('endnote'), "Insert\nEndnote", "Insert endnote")
         tab.add_group(footnotes_group)
 
         # Citations & Bibliography group
         citations_group = RibbonGroup("Citations & Bibliography")
-        self.buttons['insert_citation'] = citations_group.add_small_button(QIcon(), "Insert Citation", "Insert citation")
+        self.buttons['insert_citation'] = citations_group.add_small_button(load_icon('citation'), "Insert Citation", "Insert citation")
         self.buttons['manage_sources'] = citations_group.add_small_button(QIcon(), "Manage Sources", "Manage sources")
         self.buttons['bibliography'] = citations_group.add_small_button(QIcon(), "Bibliography", "Insert bibliography")
         tab.add_group(citations_group)
@@ -1147,8 +1156,8 @@ class RibbonBar(QWidget):
 
         # Create group
         create_group = RibbonGroup("Create")
-        self.buttons['envelopes'] = create_group.add_large_button(QIcon(), "Envelopes", "Create envelopes")
-        self.buttons['labels'] = create_group.add_large_button(QIcon(), "Labels", "Create labels")
+        self.buttons['envelopes'] = create_group.add_large_button(load_icon('envelope'), "Envelopes", "Create envelopes")
+        self.buttons['labels'] = create_group.add_large_button(load_icon('label'), "Labels", "Create labels")
         tab.add_group(create_group)
 
         # Start Mail Merge group
@@ -1183,14 +1192,14 @@ class RibbonBar(QWidget):
 
         # Views group
         views_group = RibbonGroup("Views")
-        self.buttons['view_print_layout'] = views_group.add_small_button(QIcon(), "Print Layout", "Print layout")
+        self.buttons['view_print_layout'] = views_group.add_small_button(load_icon('print-layout'), "Print Layout", "Print layout")
         self.buttons['view_web_layout'] = views_group.add_small_button(QIcon(), "Web Layout", "Web layout")
         self.buttons['view_draft'] = views_group.add_small_button(QIcon(), "Draft", "Draft view")
         tab.add_group(views_group)
 
         # Zoom group
         zoom_group = RibbonGroup("Zoom")
-        self.buttons['view_zoom'] = zoom_group.add_large_button(QIcon(), "Zoom", "Zoom level")
+        self.buttons['view_zoom'] = zoom_group.add_large_button(load_icon('zoom'), "Zoom", "Zoom level")
         self.buttons['view_zoom_100'] = zoom_group.add_small_button(QIcon(), "100%", "Zoom to 100%")
         self.buttons['view_page_width'] = zoom_group.add_small_button(QIcon(), "Page Width", "Fit to page width")
         tab.add_group(zoom_group)
@@ -1198,7 +1207,7 @@ class RibbonBar(QWidget):
         # Window group
         window_group = RibbonGroup("Window")
         self.buttons['view_new_window'] = window_group.add_small_button(QIcon(), "New Window", "New window")
-        self.buttons['view_split'] = window_group.add_small_button(QIcon(), "Split", "Split view")
+        self.buttons['view_split'] = window_group.add_small_button(load_icon('split'), "Split", "Split view")
         self.buttons['view_side_by_side'] = window_group.add_small_button(QIcon(), "Side by Side", "View side by side")
         tab.add_group(window_group)
 

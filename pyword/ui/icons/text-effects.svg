@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <text x="3" y="12" font-family="Arial" font-size="10" font-weight="bold" fill="#0078D4">A</text>
+  <path d="M12 3 l1 1 M13 3 l-1 1 M12 6 l1 1 M13 6 l-1 1 M11 4.5 l1 0.5 M14 4.5 l-1 0.5" stroke="#0078D4" stroke-width="1.2"/>
+</svg>
