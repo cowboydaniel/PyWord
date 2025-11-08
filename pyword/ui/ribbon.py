@@ -48,18 +48,23 @@ class RibbonGroup(QWidget):
     def setup_ui(self):
         """Initialize the group UI."""
         main_layout = QVBoxLayout(self)
-        main_layout.setContentsMargins(5, 5, 5, 5)
+        main_layout.setContentsMargins(8, 3, 8, 3)
         main_layout.setSpacing(2)
 
         # Content area
         self.content_layout = QGridLayout()
-        self.content_layout.setSpacing(3)
+        self.content_layout.setSpacing(4)
         main_layout.addLayout(self.content_layout)
 
         # Group title
         title_label = QLabel(self.title)
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("font-size: 9pt; color: #666;")
+        title_label.setStyleSheet("""
+            font-size: 11px;
+            color: #605E5C;
+            font-weight: normal;
+            padding-top: 2px;
+        """)
         main_layout.addWidget(title_label)
 
         self.current_row = 0
@@ -73,20 +78,23 @@ class RibbonGroup(QWidget):
         button.setToolTip(tooltip or text)
         button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         button.setIconSize(QSize(32, 32))
-        button.setFixedSize(60, 60)
+        button.setFixedSize(68, 68)
         button.setStyleSheet("""
             QToolButton {
                 border: 1px solid transparent;
-                border-radius: 3px;
-                padding: 2px;
+                border-radius: 2px;
+                padding: 4px;
                 background: transparent;
+                color: #323130;
+                font-size: 11px;
             }
             QToolButton:hover {
-                background: rgba(0, 120, 215, 0.1);
-                border: 1px solid rgba(0, 120, 215, 0.3);
+                background-color: #F3F2F1;
+                border: 1px solid #EDEBE9;
             }
             QToolButton:pressed {
-                background: rgba(0, 120, 215, 0.2);
+                background-color: #EDEBE9;
+                border: 1px solid #E1DFDD;
             }
         """)
 
@@ -103,20 +111,25 @@ class RibbonGroup(QWidget):
         button.setToolTip(tooltip or text)
         button.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
         button.setIconSize(QSize(16, 16))
-        button.setFixedHeight(22)
+        button.setFixedHeight(24)
+        button.setMinimumWidth(60)
         button.setStyleSheet("""
             QToolButton {
                 border: 1px solid transparent;
-                border-radius: 3px;
-                padding: 2px 8px;
+                border-radius: 2px;
+                padding: 3px 8px;
                 background: transparent;
+                color: #323130;
+                font-size: 12px;
+                text-align: left;
             }
             QToolButton:hover {
-                background: rgba(0, 120, 215, 0.1);
-                border: 1px solid rgba(0, 120, 215, 0.3);
+                background-color: #F3F2F1;
+                border: 1px solid #EDEBE9;
             }
             QToolButton:pressed {
-                background: rgba(0, 120, 215, 0.2);
+                background-color: #EDEBE9;
+                border: 1px solid #E1DFDD;
             }
         """)
 
@@ -163,13 +176,13 @@ class RibbonBar(QWidget):
         self.tab_bar_widget = QWidget()
         self.tab_bar_widget.setStyleSheet("""
             QWidget {
-                background: #f3f3f3;
-                border-bottom: 1px solid #d0d0d0;
+                background-color: #FFFFFF;
+                border-bottom: 1px solid #D2D0CE;
             }
         """)
         self.tab_bar_layout = QHBoxLayout(self.tab_bar_widget)
-        self.tab_bar_layout.setContentsMargins(5, 0, 5, 0)
-        self.tab_bar_layout.setSpacing(0)
+        self.tab_bar_layout.setContentsMargins(8, 0, 8, 0)
+        self.tab_bar_layout.setSpacing(2)
         self.tab_bar_layout.addStretch()
         main_layout.addWidget(self.tab_bar_widget)
 
@@ -177,8 +190,8 @@ class RibbonBar(QWidget):
         self.content_widget = QWidget()
         self.content_widget.setStyleSheet("""
             QWidget {
-                background: white;
-                border-bottom: 1px solid #d0d0d0;
+                background-color: #FFFFFF;
+                border-bottom: 1px solid #D2D0CE;
             }
         """)
         self.content_layout = QVBoxLayout(self.content_widget)
@@ -206,17 +219,19 @@ class RibbonBar(QWidget):
             QPushButton {
                 padding: 8px 16px;
                 border: none;
-                border-bottom: 3px solid transparent;
+                border-bottom: 2px solid transparent;
                 background: transparent;
                 font-weight: normal;
+                font-size: 13px;
+                color: #323130;
             }
             QPushButton:hover {
-                background: rgba(0, 120, 215, 0.05);
+                background-color: #F3F2F1;
             }
             QPushButton:checked {
-                border-bottom: 3px solid #0078d7;
-                font-weight: bold;
-                color: #0078d7;
+                border-bottom: 2px solid #0078D4;
+                background-color: #FFFFFF;
+                color: #0078D4;
             }
         """)
 
