@@ -7,7 +7,7 @@ from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QSplitter, QTa
                              QTableWidget, QTableWidgetItem, QHeaderView, QComboBox, QSpinBox,
                              QDoubleSpinBox, QCheckBox, QGroupBox, QFormLayout, QScrollArea,
                              QFrame, QToolButton, QStyle, QColorDialog, QFontDialog, QInputDialog,
-                             QSplitterHandle)
+                             QSplitterHandle, QSlider)
 from PySide6.QtPrintSupport import QPrinter, QPageSetupDialog, QPrintDialog, QPrintPreviewDialog
 from PySide6.QtCore import Qt, QSize, QSettings, QTimer, QUrl, QMimeData, Signal
 from PySide6.QtGui import (QAction, QIcon, QFont, QTextCursor, QTextCharFormat, QTextListFormat,
@@ -145,6 +145,12 @@ class MainWindow(QMainWindow):
         self.current_zoom = zoom_level
         self.zoom_label.setText(f"{zoom_level}%")
 
+        # Update zoom slider
+        if hasattr(self, 'zoom_slider'):
+            self.zoom_slider.blockSignals(True)  # Prevent recursive calls
+            self.zoom_slider.setValue(zoom_level)
+            self.zoom_slider.blockSignals(False)
+
         # Update rulers to reflect zoom level
         if hasattr(self, 'horizontal_ruler'):
             self.horizontal_ruler.set_zoom(zoom_level)
@@ -272,6 +278,9 @@ class MainWindow(QMainWindow):
         # Connect ribbon actions to methods
         self.connect_ribbon_actions()
 
+        # Connect File tab to show backstage view
+        self.ribbon.file_tab_clicked.connect(self.ribbon.show_backstage)
+
     def connect_ribbon_actions(self):
         """Connect ribbon button actions to their respective methods."""
         # This method will connect ribbon buttons to the application methods
@@ -310,6 +319,14 @@ class MainWindow(QMainWindow):
     def setup_editor_area(self):
         """Setup the main editor area."""
         self.editor_area = QWidget()
+
+        # Set gray background for the editor area (Microsoft Word style)
+        self.editor_area.setStyleSheet("""
+            QWidget {
+                background-color: #C7C7C7;
+            }
+        """)
+
         editor_layout = QVBoxLayout(self.editor_area)
         editor_layout.setContentsMargins(0, 0, 0, 0)
         editor_layout.setSpacing(0)
@@ -336,6 +353,19 @@ class MainWindow(QMainWindow):
 
         # Hide tab bar for single-document interface (Microsoft Word style)
         self.tab_widget.tabBar().setVisible(False)
+
+        # Style the tab widget to have gray background and center the content
+        self.tab_widget.setStyleSheet("""
+            QTabWidget::pane {
+                border: none;
+                background-color: #C7C7C7;
+            }
+            QTextEdit {
+                background-color: white;
+                border: 1px solid #A0A0A0;
+                margin: 20px;
+            }
+        """)
 
         editor_row_layout.addWidget(self.tab_widget)
         editor_layout.addLayout(editor_row_layout)
@@ -395,12 +425,101 @@ class MainWindow(QMainWindow):
         # Add spacer
         self.status_bar.addWidget(QLabel(""), 1)  # Stretch
 
-        # Right side: Zoom level
+        # Right side: Zoom controls (Word style)
+        zoom_widget = QWidget()
+        zoom_layout = QHBoxLayout(zoom_widget)
+        zoom_layout.setContentsMargins(0, 0, 0, 0)
+        zoom_layout.setSpacing(4)
+
+        # Zoom out button
+        zoom_out_btn = QPushButton("-")
+        zoom_out_btn.setFixedSize(20, 20)
+        zoom_out_btn.setStyleSheet("""
+            QPushButton {
+                border: 1px solid #D2D0CE;
+                border-radius: 2px;
+                background: white;
+                color: #323130;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #F3F2F1;
+            }
+            QPushButton:pressed {
+                background-color: #EDEBE9;
+            }
+        """)
+        zoom_out_btn.clicked.connect(self.zoom_out)
+        zoom_layout.addWidget(zoom_out_btn)
+
+        # Zoom slider
+        self.zoom_slider = QSlider(Qt.Horizontal)
+        self.zoom_slider.setMinimum(25)
+        self.zoom_slider.setMaximum(400)
+        self.zoom_slider.setValue(100)
+        self.zoom_slider.setFixedWidth(100)
+        self.zoom_slider.setStyleSheet("""
+            QSlider::groove:horizontal {
+                border: 1px solid #D2D0CE;
+                height: 4px;
+                background: white;
+                margin: 0px;
+                border-radius: 2px;
+            }
+            QSlider::handle:horizontal {
+                background: #0078D4;
+                border: 1px solid #0078D4;
+                width: 12px;
+                height: 12px;
+                margin: -5px 0;
+                border-radius: 6px;
+            }
+            QSlider::handle:horizontal:hover {
+                background: #106EBE;
+                border: 1px solid #106EBE;
+            }
+        """)
+        self.zoom_slider.valueChanged.connect(self.on_zoom_slider_changed)
+        zoom_layout.addWidget(self.zoom_slider)
+
+        # Zoom in button
+        zoom_in_btn = QPushButton("+")
+        zoom_in_btn.setFixedSize(20, 20)
+        zoom_in_btn.setStyleSheet("""
+            QPushButton {
+                border: 1px solid #D2D0CE;
+                border-radius: 2px;
+                background: white;
+                color: #323130;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #F3F2F1;
+            }
+            QPushButton:pressed {
+                background-color: #EDEBE9;
+            }
+        """)
+        zoom_in_btn.clicked.connect(self.zoom_in)
+        zoom_layout.addWidget(zoom_in_btn)
+
+        # Zoom percentage label
         self.zoom_label = QLabel("100%")
-        self.status_bar.addPermanentWidget(self.zoom_label)
+        self.zoom_label.setMinimumWidth(40)
+        zoom_layout.addWidget(self.zoom_label)
+
+        self.status_bar.addPermanentWidget(zoom_widget)
 
         # Connect zoom signal
         self.zoom_changed.connect(self.update_zoom_display)
+
+    def on_zoom_slider_changed(self, value):
+        """Handle zoom slider value change."""
+        if self.current_editor():
+            # Set zoom factor on editor
+            self.current_editor().zoom_factor = value / 100.0
+            self.current_editor().update_zoom()
+            self.current_zoom = value
     
     def setup_menus(self):
         """Setup all menus."""

@@ -18,11 +18,20 @@ class HorizontalRuler(QWidget):
         self.right_indent = 0
         self.first_line_indent = 0
 
+        # Page margins (in inches)
+        self.left_margin = 1.0  # 1 inch left margin
+        self.right_margin = 1.0  # 1 inch right margin
+        self.page_width = 8.5  # US Letter width in inches
+
+        # Tab stops (list of positions in inches)
+        self.tab_stops = []
+
         # Microsoft Word colors
         self.bg_color = QColor("#FFFFFF")
         self.border_color = QColor("#D2D0CE")
         self.text_color = QColor("#605E5C")
         self.marker_color = QColor("#0078D4")
+        self.margin_color = QColor("#E6E6E6")
 
     def paintEvent(self, event):
         """Paint the horizontal ruler."""
@@ -32,12 +41,18 @@ class HorizontalRuler(QWidget):
         # Draw background
         painter.fillRect(self.rect(), self.bg_color)
 
+        # Draw margin indicators (gray areas)
+        self.draw_margin_indicators(painter)
+
         # Draw bottom border
         painter.setPen(QPen(self.border_color, 1))
         painter.drawLine(0, self.height() - 1, self.width(), self.height() - 1)
 
         # Draw ruler markings
         self.draw_ruler_markings(painter)
+
+        # Draw tab stops
+        self.draw_tab_stops(painter)
 
         # Draw indent markers
         self.draw_indent_markers(painter)
@@ -75,6 +90,35 @@ class HorizontalRuler(QWidget):
             else:
                 painter.drawLine(x, self.height() - 3, x, self.height() - 1)
 
+    def draw_margin_indicators(self, painter):
+        """Draw gray areas showing page margins."""
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(self.margin_color)
+
+        pixels_per_inch = self.dpi * self.zoom
+
+        # Left margin (gray area from 0 to left margin)
+        left_margin_pixels = int(self.left_margin * pixels_per_inch)
+        painter.drawRect(0, 0, left_margin_pixels, self.height())
+
+        # Right margin (gray area from page_width - right_margin to end)
+        right_margin_start = int((self.page_width - self.right_margin) * pixels_per_inch)
+        page_width_pixels = int(self.page_width * pixels_per_inch)
+        painter.drawRect(right_margin_start, 0, page_width_pixels - right_margin_start, self.height())
+
+    def draw_tab_stops(self, painter):
+        """Draw tab stop indicators (small L-shaped markers)."""
+        painter.setPen(QPen(self.text_color, 1))
+        painter.setBrush(self.text_color)
+
+        pixels_per_inch = self.dpi * self.zoom
+
+        for tab_position in self.tab_stops:
+            x = int(tab_position * pixels_per_inch)
+            # Draw L-shaped tab stop marker
+            painter.drawLine(x, self.height() - 6, x, self.height() - 2)
+            painter.drawLine(x, self.height() - 6, x + 3, self.height() - 6)
+
     def draw_indent_markers(self, painter):
         """Draw indent markers (triangular markers for indents)."""
         painter.setPen(QPen(self.marker_color, 1))
@@ -97,6 +141,23 @@ class HorizontalRuler(QWidget):
             QPoint(first_line_x + 4, 2),
             QPoint(first_line_x, 8)
         ])
+
+    def add_tab_stop(self, inches):
+        """Add a tab stop at the specified position."""
+        self.tab_stops.append(inches)
+        self.tab_stops.sort()
+        self.update()
+
+    def remove_tab_stop(self, inches):
+        """Remove a tab stop at the specified position."""
+        if inches in self.tab_stops:
+            self.tab_stops.remove(inches)
+            self.update()
+
+    def clear_tab_stops(self):
+        """Clear all tab stops."""
+        self.tab_stops.clear()
+        self.update()
 
     def set_zoom(self, zoom):
         """Set the zoom level."""
