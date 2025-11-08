@@ -12,7 +12,8 @@ from PySide6.QtGui import (QAction, QIcon, QFont, QTextCursor, QTextCharFormat, 
                          QTextBlockFormat, QTextTableFormat, QTextFrameFormat, QTextLength,
                          QTextImageFormat, QPixmap, QImage, QPainter, QPalette, QColor,
                          QDesktopServices, QKeySequence, QTextDocument, QTextFrame, QTextTable,
-                         QTextDocumentFragment, QTextBlock, QTextList, QTextFormat, QTextFrameLayoutData)
+                         QTextDocumentFragment, QTextBlock, QTextList, QTextFormat, QTextFrameLayoutData,
+                         QShortcut)
 
 from ...core.document import Document, DocumentManager
 from ...core.editor import TextEditor
