@@ -340,6 +340,9 @@ class MainWindow(QMainWindow):
         editor_row_layout.setContentsMargins(0, 0, 0, 0)
         editor_row_layout.setSpacing(0)
 
+        # Add left stretch to center the page horizontally
+        editor_row_layout.addStretch()
+
         # Vertical ruler
         self.vertical_ruler = VerticalRuler(self.editor_area)
         editor_row_layout.addWidget(self.vertical_ruler)
@@ -368,6 +371,10 @@ class MainWindow(QMainWindow):
         """)
 
         editor_row_layout.addWidget(self.tab_widget)
+
+        # Add right stretch to center the page horizontally
+        editor_row_layout.addStretch()
+
         editor_layout.addLayout(editor_row_layout)
 
         self.main_splitter.addWidget(self.editor_area)
