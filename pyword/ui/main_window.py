@@ -1092,13 +1092,9 @@ class MainWindow(QMainWindow):
         
         event.accept()
 
-    def get_current_editor(self):
+    def current_editor(self):
         """Get the current active editor."""
         return self.document_ui.tab_widget.current_editor()
-
-    def current_editor(self):
-        """Get the current active editor (alias for get_current_editor)."""
-        return self.get_current_editor()
 
     def tab_changed(self, index):
         """Handle tab change event."""
@@ -1120,7 +1116,7 @@ class MainWindow(QMainWindow):
     # Document operations
     def document_modified(self):
         """Handle document modification."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor and hasattr(editor, 'document'):
             editor.document.content = editor.toPlainText()
             editor.document.modified = True
@@ -1137,7 +1133,7 @@ class MainWindow(QMainWindow):
     # Formatting methods
     def format_font(self):
         """Open font dialog to format text."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             font, ok = QFontDialog.getFont(editor.currentFont(), self, "Select Font")
             if ok:
@@ -1145,9 +1141,12 @@ class MainWindow(QMainWindow):
     
     def format_paragraph(self):
         """Open paragraph formatting dialog."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
-            dialog = ParagraphDialog(editor, self)
+            # Get current paragraph format from the editor
+            cursor = editor.textCursor()
+            initial_format = cursor.blockFormat() if cursor else None
+            dialog = ParagraphDialog(self, initial_format)
             if dialog.exec() == QDialog.Accepted:
                 # Apply paragraph formatting
                 pass
@@ -1183,14 +1182,14 @@ class MainWindow(QMainWindow):
     # Insert methods
     def insert_page_break(self):
         """Insert a page break at the current cursor position."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
             cursor.insertHtml("<hr style='page-break-before:always; margin:0;' />")
     
     def insert_table(self):
         """Insert a table at the current cursor position."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             dialog = InsertTableDialog(self)
             if dialog.exec() == QDialog.Accepted:
@@ -1200,7 +1199,7 @@ class MainWindow(QMainWindow):
     
     def insert_image(self):
         """Insert an image at the current cursor position."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             dialog = InsertImageDialog(self)
             if dialog.exec() == QDialog.Accepted:
@@ -1210,7 +1209,7 @@ class MainWindow(QMainWindow):
     
     def insert_hyperlink(self):
         """Insert a hyperlink at the current cursor position."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             dialog = HyperlinkDialog(self)
             if dialog.exec() == QDialog.Accepted:
@@ -1225,14 +1224,14 @@ class MainWindow(QMainWindow):
         if dialog.exec() == QDialog.Accepted:
             symbol = dialog.get_selected_symbol()
             if symbol:
-                editor = self.get_current_editor()
+                editor = self.current_editor()
                 if editor:
                     editor.insertPlainText(symbol)
     
     # Table operations
     def delete_table(self):
         """Delete the current table."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
             table = cursor.currentTable()
@@ -1247,7 +1246,7 @@ class MainWindow(QMainWindow):
     
     def insert_table_row(self, above):
         """Insert a row above or below the current row."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
             table = cursor.currentTable()
@@ -1259,7 +1258,7 @@ class MainWindow(QMainWindow):
     
     def insert_table_column(self, left):
         """Insert a column to the left or right of the current column."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
             table = cursor.currentTable()
@@ -1271,7 +1270,7 @@ class MainWindow(QMainWindow):
     
     def delete_table_row(self):
         """Delete the current row."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
             table = cursor.currentTable()
@@ -1280,7 +1279,7 @@ class MainWindow(QMainWindow):
     
     def delete_table_column(self):
         """Delete the current column."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
             table = cursor.currentTable()
@@ -1289,7 +1288,7 @@ class MainWindow(QMainWindow):
     
     def merge_table_cells(self):
         """Merge selected table cells."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
             if cursor.hasSelection() and cursor.currentTable():
@@ -1297,7 +1296,7 @@ class MainWindow(QMainWindow):
     
     def split_table_cells(self):
         """Split the current table cell."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
             if cursor.currentTable():
@@ -1316,7 +1315,7 @@ class MainWindow(QMainWindow):
     
     def show_table_properties(self):
         """Show table properties dialog."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             cursor = editor.textCursor()
             if cursor.currentTable():
@@ -1328,21 +1327,21 @@ class MainWindow(QMainWindow):
     # View methods
     def zoom_in(self):
         """Zoom in the document."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             editor.zoom_in()
             self.update_status_bar()
     
     def zoom_out(self):
         """Zoom out the document."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             editor.zoom_out()
             self.update_status_bar()
     
     def zoom_reset(self):
         """Reset zoom to 100%."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             editor.zoom_reset()
             self.update_status_bar()
@@ -1353,9 +1352,13 @@ class MainWindow(QMainWindow):
             self.ribbon.setVisible(visible)
 
     def toggle_formatting_toolbar(self, visible):
-        """Toggle the ribbon visibility."""
-        if hasattr(self, 'ribbon'):
-            self.ribbon.setVisible(visible)
+        """Toggle the formatting toolbar visibility.
+
+        Note: In this implementation, both standard and formatting tools
+        are part of the same ribbon, so this toggles the ribbon visibility.
+        """
+        # Delegate to toggle_standard_toolbar since they control the same ribbon
+        self.toggle_standard_toolbar(visible)
     
     def toggle_navigation_panel(self, visible):
         """Toggle the navigation panel visibility."""
@@ -1396,25 +1399,25 @@ class MainWindow(QMainWindow):
     
     def cut(self):
         """Cut selected text to clipboard."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             editor.cut()
     
     def copy(self):
         """Copy selected text to clipboard."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             editor.copy()
     
     def paste(self):
         """Paste text from clipboard."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             editor.paste()
     
     def select_all(self):
         """Select all text in the document."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             editor.select_all()
 
@@ -1593,7 +1596,7 @@ class MainWindow(QMainWindow):
     # Tools methods
     def show_word_count(self):
         """Show word count dialog."""
-        editor = self.get_current_editor()
+        editor = self.current_editor()
         if editor:
             stats = editor.word_count()
             dialog = WordCountDialog(stats, self)
@@ -1612,14 +1615,6 @@ class MainWindow(QMainWindow):
         dialog = AboutDialog(self)
         dialog.exec()
     
-    # File methods
-    def page_setup(self):
-        """Open page setup dialog."""
-        dialog = PageSetupDialog(self)
-        if dialog.exec() == QDialog.Accepted:
-            # Apply page settings
-            pass
-
     def export_document(self):
         """Export document to a different format."""
         # Get current document from document_ui

@@ -5,10 +5,11 @@ from PySide6.QtCore import Qt, Signal, QRegularExpression
 from PySide6.QtGui import QTextCursor, QTextDocument, QTextBlock, QTextFormat
 
 class FindReplaceDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, find_only=False):
         super().__init__(parent)
         self.parent = parent
-        self.setWindowTitle("Find and Replace")
+        self.find_only = find_only
+        self.setWindowTitle("Find" if find_only else "Find and Replace")
         self.setup_ui()
         
     def setup_ui(self):
@@ -47,17 +48,24 @@ class FindReplaceDialog(QDialog):
         self.status_label = QLabel("")
 
         layout.addLayout(find_layout)
-        layout.addLayout(replace_layout)
+
+        # Only add replace section if not find_only mode
+        if not self.find_only:
+            layout.addLayout(replace_layout)
+
         layout.addLayout(options_layout)
         layout.addWidget(self.status_label)
 
         self.setLayout(layout)
-        
+
         # Connect signals
         self.find_next_btn.clicked.connect(self.find_next)
         self.find_prev_btn.clicked.connect(self.find_previous)
-        self.replace_btn.clicked.connect(self.replace)
-        self.replace_all_btn.clicked.connect(self.replace_all)
+
+        # Only connect replace signals if not find_only mode
+        if not self.find_only:
+            self.replace_btn.clicked.connect(self.replace)
+            self.replace_all_btn.clicked.connect(self.replace_all)
     
     def find_next(self):
         text = self.find_edit.text()
@@ -182,7 +190,7 @@ class DocumentMap(QWidget):
 
 
 class GoToDialog(QDialog):
-    def __init__(self, max_pages, parent=None):
+    def __init__(self, parent=None, max_pages=1):
         super().__init__(parent)
         self.parent = parent
         self.max_pages = max_pages
