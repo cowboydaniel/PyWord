@@ -16,10 +16,10 @@ from PySide6.QtGui import (QAction, QIcon, QFont, QTextCursor, QTextCharFormat, 
                          QTextDocumentFragment, QTextBlock, QTextList, QTextFormat, QTextFrameLayoutData,
                          QShortcut)
 
-from ...core.document import Document, DocumentManager
-from ...core.editor import TextEditor
-from ...core.page_setup import PageSetup, PageOrientation, PageMargins
-from ...core.print_manager import PrintManager
+from ..core.document import Document, DocumentManager
+from ..core.editor import TextEditor
+from ..core.page_setup import PageSetup, PageOrientation, PageMargins
+from ..core.print_manager import PrintManager
 from .document_manager_ui import DocumentManagerUI
 from .toolbars import MainToolBar, FormatToolBar, TableToolBar, ReviewToolBar, ViewToolBar
 from .panels import NavigationPanel, StylesPanel, DocumentMapPanel, CommentsPanel
