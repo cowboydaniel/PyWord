@@ -183,13 +183,13 @@ class DocumentManagerUI(QWidget):
         toolbar.addAction(self.save_as_action)
         
         toolbar.addSeparator()
-        
+
         # Recent Documents menu
         self.recent_menu = QMenu("Recent Documents", self)
-        self.recent_docs_action = toolbar.addMenu(self.recent_menu)
+        self.recent_docs_action = self.recent_menu.menuAction()
         self.recent_docs_action.setIcon(QIcon.fromTheme("document-open-recent"))
         self.recent_docs_action.setText("Recent")
-        self.recent_docs_action.setMenu(self.recent_menu)
+        toolbar.addAction(self.recent_docs_action)
         
         # Update recent documents
         self.update_recent_documents_menu()
