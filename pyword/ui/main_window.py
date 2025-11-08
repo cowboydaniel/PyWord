@@ -293,6 +293,10 @@ class MainWindow(QMainWindow):
             self.ribbon.buttons['print'].clicked.connect(self.print_document)
         if 'print_preview' in self.ribbon.buttons:
             self.ribbon.buttons['print_preview'].clicked.connect(self.print_preview)
+        if 'export' in self.ribbon.buttons:
+            self.ribbon.buttons['export'].clicked.connect(self.export_document)
+        if 'export_pdf' in self.ribbon.buttons:
+            self.ribbon.buttons['export_pdf'].clicked.connect(self.export_to_pdf)
 
         # Home tab - Clipboard group
         if 'cut' in self.ribbon.buttons:
@@ -1331,11 +1335,64 @@ class MainWindow(QMainWindow):
         if dialog.exec() == QDialog.Accepted:
             # Apply page settings
             pass
-    
-    def print_preview(self):
-        """Open print preview dialog."""
-        dialog = PrintPreviewDialog(self)
-        dialog.exec()
+
+    def export_document(self):
+        """Export document to a different format."""
+        if not self.current_document:
+            QMessageBox.warning(self, "No Document", "Please open a document first.")
+            return
+
+        # Show save dialog with various export formats
+        file_path, selected_filter = QFileDialog.getSaveFileName(
+            self,
+            "Export Document",
+            self.current_document.file_path or "",
+            "PDF Files (*.pdf);;"
+            "Word Documents (*.docx);;"
+            "OpenDocument Text (*.odt);;"
+            "HTML Files (*.html);;"
+            "Rich Text Files (*.rtf);;"
+            "Text Files (*.txt);;"
+            "All Files (*.*)"
+        )
+
+        if file_path:
+            try:
+                if self.current_document.save(file_path):
+                    QMessageBox.information(self, "Export Successful", f"Document exported to {file_path}")
+                else:
+                    QMessageBox.warning(self, "Export Failed", "Failed to export document.")
+            except Exception as e:
+                QMessageBox.critical(self, "Export Error", f"Error exporting document: {str(e)}")
+
+    def export_to_pdf(self):
+        """Export document directly to PDF format."""
+        if not self.current_document:
+            QMessageBox.warning(self, "No Document", "Please open a document first.")
+            return
+
+        # Suggest PDF filename based on current document
+        suggested_name = ""
+        if self.current_document.file_path:
+            suggested_name = str(Path(self.current_document.file_path).with_suffix('.pdf'))
+        else:
+            suggested_name = f"{self.current_document.title}.pdf"
+
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Export to PDF",
+            suggested_name,
+            "PDF Files (*.pdf)"
+        )
+
+        if file_path:
+            try:
+                if self.current_document.save(file_path):
+                    QMessageBox.information(self, "Export Successful", f"Document exported to PDF: {file_path}")
+                else:
+                    QMessageBox.warning(self, "Export Failed", "Failed to export document to PDF.")
+            except Exception as e:
+                QMessageBox.critical(self, "Export Error", f"Error exporting to PDF: {str(e)}")
 
     # Settings
     def load_settings(self):
