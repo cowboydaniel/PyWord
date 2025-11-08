@@ -271,6 +271,32 @@ class RibbonBar(QWidget):
             self.current_tab_index = index
             self.tab_changed.emit(index)
 
+    def create_file_tab(self) -> RibbonTab:
+        """Create the File tab with document operations (backstage view)."""
+        tab = RibbonTab("File")
+
+        # Document operations group
+        file_group = RibbonGroup("Document")
+        file_group.add_large_button(QIcon(), "New", "Create new document")
+        file_group.add_large_button(QIcon(), "Open", "Open document")
+        file_group.add_large_button(QIcon(), "Save", "Save document")
+        file_group.add_large_button(QIcon(), "Save As", "Save document as")
+        tab.add_group(file_group)
+
+        # Print group
+        print_group = RibbonGroup("Print")
+        print_group.add_large_button(QIcon(), "Print", "Print document")
+        print_group.add_large_button(QIcon(), "Preview", "Print preview")
+        tab.add_group(print_group)
+
+        # Share group
+        share_group = RibbonGroup("Share")
+        share_group.add_large_button(QIcon(), "Export", "Export document")
+        share_group.add_small_button(QIcon(), "PDF", "Export as PDF")
+        tab.add_group(share_group)
+
+        return tab
+
     def create_home_tab(self) -> RibbonTab:
         """Create the Home tab with common formatting options."""
         tab = RibbonTab("Home")
