@@ -6,8 +6,8 @@ from PySide6.QtWidgets import (QMainWindow, QVBoxLayout, QWidget, QSplitter, QTa
                              QTableWidget, QTableWidgetItem, QHeaderView, QComboBox, QSpinBox,
                              QDoubleSpinBox, QCheckBox, QGroupBox, QFormLayout, QScrollArea,
                              QFrame, QToolButton, QStyle, QColorDialog, QFontDialog, QInputDialog,
-                             QSplitterHandle, QPrintDialog, QPrintPreviewDialog)
-from PySide6.QtPrintSupport import QPrinter, QPageSetupDialog
+                             QSplitterHandle)
+from PySide6.QtPrintSupport import QPrinter, QPageSetupDialog, QPrintDialog, QPrintPreviewDialog
 from PySide6.QtCore import Qt, QSize, QSettings, QTimer, QUrl, QMimeData, Signal
 from PySide6.QtGui import (QAction, QIcon, QFont, QTextCursor, QTextCharFormat, QTextListFormat,
                          QTextBlockFormat, QTextTableFormat, QTextFrameFormat, QTextLength,
