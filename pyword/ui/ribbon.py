@@ -2,7 +2,7 @@
 
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QToolButton,
                                QLabel, QFrame, QScrollArea, QSizePolicy, QPushButton,
-                               QButtonGroup, QGridLayout, QSpacerItem, QMenu)
+                               QButtonGroup, QGridLayout, QSpacerItem, QMenu, QStackedWidget)
 from PySide6.QtCore import Qt, Signal, QSize
 from PySide6.QtGui import QIcon, QAction, QFont, QColor
 
@@ -186,7 +186,7 @@ class RibbonBar(QWidget):
         self.tab_bar_layout.addStretch()
         main_layout.addWidget(self.tab_bar_widget)
 
-        # Content area
+        # Content area with stacked widget for tabs
         self.content_widget = QWidget()
         self.content_widget.setStyleSheet("""
             QWidget {
@@ -199,17 +199,25 @@ class RibbonBar(QWidget):
         self.content_layout.setSpacing(0)
         main_layout.addWidget(self.content_widget)
 
+        # Stacked widget for tabs wrapped in scroll area
+        self.stacked_widget = QStackedWidget()
+
         # Scroll area for tabs
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFrameShape(QFrame.NoFrame)
         self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setWidget(self.stacked_widget)
+        self.scroll_area.setMaximumHeight(120)  # Limit ribbon height
         self.content_layout.addWidget(self.scroll_area)
 
     def add_tab(self, tab: RibbonTab) -> int:
         """Add a tab to the ribbon."""
         self.tabs.append(tab)
+
+        # Add tab to stacked widget
+        self.stacked_widget.addWidget(tab)
 
         # Create tab button
         button = QPushButton(tab.title)
@@ -244,7 +252,7 @@ class RibbonBar(QWidget):
         # Set first tab as active
         if len(self.tabs) == 1:
             button.setChecked(True)
-            self.scroll_area.setWidget(tab)
+            self.stacked_widget.setCurrentIndex(0)
 
         return tab_index
 
@@ -258,8 +266,8 @@ class RibbonBar(QWidget):
             # Check current button
             self.tab_buttons[index].setChecked(True)
 
-            # Show tab content
-            self.scroll_area.setWidget(self.tabs[index])
+            # Show tab content using stacked widget
+            self.stacked_widget.setCurrentIndex(index)
             self.current_tab_index = index
             self.tab_changed.emit(index)
 
