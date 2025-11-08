@@ -12,11 +12,11 @@ from typing import Optional, Callable, Dict, Any, List
 from pathlib import Path
 
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QToolBar, 
-    QMenu, QAction, QFileDialog, QMessageBox, QLabel, QSizePolicy
+    QWidget, QVBoxLayout, QHBoxLayout, QTabWidget, QToolBar,
+    QMenu, QFileDialog, QMessageBox, QLabel, QSizePolicy
 )
 from PySide6.QtCore import Qt, Signal, Slot, QSize
-from PySide6.QtGui import QIcon, QKeySequence, QPixmap
+from PySide6.QtGui import QIcon, QKeySequence, QPixmap, QAction
 
 from ..core.document import Document, DocumentType, DocumentManager
 from .toolbars.main_toolbar import MainToolBar
