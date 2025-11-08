@@ -12,7 +12,7 @@ import os
 from typing import Optional, Dict, Any, List, Callable
 from enum import Enum, auto
 from PySide6.QtCore import QObject, Qt, Signal, QEvent, QTimer
-from PySide6.QtGui import QPalette, QColor, QKeySequence, QTextCursor, QAccessible, QShortcut
+from PySide6.QtGui import QPalette, QColor, QKeySequence, QTextCursor, QAccessible, QAccessibleEvent, QShortcut
 from PySide6.QtWidgets import QWidget, QTextEdit, QApplication
 
 
@@ -63,11 +63,8 @@ class ScreenReaderSupport(QObject):
             self.announcement_requested.emit(message, priority)
             # Update accessible description
             if self.parent():
-                QAccessible.updateAccessibility(
-                    self.parent(),
-                    0,
-                    QAccessible.Event.DescriptionChanged
-                )
+                event = QAccessibleEvent(self.parent(), QAccessible.Event.DescriptionChanged)
+                QAccessible.updateAccessibility(event)
 
     def set_focus_announcement(self, widget: QWidget, description: str):
         """
