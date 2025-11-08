@@ -114,24 +114,23 @@ class TextEditor(QTextEdit):
         """Set up the default page format."""
         # Set up page format (margins, size, etc.)
         text_document = self.document()
-        
+
         # Set page size to A4 (210 x 297 mm)
         page_size = text_document.pageSize()
         page_size.setWidth(595)  # 210mm at 72dpi
         page_size.setHeight(842)  # 297mm at 72dpi
         text_document.setPageSize(page_size)
-        
+
         # Set margins (1 inch = 72 points)
         frame_format = QTextFrameFormat()
         frame_format.setLeftMargin(72)  # 1 inch
         frame_format.setRightMargin(72)
         frame_format.setTopMargin(72)
         frame_format.setBottomMargin(72)
-        
+
         # Apply to the root frame
-        cursor = QTextCursor(text_document)
-        cursor.select(QTextCursor.Document)
-        cursor.mergeBlockFormat(frame_format)
+        root_frame = text_document.rootFrame()
+        root_frame.setFrameFormat(frame_format)
     
     def modification_changed(self, changed):
         """Handle document modification state changes."""
