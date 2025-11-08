@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <rect x="2" y="1" width="12" height="14" fill="none" stroke="#323130" stroke-width="1.2"/>
+  <text x="11" y="14" font-family="Arial" font-size="3" fill="#D13438">i</text>
+  <line x1="4" y1="12.5" x2="10" y2="12.5" stroke="#323130" stroke-width="0.6"/>
+</svg>
