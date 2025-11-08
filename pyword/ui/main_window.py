@@ -332,37 +332,22 @@ class MainWindow(QMainWindow):
         self.page_width_px = 794
         self.page_height_px = 1122
 
-        # Top row: contains horizontal ruler centered above page
-        ruler_row = QWidget()
-        ruler_row.setStyleSheet("background-color: #D3D3D3;")
-        ruler_row_layout = QHBoxLayout(ruler_row)
-        ruler_row_layout.setContentsMargins(0, 0, 0, 0)
-        ruler_row_layout.setSpacing(0)
-
-        # Left spacer (25px for vertical ruler)
-        spacer = QWidget()
-        spacer.setFixedWidth(25)
-        ruler_row_layout.addWidget(spacer)
-        ruler_row_layout.addStretch()
-
-        # Horizontal ruler - sized to page width only
+        # Horizontal ruler - FULL WIDTH spanning workspace
+        # It will calculate offset internally to align 0 with page edge
         self.horizontal_ruler = HorizontalRuler(self.editor_area)
-        self.horizontal_ruler.setFixedWidth(self.page_width_px)
-        ruler_row_layout.addWidget(self.horizontal_ruler)
-
-        # Right stretch
-        ruler_row_layout.addStretch()
-
-        editor_layout.addWidget(ruler_row)
+        self.horizontal_ruler.page_width_px = self.page_width_px
+        editor_layout.addWidget(self.horizontal_ruler)
 
         # Content row: vertical ruler + page
         content_row_layout = QHBoxLayout()
         content_row_layout.setContentsMargins(0, 0, 0, 0)
         content_row_layout.setSpacing(0)
 
-        # Vertical ruler - anchored to left edge
+        # Vertical ruler - anchored to left edge, FULL HEIGHT
+        # It will calculate offset internally to align 0 with page edge
         self.vertical_ruler = VerticalRuler(self.editor_area)
-        content_row_layout.addWidget(self.vertical_ruler, 0, Qt.AlignLeft | Qt.AlignTop)
+        self.vertical_ruler.page_height_px = self.page_height_px
+        content_row_layout.addWidget(self.vertical_ruler, 0, Qt.AlignLeft)
 
         # Page container - takes remaining space, centers the page
         page_container = QWidget()

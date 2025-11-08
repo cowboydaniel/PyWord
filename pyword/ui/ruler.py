@@ -18,10 +18,13 @@ class HorizontalRuler(QWidget):
         self.right_indent = 0
         self.first_line_indent = 0
 
+        # Page dimensions (set by parent)
+        self.page_width_px = 794  # A4 width in pixels at 96 DPI
+        self.page_width = 21.0  # A4 width in cm
+
         # Page margins (in cm)
         self.left_margin = 2.54  # 1 inch = 2.54 cm left margin
         self.right_margin = 2.54  # 1 inch = 2.54 cm right margin
-        self.page_width = 21.0  # A4 width in cm
 
         # Tab stops (list of positions in cm)
         self.tab_stops = []
@@ -68,18 +71,24 @@ class HorizontalRuler(QWidget):
         # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
-        # NO OFFSET - ruler "0" starts at page edge
-        # Draw tick marks every mm (0.1 cm)
-        max_cm = int(self.page_width) + 1
-        for i in range(0, max_cm * 10):
-            x = int(i * pixels_per_cm / 10)
-            if x > self.width():
-                break
+        # Calculate offset where page starts (ruler "0" aligns with page left edge)
+        # Page is centered, so offset = (total_width - page_width) / 2
+        page_offset = (self.width() - self.page_width_px) // 2
+
+        # Calculate how many cm to show before and after 0
+        cm_before_zero = int(page_offset / pixels_per_cm) + 2
+        cm_after_zero = int((self.width() - page_offset) / pixels_per_cm) + 2
+
+        # Draw tick marks every mm, including negative numbers
+        for i in range(-cm_before_zero * 10, cm_after_zero * 10):
+            x = page_offset + int(i * pixels_per_cm / 10)
+            if x < 0 or x > self.width():
+                continue
 
             # Every cm: long tick + number
             if i % 10 == 0:
                 painter.drawLine(x, self.height() - 10, x, self.height() - 1)
-                # Draw cm number (starting from 0 at page edge)
+                # Draw cm number (can be negative)
                 cm = i // 10
                 painter.drawText(x + 2, 12, str(cm))
             # Every 5mm: medium tick
@@ -97,14 +106,17 @@ class HorizontalRuler(QWidget):
         # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
-        # Left margin (gray area from 0 to left margin)
-        left_margin_pixels = int(self.left_margin * pixels_per_cm)
-        painter.drawRect(0, 0, left_margin_pixels, self.height())
+        # Calculate page offset (where page starts)
+        page_offset = (self.width() - self.page_width_px) // 2
 
-        # Right margin (gray area from page_width - right_margin to end)
-        right_margin_start = int((self.page_width - self.right_margin) * pixels_per_cm)
-        page_width_pixels = int(self.page_width * pixels_per_cm)
-        painter.drawRect(right_margin_start, 0, page_width_pixels - right_margin_start, self.height())
+        # Left margin (gray area from page start to left margin)
+        left_margin_pixels = int(self.left_margin * pixels_per_cm)
+        painter.drawRect(page_offset, 0, left_margin_pixels, self.height())
+
+        # Right margin (gray area from page_width - right_margin to page end)
+        right_margin_start = page_offset + int((self.page_width - self.right_margin) * pixels_per_cm)
+        right_margin_width = int(self.right_margin * pixels_per_cm)
+        painter.drawRect(right_margin_start, 0, right_margin_width, self.height())
 
     def draw_tab_stops(self, painter):
         """Draw tab stop indicators (small L-shaped markers)."""
@@ -114,8 +126,11 @@ class HorizontalRuler(QWidget):
         # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
+        # Calculate page offset (where page starts)
+        page_offset = (self.width() - self.page_width_px) // 2
+
         # Start from left margin
-        left_margin_offset = int(self.left_margin * pixels_per_cm)
+        left_margin_offset = page_offset + int(self.left_margin * pixels_per_cm)
 
         for tab_position in self.tab_stops:
             x = left_margin_offset + int(tab_position * pixels_per_cm)
@@ -131,8 +146,11 @@ class HorizontalRuler(QWidget):
         # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
+        # Calculate page offset (where page starts)
+        page_offset = (self.width() - self.page_width_px) // 2
+
         # Start from left margin
-        left_margin_offset = int(self.left_margin * pixels_per_cm)
+        left_margin_offset = page_offset + int(self.left_margin * pixels_per_cm)
 
         # Left indent marker (bottom triangle) - positioned relative to left margin
         left_x = left_margin_offset + int(self.left_indent * pixels_per_cm)
@@ -193,10 +211,13 @@ class VerticalRuler(QWidget):
         self.dpi = 96  # dots per inch
         self.zoom = 1.0
 
+        # Page dimensions (set by parent)
+        self.page_height_px = 1122  # A4 height in pixels at 96 DPI
+        self.page_height = 29.7  # A4 height in cm
+
         # Page margins (in cm)
         self.top_margin = 2.54  # 1 inch = 2.54 cm top margin
         self.bottom_margin = 2.54  # 1 inch = 2.54 cm bottom margin
-        self.page_height = 29.7  # A4 height in cm
 
         # Microsoft Word colors
         self.bg_color = QColor("#FFFFFF")
@@ -230,14 +251,18 @@ class VerticalRuler(QWidget):
         # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
-        # Top margin (gray area from 0 to top margin)
-        top_margin_pixels = int(self.top_margin * pixels_per_cm)
-        painter.drawRect(0, 0, self.width(), top_margin_pixels)
+        # Calculate page offset (where page starts vertically)
+        # Page is at top of workspace (no vertical centering)
+        page_offset = 0
 
-        # Bottom margin (gray area from page_height - bottom_margin to end)
-        bottom_margin_start = int((self.page_height - self.bottom_margin) * pixels_per_cm)
-        page_height_pixels = int(self.page_height * pixels_per_cm)
-        painter.drawRect(0, bottom_margin_start, self.width(), page_height_pixels - bottom_margin_start)
+        # Top margin (gray area from page start to top margin)
+        top_margin_pixels = int(self.top_margin * pixels_per_cm)
+        painter.drawRect(0, page_offset, self.width(), top_margin_pixels)
+
+        # Bottom margin (gray area from page_height - bottom_margin to page end)
+        bottom_margin_start = page_offset + int((self.page_height - self.bottom_margin) * pixels_per_cm)
+        bottom_margin_height = int(self.bottom_margin * pixels_per_cm)
+        painter.drawRect(0, bottom_margin_start, self.width(), bottom_margin_height)
 
     def draw_ruler_markings(self, painter):
         """Draw the ruler tick marks and numbers."""
@@ -250,18 +275,24 @@ class VerticalRuler(QWidget):
         # Calculate pixels per cm (1 inch = 2.54 cm, 96 DPI)
         pixels_per_cm = (self.dpi / 2.54) * self.zoom
 
-        # NO OFFSET - ruler "0" starts at page edge
-        # Draw tick marks every mm (0.1 cm)
-        max_cm = int(self.page_height) + 1
-        for i in range(0, max_cm * 10):
-            y = int(i * pixels_per_cm / 10)
-            if y > self.height():
-                break
+        # Calculate offset where page starts (ruler "0" aligns with page top edge)
+        # Page is at top of workspace (no vertical centering for now)
+        page_offset = 0
+
+        # Calculate how many cm to show before and after 0
+        cm_before_zero = int(page_offset / pixels_per_cm) + 2
+        cm_after_zero = int((self.height() - page_offset) / pixels_per_cm) + 2
+
+        # Draw tick marks every mm, including negative numbers
+        for i in range(-cm_before_zero * 10, cm_after_zero * 10):
+            y = page_offset + int(i * pixels_per_cm / 10)
+            if y < 0 or y > self.height():
+                continue
 
             # Every cm: long tick + number
             if i % 10 == 0:
                 painter.drawLine(self.width() - 10, y, self.width() - 1, y)
-                # Draw cm number (rotated) - starting from 0 at page edge
+                # Draw cm number (rotated, can be negative)
                 cm = i // 10
                 painter.save()
                 painter.translate(8, y + 10)
