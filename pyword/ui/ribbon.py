@@ -316,6 +316,8 @@ class RibbonBar(QWidget):
         self.tab_buttons = []
         self.current_tab_index = 0
         self.backstage_view = None
+        # Store button references for easy access
+        self.buttons = {}
         self.setup_ui()
 
     def setup_ui(self):
@@ -458,22 +460,22 @@ class RibbonBar(QWidget):
 
         # Document operations group
         file_group = RibbonGroup("Document")
-        file_group.add_large_button(QIcon(), "New", "Create new document")
-        file_group.add_large_button(QIcon(), "Open", "Open document")
-        file_group.add_large_button(QIcon(), "Save", "Save document")
-        file_group.add_large_button(QIcon(), "Save As", "Save document as")
+        self.buttons['new'] = file_group.add_large_button(QIcon(), "New", "Create new document")
+        self.buttons['open'] = file_group.add_large_button(QIcon(), "Open", "Open document")
+        self.buttons['save'] = file_group.add_large_button(QIcon(), "Save", "Save document")
+        self.buttons['save_as'] = file_group.add_large_button(QIcon(), "Save As", "Save document as")
         tab.add_group(file_group)
 
         # Print group
         print_group = RibbonGroup("Print")
-        print_group.add_large_button(QIcon(), "Print", "Print document")
-        print_group.add_large_button(QIcon(), "Preview", "Print preview")
+        self.buttons['print'] = print_group.add_large_button(QIcon(), "Print", "Print document")
+        self.buttons['print_preview'] = print_group.add_large_button(QIcon(), "Preview", "Print preview")
         tab.add_group(print_group)
 
         # Share group
         share_group = RibbonGroup("Share")
-        share_group.add_large_button(QIcon(), "Export", "Export document")
-        share_group.add_small_button(QIcon(), "PDF", "Export as PDF")
+        self.buttons['export'] = share_group.add_large_button(QIcon(), "Export", "Export document")
+        self.buttons['export_pdf'] = share_group.add_small_button(QIcon(), "PDF", "Export as PDF")
         tab.add_group(share_group)
 
         return tab
@@ -485,12 +487,12 @@ class RibbonBar(QWidget):
         # Clipboard group
         clipboard_group = RibbonGroup("Clipboard")
         # Make Paste button more prominent with larger size
-        paste_btn = clipboard_group.add_large_button(QIcon(), "Paste", "Paste from clipboard")
-        paste_btn.setIconSize(QSize(36, 36))  # Larger icon
-        paste_btn.setFixedSize(75, 70)  # Slightly larger button
-        clipboard_group.add_small_button(QIcon(), "Cut", "Cut to clipboard")
-        clipboard_group.add_small_button(QIcon(), "Copy", "Copy to clipboard")
-        clipboard_group.add_small_button(QIcon(), "Format\nPainter", "Format painter")
+        self.buttons['paste'] = clipboard_group.add_large_button(QIcon(), "Paste", "Paste from clipboard")
+        self.buttons['paste'].setIconSize(QSize(36, 36))  # Larger icon
+        self.buttons['paste'].setFixedSize(75, 70)  # Slightly larger button
+        self.buttons['cut'] = clipboard_group.add_small_button(QIcon(), "Cut", "Cut to clipboard")
+        self.buttons['copy'] = clipboard_group.add_small_button(QIcon(), "Copy", "Copy to clipboard")
+        self.buttons['format_painter'] = clipboard_group.add_small_button(QIcon(), "Format\nPainter", "Format painter")
         tab.add_group(clipboard_group)
 
         # Font group (with selectors)
@@ -717,9 +719,9 @@ class RibbonBar(QWidget):
 
         # Editing group
         editing_group = RibbonGroup("Editing")
-        editing_group.add_large_button(QIcon(), "Find", "Find text")
-        editing_group.add_small_button(QIcon(), "Replace", "Find and replace")
-        editing_group.add_small_button(QIcon(), "Select", "Select text")
+        self.buttons['find'] = editing_group.add_large_button(QIcon(), "Find", "Find text")
+        self.buttons['replace'] = editing_group.add_small_button(QIcon(), "Replace", "Find and replace")
+        self.buttons['select_all'] = editing_group.add_small_button(QIcon(), "Select", "Select text")
         tab.add_group(editing_group)
 
         return tab
@@ -730,34 +732,34 @@ class RibbonBar(QWidget):
 
         # Tables group
         tables_group = RibbonGroup("Tables")
-        tables_group.add_large_button(QIcon(), "Table", "Insert table")
+        self.buttons['insert_table'] = tables_group.add_large_button(QIcon(), "Table", "Insert table")
         tab.add_group(tables_group)
 
         # Illustrations group
         illustrations_group = RibbonGroup("Illustrations")
-        illustrations_group.add_large_button(QIcon(), "Picture", "Insert picture")
-        illustrations_group.add_large_button(QIcon(), "Shapes", "Insert shapes")
-        illustrations_group.add_large_button(QIcon(), "Chart", "Insert chart")
-        illustrations_group.add_large_button(QIcon(), "SmartArt", "Insert SmartArt")
+        self.buttons['insert_picture'] = illustrations_group.add_large_button(QIcon(), "Picture", "Insert picture")
+        self.buttons['insert_shapes'] = illustrations_group.add_large_button(QIcon(), "Shapes", "Insert shapes")
+        self.buttons['insert_chart'] = illustrations_group.add_large_button(QIcon(), "Chart", "Insert chart")
+        self.buttons['insert_smartart'] = illustrations_group.add_large_button(QIcon(), "SmartArt", "Insert SmartArt")
         tab.add_group(illustrations_group)
 
         # Links group
         links_group = RibbonGroup("Links")
-        links_group.add_large_button(QIcon(), "Link", "Insert hyperlink")
-        links_group.add_large_button(QIcon(), "Bookmark", "Insert bookmark")
+        self.buttons['insert_link'] = links_group.add_large_button(QIcon(), "Link", "Insert hyperlink")
+        self.buttons['insert_bookmark'] = links_group.add_large_button(QIcon(), "Bookmark", "Insert bookmark")
         tab.add_group(links_group)
 
         # Header & Footer group
         header_group = RibbonGroup("Header & Footer")
-        header_group.add_small_button(QIcon(), "Header", "Edit header")
-        header_group.add_small_button(QIcon(), "Footer", "Edit footer")
-        header_group.add_small_button(QIcon(), "Page Number", "Insert page number")
+        self.buttons['insert_header'] = header_group.add_small_button(QIcon(), "Header", "Edit header")
+        self.buttons['insert_footer'] = header_group.add_small_button(QIcon(), "Footer", "Edit footer")
+        self.buttons['insert_page_number'] = header_group.add_small_button(QIcon(), "Page Number", "Insert page number")
         tab.add_group(header_group)
 
         # Symbols group
         symbols_group = RibbonGroup("Symbols")
-        symbols_group.add_large_button(QIcon(), "Equation", "Insert equation")
-        symbols_group.add_large_button(QIcon(), "Symbol", "Insert symbol")
+        self.buttons['insert_equation'] = symbols_group.add_large_button(QIcon(), "Equation", "Insert equation")
+        self.buttons['insert_symbol'] = symbols_group.add_large_button(QIcon(), "Symbol", "Insert symbol")
         tab.add_group(symbols_group)
 
         return tab

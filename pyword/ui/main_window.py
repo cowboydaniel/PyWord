@@ -280,10 +280,45 @@ class MainWindow(QMainWindow):
 
     def connect_ribbon_actions(self):
         """Connect ribbon button actions to their respective methods."""
-        # This method will connect ribbon buttons to the application methods
-        # For now, we'll let the ribbon display without connections
-        # Full connections can be added incrementally
-        pass
+        # File tab connections
+        if 'new' in self.ribbon.buttons:
+            self.ribbon.buttons['new'].clicked.connect(self.new_document)
+        if 'open' in self.ribbon.buttons:
+            self.ribbon.buttons['open'].clicked.connect(self.open_document)
+        if 'save' in self.ribbon.buttons:
+            self.ribbon.buttons['save'].clicked.connect(self.save_document)
+        if 'save_as' in self.ribbon.buttons:
+            self.ribbon.buttons['save_as'].clicked.connect(self.save_document_as)
+        if 'print' in self.ribbon.buttons:
+            self.ribbon.buttons['print'].clicked.connect(self.print_document)
+        if 'print_preview' in self.ribbon.buttons:
+            self.ribbon.buttons['print_preview'].clicked.connect(self.print_preview)
+
+        # Home tab - Clipboard group
+        if 'cut' in self.ribbon.buttons:
+            self.ribbon.buttons['cut'].clicked.connect(self.cut)
+        if 'copy' in self.ribbon.buttons:
+            self.ribbon.buttons['copy'].clicked.connect(self.copy)
+        if 'paste' in self.ribbon.buttons:
+            self.ribbon.buttons['paste'].clicked.connect(self.paste)
+
+        # Home tab - Editing group
+        if 'find' in self.ribbon.buttons:
+            self.ribbon.buttons['find'].clicked.connect(self.find)
+        if 'replace' in self.ribbon.buttons:
+            self.ribbon.buttons['replace'].clicked.connect(self.replace)
+        if 'select_all' in self.ribbon.buttons:
+            self.ribbon.buttons['select_all'].clicked.connect(self.select_all)
+
+        # Insert tab connections
+        if 'insert_table' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_table'].clicked.connect(self.insert_table)
+        if 'insert_picture' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_picture'].clicked.connect(self.insert_image)
+        if 'insert_link' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_link'].clicked.connect(self.insert_hyperlink)
+        if 'insert_symbol' in self.ribbon.buttons:
+            self.ribbon.buttons['insert_symbol'].clicked.connect(self.insert_symbol)
 
     def setup_left_panel(self):
         """Setup the left panel with navigation and styles."""
@@ -1301,12 +1336,7 @@ class MainWindow(QMainWindow):
         """Open print preview dialog."""
         dialog = PrintPreviewDialog(self)
         dialog.exec()
-    
-    def print_document(self):
-        """Print the current document."""
-        # TODO: Implement printing
-        QMessageBox.information(self, "Print", "Print functionality will be implemented in a future version.")
-    
+
     # Settings
     def load_settings(self):
         """Load application settings."""
